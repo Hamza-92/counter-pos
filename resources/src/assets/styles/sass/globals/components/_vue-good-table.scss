@@ -1,0 +1,476 @@
+/* Clean & Minimal VGT Table Design */
+.vgt-table {
+  border-collapse: separate !important;
+  border-spacing: 0;
+  
+  overflow: hidden;
+  
+  background: #ffffff;
+  
+  thead {
+    background: #f8f9fa;
+    
+    tr {
+      th {
+        background: #f8f9fa !important;
+        color: #212529 !important;
+        text-transform: none;
+        font-size: 0.8125rem !important;
+        letter-spacing: 0.01em;
+        padding: 0.75rem 1rem !important;
+        border-bottom: 2px solid #dee2e6 !important;
+        border-right: none !important;
+        position: relative;
+        transition: background-color 0.2s ease;
+        white-space: nowrap !important;
+        
+        &:hover {
+          background: #f8f9fa !important;
+        }
+        
+        &.sortable {
+          cursor: pointer;
+
+          &:hover {
+            color: #1f2937 !important;
+          }
+
+          button {
+            display: none !important;
+          }
+        }
+      }
+    }
+  }
+  
+  tbody {
+    tr {
+      transition: all 0.3s ease;
+      background: #ffffff;
+      
+      &:hover {
+        background: #f8f9fa !important;
+      }
+      
+      &:nth-child(even) {
+        background: #fcfcfd;
+        
+        &:hover {
+          background: #f8f9fa !important;
+        }
+      }
+      
+      td {
+        padding: .75em .75em .75em .75em !important;
+        border-bottom: 1px solid #e9ecef !important;
+        border-right: none !important;
+        color: #495057;
+        vertical-align: middle;
+        white-space: nowrap !important;
+      }
+      
+      &:last-child td {
+        border-bottom: none !important;
+      }
+    }
+  }
+}
+
+/* Remove any outer border from the root table element globally */
+table.vgt-table {
+  border: none !important;
+  font-size: 13px;
+}
+
+/* Remove borders added by vue-good-table's "bordered" class */
+table.vgt-table.bordered {
+  border: none !important;
+}
+
+table.vgt-table.bordered th,
+table.vgt-table.bordered td {
+  border: none !important;
+}
+
+table.tableOne.vgt-table {
+  font-size: 13px;
+  border: none !important;
+  
+  thead tr th {
+    background: transparent;
+  }
+  
+  tbody tr th.line-numbers {
+    background: #fff;
+  }
+  
+  tbody tr th.vgt-checkbox-col {
+    background: #fff;
+  }
+}
+
+.vgt-global-search.vgt-clearfix {
+  background: #fff;
+  border: none !important;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  // Vertically center the search input and the right-side action buttons
+  // so they sit on the same baseline.
+  align-items: center;
+}
+
+// Remove the magnifying-glass icon globally and reclaim its left padding.
+.vgt-global-search__input .input__icon {
+  display: none;
+}
+.vgt-global-search__input {
+  padding-left: 0;
+  // Slight downward nudge so the input lines up with action buttons that
+  // carry an .m-1 margin in their toolbar.
+  padding-top: 4px;
+}
+
+// Pointer cursor on every vue-good-table row (rows are typically
+// clickable / selectable across the app).
+.vgt-table tbody tr {
+  cursor: pointer;
+}
+
+.vgt-table.full-height {
+  min-height: 450px !important;
+}
+
+.vgt-table.non-height {
+  min-height: none !important;
+}
+
+.vgt-wrap .vgt-inner-wrap {
+  box-shadow: unset !important;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Footer Styling */
+div.vgt-wrap__footer.vgt-clearfix {
+  background: #fff;
+  font-size: 14px;
+  border: none !important;
+  padding: 1.25rem 1rem;
+  border-top: 2px solid #e9ecef;
+  margin-top: 0;
+}
+
+.vgt-wrap__footer .footer__navigation__page-btn {
+  span {
+    font-size: 14px !important;
+    font-weight: 500;
+  }
+  
+  button {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 0.5rem 0.875rem;
+    margin: 0 0.25rem;
+    transition: all 0.2s ease;
+    background: #fff;
+    color: #6b7280;
+    font-weight: 500;
+    
+    &:hover:not(:disabled) {
+      background: #f9fafb;
+      border-color: #d1d5db;
+      color: #374151;
+    }
+    
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    &.active {
+      background: #374151;
+      border-color: #374151;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+
+.vgt-wrap__footer .footer__row-count__label {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
+  margin-bottom: 0 !important;
+}
+
+.vgt-wrap__footer .footer__row-count::after {
+  display: none;
+}
+
+.vgt-wrap__footer .footer__row-count__select {
+  background-color: #fff;
+  width: auto;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  height: auto;
+  font-size: 14px;
+  margin-left: 8px;
+  color: #374151;
+  font-weight: 500;
+  -webkit-appearance: auto !important;
+  appearance: auto !important;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  
+  &:hover {
+    border-color: #9ca3af;
+    background-color: #f9fafb;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: #6b7280;
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+  }
+}
+
+.vgt-wrap__footer .footer__navigation {
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.vgt-wrap__footer .footer__navigation>button:first-of-type {
+  margin-right: 0;
+}
+
+/* Chevron Icons */
+span.chevron.right::after {
+  border-left: 6px solid #9ca3af !important;
+}
+
+span.chevron.left::after {
+  border-right: 6px solid #9ca3af !important;
+}
+
+/* Search Input */
+input.vgt-input.vgt-pull-left {
+  width: auto;
+  min-width: 250px;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #9ca3af;
+    box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.1);
+  }
+
+  // Darker, more readable placeholder text (was #9ca3af which had poor
+  // contrast). Opacity 1 defeats Firefox's default low-alpha placeholder.
+  &::placeholder,
+  &::-webkit-input-placeholder,
+  &::-moz-placeholder,
+  &:-ms-input-placeholder,
+  &::-ms-input-placeholder {
+    color: #4b5563;
+    opacity: 1;
+  }
+}
+
+// Match the same placeholder contrast for any custom search input that uses
+// the Bootstrap input-group pattern (e.g. store/CollectionsIndex, Messages,
+// CollectionsCreate/Edit). Scoped to .input-group so it doesn't affect
+// regular form fields elsewhere in the app.
+.input-group .form-control::placeholder,
+.input-group .form-control::-webkit-input-placeholder,
+.input-group .form-control::-moz-placeholder,
+.input-group .form-control:-ms-input-placeholder,
+.input-group .form-control::-ms-input-placeholder {
+  color: #4b5563;
+  opacity: 1;
+}
+
+// Equalize the input and adjacent action button heights inside default-size
+// input-groups so they line up cleanly side-by-side. Excludes the explicit
+// small/large variants which are sized intentionally.
+.input-group:not(.input-group-sm):not(.input-group-lg) {
+  .form-control,
+  .btn {
+    height: calc(1.5em + 0.7rem + 0px);
+    font-size: 14px;
+  }
+
+  .form-control {
+    padding: 0 0.875rem;
+    transition: all 0.2s ease;
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.1);
+      z-index: 3;
+    }
+  }
+
+  // Squared inner edges so radii meet cleanly when input + button join.
+  > .input-group-prepend > .btn,
+  > .input-group-prepend > .input-group-text {
+    border-radius: 6px 0 0 6px;
+    padding: 0 0.875rem;
+  }
+  > .input-group-append > .btn,
+  > .input-group-append > .input-group-text {
+    border-radius: 0 6px 6px 0;
+    padding: 0 0.875rem;
+  }
+
+  // When there's no prepend, the input gets the left rounding.
+  > .form-control:first-child {
+    border-radius: 6px 0 0 6px;
+  }
+  // When there's no append, the input gets the right rounding.
+  > .form-control:last-child {
+    border-radius: 0 6px 6px 0;
+  }
+  // Bare input with no group siblings: full rounding.
+  > .form-control:only-child {
+    border-radius: 6px;
+  }
+}
+
+/* === Standardized table action buttons (matches /app/products/list design) ===
+ *
+ * New pattern (preferred — used in index_products.vue):
+ *   <span class="action-cell">
+ *     <router-link class="btn btn-sm btn-outline-success action-btn">
+ *       <lucide-icon class="text-success" name="pencil" />
+ *     </router-link>
+ *   </span>
+ *
+ * Legacy pattern (still present across most list pages):
+ *   <router-link><lucide-icon class="text-25 text-success" name="pencil" /></router-link>
+ *
+ * The :has() fallback below auto-styles legacy markup as the same outline
+ * button without needing to edit 50+ templates.
+ */
+.action-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.action-btn.btn {
+  padding: 0.25rem 0.45rem;
+  border-color: #e5e7eb;
+  background: #fff;
+
+  &:hover {
+    background: #f9fafb;
+  }
+}
+
+// Auto-style legacy bare-anchor / bare-button action icons inside vgt cells.
+// Anything containing an action icon child (.text-20 or .text-25 size class)
+// is treated as a table action button. Covers index_* pages (text-25) and
+// the store/* pages (text-20).
+.vgt-table td a:not(.btn):has(> .text-20),
+.vgt-table td a:not(.btn):has(> .text-25),
+.vgt-table td button:not(.btn):has(> .text-20),
+.vgt-table td button:not(.btn):has(> .text-25) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.45rem;
+  margin: 0 2px;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.2rem;
+  background: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  vertical-align: middle;
+  transition: all 0.3s;
+
+  &:hover,
+  &:focus {
+    background: #f9fafb;
+    text-decoration: none;
+  }
+}
+
+// Normalize legacy icon sizes inside the compact action button
+// (.text-25 = 25px, .text-20 = 20px — both too large for a small button).
+.vgt-table td a:not(.btn) .text-20,
+.vgt-table td a:not(.btn) .text-25,
+.vgt-table td button:not(.btn) .text-20,
+.vgt-table td button:not(.btn) .text-25 {
+  font-size: 1rem;
+}
+
+/* Checkbox Column */
+th.vgt-checkbox-col {
+  border-right: none !important;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+th.line-numbers {
+  border-right: none !important;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+/* Alert Box */
+.table-alert__box {
+  color: #155724 !important;
+  background-color: #d4edda !important;
+  border-color: #c3e6cb !important;
+  padding: 0.75rem !important;
+  border-radius: 8px;
+}
+
+.gull-border-none {
+  border-bottom: none !important;
+}
+.order-table.vgt-table {
+  font-size: 14px;
+  border: 0px solid #dcdfe6;
+  thead th {
+    color: $body-color;
+
+    vertical-align: bottom;
+    border-bottom: 0px solid #dcdfe6;
+    padding-right: 1.5em;
+    background: transparent;
+    min-width: 140px !important;
+    font-size: 14px;
+    font-weight: 600 !important;
+  }
+  td {
+    padding: 10px;
+    vertical-align: middle;
+    border-bottom: 0px solid #dcdfe6;
+    color: $body-color;
+    font-size: 14px;
+    min-width: 140px !important;
+  }
+  tbody tr {
+    transition: all 0.5s;
+    padding: 15px;
+    cursor: pointer;
+  }
+  tbody tr:hover {
+    background: #eee;
+    border-radius: 10px;
+  }
+}
+
+
+@media only screen and (max-width: 750px){
+  .vgt-wrap__footer .footer__navigation__page-info {
+      display: none;
+  }
+}
+

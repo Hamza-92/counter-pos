@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+   <title>Stocky - Ultimate Inventory Management with POS</title>
+   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+
+   <!-- Modern typography: Inter (UI) + JetBrains Mono (code). System fonts fall back if offline. -->
+   <link rel="preconnect" href="https://fonts.googleapis.com" />
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+   <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" />
+
+   <link rel="stylesheet" href="assets/vendor/fontawesome/css/all.min.css" />
+   <link rel="stylesheet" href="assets/vendor/highlightjs/github.min.css" />
+   <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css" />
+   <link rel="stylesheet" href="assets/css/stocky-docs.css" />
+</head>
+
+<body>
+   <div class="wrapper">
+      <div class="doc-header">
+         <button type="button" class="sidebar-toggle btn" aria-label="Toggle sidebar">
+            <i class="fas fa-bars ti-menu"></i>
+            <i class="fas fa-times ti-close"></i>
+         </button>
+         <div class="brand mr-md">
+            <a href="#">
+               <span class="brand-mark">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                     <path d="M4 7l8-4 8 4-8 4-8-4z" fill="#fff" opacity=".95"/>
+                     <path d="M4 12l8 4 8-4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                     <path d="M4 17l8 4 8-4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+               </span>
+               <span class="brand-text">Stocky <small>Docs</small></span>
+            </a>
+         </div>
+         <span class="flex-grow-1"></span>
+         <a href="https://stocky.getstocky.com/" class="btn btn-link btn-link-secondary mr-md d-none d-sm-block">
+            <i class="fas fa-external-link-alt mr-1"></i> Live Preview
+         </a>
+         <button type="button" class="theme-toggle" aria-label="Toggle theme">
+            <i class="fas fa-moon icon-moon"></i>
+            <i class="fas fa-sun icon-sun"></i>
+         </button>
+      </div>
+      <div class="doc-content clearfix">
+         <div class="doc-content__sidebar">
+            <div class="sidebar-search">
+               <input type="text" placeholder="Search documentation..." aria-label="Search documentation" />
+            </div>
+            <ul class="sidebar__list">
+               <li>
+                  <a href="index.html">getting started</a>
+                  <ul>
+                     <li>
+                        <a data-nav-section="Introduction" href="#">Introduction</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="installation" href="#">Installation</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="dev_backend" href="#">Developer Guide (Backend)</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="dev_frontend" href="#">Developer Guide (Frontend - Vue.js)</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="Update" href="#">Upgrade</a> 
+                     </li>
+                     <li>
+                        <a data-nav-section="backup_db" href="#">Backup Database</a> 
+                     </li>
+
+                     <li>
+                        <a data-nav-section="printer" href="#">POS Printer Settings</a>
+                     </li>
+
+                     <li>
+                        <a data-nav-section="barcode" href="#">Priting barcode/labels</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="cash_drawer" href="#">Cash drawer</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="weight_scale" href="#">Weight Scale Barcodes</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="login" href="#">Login</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="online_store" href="#">Online Store</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="dashboard" href="#">Dashboard</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="languages" href="#">Languages</a>
+                     </li>
+
+                     <li>
+                        <a data-nav-section="products"  href="#">Products</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="transfer"  href="#">Transfer</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="adjustment"  href="#">Adjustment</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="account"  href="#">Account</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="transfer_money"  href="#">Transfer Money</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="expense"  href="#">Expense</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="deposit"  href="#">Deposit</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="quotations"  href="#">Quotations</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="sales"  href="#">Sales</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="pos"  href="#">Sales POS</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="purchases"  href="#">Purchases</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="returns-sale" href="#">Sale Returns</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="returns-purchase" href="#">Purchase Returns</a>
+                     </li>
+                     <li>
+                           <a data-nav-section="customers"  href="#">Customers</a>
+                        </li>
+                     <li>
+                           <a data-nav-section="suppliers"  href="#">Suppliers</a>
+                     </li>
+                     <li>
+                           <a data-nav-section="users"  href="#">Users</a>
+                        </li>
+
+                         <li>
+                           <a data-nav-section="projects"  href="#">Projects</a>
+                        </li>
+
+                         <li>
+                           <a data-nav-section="tasks"  href="#">Tasks</a>
+                        </li>
+
+                         <li>
+                           <a data-nav-section="subscriptions-list"  href="#">Subscriptions</a>
+                        </li>
+
+                     <li>
+                        <a data-nav-section="settings" href="#">Settings</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="multi_units" href="#">Multi-Unit Conversion</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="reports" href="#">Reports</a>
+                     </li>
+                     <li>
+                        <a data-nav-section="Reviews" href="#">Rate Us</a>
+                     </li>
+                  </ul>
+            </ul>
+         </div>
+         <div class="doc-content__body">
+
+            <section data-section="Introduction">
+               <h1 class="doc-section-title">
+                  Introduction
+               </h1>
+              <p class="text-lead">
+                  Stocky - Ultimate Inventory with POS and Online Store.
+               </p>
+                  </br>
+               <p class="text-lead">
+                  Stocky is a complete inventory management system with POS and an integrated Online Store.  
+                  It allows you to manage inventory, sales, purchases, customers, invoices, payments, and now — sell online directly from your store!  
+                  Access your business anywhere, anytime, whether you manage a small shop or a large enterprise.  
+                  It’s the all-in-one solution you need to control inventory, purchases, sales, and your online presence effortlessly.
+               </p>
+                  </br>
+               <ul>
+                  <li>Very simple installation in under 5 minutes</li>
+                  <li>Modern POS, Online Store & Dynamic Dashboard</li>
+                  <li>6 Months of Dedicated Support</li>
+               </ul>
+
+               <h3 class="doc-section-title">
+                  Features
+               </h3>
+               <p>
+                  Stocky Offers Lots of Awesome Features out of the box, such as :
+               </p>
+               <div class="card">
+                  <div class="card-body">
+                     <ul class="">
+                        <li class="">Easy POS and Dynamic dashboard</li>
+                        <li class="">Items , Adjustment , Transfer</li>
+                        <li class="">Quotations , Sales , Purchases</li>
+                        <li class="">Returns Customer & Supplier</li>
+                        <li class="">Users ,Customers, Supppliers</li>
+                        <li class="">Currency , Units , Category , Backup</li>
+                        <li class="">Payment Sales , Purchases</li>
+                        <li class="">Payments Report</li>
+                        <li class="">Overview & warehouse stock charts</li>
+                        <li class="">Purchases & Sales report</li>
+                        <li class="">Customers & suppliers reports</li>
+                        <li class="">Product quantity alerts</li>
+                        <li class="">Mail notification system addedd</li>
+                        <li class="">SMS notification system addedd</li>
+                        <li class="">Uses Structured And Customizable Sass Code </li>
+                        <li class="">Integrated With Vuex,Vue Router</li>
+                        <li class="">Dark Version Included</li>
+                        <li class="">Multilingual 24 languages and More Will be added soon</li>
+                        <li class="">RTL Support Adeed</li>
+                        <li class="">Pure Vue Js ,No JQuery </li>
+                        <li class="">Clean And Organized Code</li>
+                        <li class="">Well Documented Code</li>
+                        <li class="">Standard Folder Stucture</li>
+                        <li class="">Easy POS and Dynamic dashboard</li>
+                        <li class="">6 Months Support</li>
+                        <li class="">And Many More Inside ...</li>
+                     </ul>
+                  </div>
+               </div>
+               <h3 class="doc-section-title">
+                  Credits :)
+               </h3>
+               <p>Special Thanks To These Awesome Plugins That Helps Us to Build This Awesome System
+               </p>
+               <div class="card">
+                  <div class="card-body">
+                  </div>
+                  <div class="list-group">
+                     <a href="https://vuejs.org/" class="list-group-item list-group-item-action">Vue</a>
+                     <a href="https://cli.vuejs.org/" class="list-group-item list-group-item-action">Vue Cli </a>
+                     <a href="https://vuex.vuejs.org/" class="list-group-item list-group-item-action">Vuex</a>
+                     <a href="https://router.vuejs.org/" class="list-group-item list-group-item-action">vue-router</a>
+                     <a href="https://bootstrap-vue.js.org"
+                        class="list-group-item list-group-item-action">BootstapVue</a>
+                     <a href="https://getbootstrap.com/" class="list-group-item list-group-item-action">Bootstrap</a>
+                     <a href="http://www.vue-tags-input.com"
+                        class="list-group-item list-group-item-action">vue-tags-input</a>
+                     <a href="https://github.com/zloirock/core-js#readme"
+                        class="list-group-item list-group-item-action">core-js</a>
+                     <a href="http://echarts.apache.org" class="list-group-item list-group-item-action">echarts</a>
+                     <a href="https://github.com/duskload/mobile-device-detect#readme"
+                        class="list-group-item list-group-item-action">mobile-device-detect</a>
+                     <a href="https://github.com/rstacruz/nprogress"
+                        class="list-group-item list-group-item-action">nprogress</a>
+                     <a href="https://github.com/damienroche/vue-mj-daterangepicker"
+                        class="list-group-item list-group-item-action">vue-mj-daterangepicker</a>
+                     <a href="https://github.com/ecomfe/vue-echarts#readme"
+                        class="list-group-item list-group-item-action">vue-echarts</a>
+                     <a href="https://github.com/xaksis/vue-good-table#readme"
+                        class="list-group-item list-group-item-action">vue-good-table</a>
+                     <a href="https://github.com/hilongjw/vue-lazyload#readme"
+                        class="list-group-item list-group-item-action">vue-lazyload</a>
+                     <a href="https://github.com/nuxt/vue-meta"
+                        class="list-group-item list-group-item-action">vue-meta</a>
+                     <a href="https://github.com/Degfy/vue-perfect-scrollbar#readme"
+                        class="list-group-item list-group-item-action">vue-perfect-scrollbar</a>
+                     <a href="https://github.com/mrrio/jspdf" class="list-group-item list-group-item-action">jspdf</a>
+                     <a href="https://simonbengtsson.github.io/jsPDF-AutoTable"
+                        class="list-group-item list-group-item-action">jspdf-autotable</a>
+                     <a href="https://github.com/avil13/vue-sweetalert2#readme"
+                        class="list-group-item list-group-item-action">vue-sweetalert2</a>
+                     <a href="http://fontawesome.io/" class="list-group-item list-group-item-action">font-awesome</a>
+                     <a href="https://github.com/axios/axios" class="list-group-item list-group-item-action">axios</a>
+                     <a href="https://github.com/trevoreyre/autocomplete#readme"
+                        class="list-group-item list-group-item-action">autocomplete-vue</a>
+                     <a href="https://logaretm.github.io/vee-validate/#readme"
+                        class="list-group-item list-group-item-action">vee-validate</a>
+                     <a href="https://github.com/johndatserakis/vue-navigation-bar#readme"
+                        class="list-group-item list-group-item-action">vue-navigation-bar</a>
+                     <a href="https://vue-select.org" class="list-group-item list-group-item-action">vue-select</a>
+                     <a href="https://github.com/dzwillia/vue-simple-spinner/#readme"
+                        class="list-group-item list-group-item-action">vue-simple-spinner</a>
+                     <a href="https://github.com/lekhang2512/vue-upload-multiple-image"
+                        class="list-group-item list-group-item-action">vue-upload-multiple-image</a>
+                     <a href="https://github.com/Innologica/vue2-daterange-picker#readme"
+                        class="list-group-item list-group-item-action">vue2-daterange-picker</a>
+                     <a href="https://github.com/pinguinjkeke/vue-local-storage#readme"
+                        class="list-group-item list-group-item-action">vue-localstorage</a>
+                     <a href="https://github.com/lekhang2512/vue-image-lightbox-carousel#readme"
+                        class="list-group-item list-group-item-action">vue-image-lightbox-carousel</a>
+                     <a href="https://github.com/kazupon/vue-i18n#readme"
+                        class="list-group-item list-group-item-action">vue-i18n</a>
+                     <a href="https://Iconsmind.com"
+                        class="list-group-item list-group-item-action">Icons mind</a>
+                     <a href="https://github.com/vikkio88/vue-flag-icon#readme"
+                        class="list-group-item list-group-item-action">vue-flag-icon</a>
+                     <a href="https://github.com/pcloth/vue-easy-print"
+                        class="list-group-item list-group-item-action">vue-easy-print</a>
+                     <a href="https://github.com/cmp-cc/vue-cookies#readme"
+                        class="list-group-item list-group-item-action">vue-cookies</a>
+                     <a href="https://github.com/alfhen/vue-cookie#readme"
+                        class="list-group-item list-group-item-action">vue-cookie</a>
+                     <a href="https://github.com/lindell/vue-barcode#readme"
+                        class="list-group-item list-group-item-action">vue-barcode</a>
+                     <a href="https://github.com/simplesmiler/vue-clickaway"
+                        class="list-group-item list-group-item-action">vue-clickaway</a>
+                     <a href="https://momentjs.com" class="list-group-item list-group-item-action">moment</a>
+                  </div>
+               </div>
+            </section>
+           
+            <section data-section="installation">
+               <h3 class="doc-section-title">
+                  Installation
+               </h3>
+               <p>
+                  Stocky is built with Laravel 12. Please ensure your server meets the following requirements:
+               </p>
+               <ul>
+                  <li>PHP >= 8.2.0</li>
+                  <li>MySQL 5.7 or higher</li>
+                  <li>BCMath PHP Extension</li>
+                  <li>Ctype PHP Extension</li>
+                  <li>cURL PHP Extension</li>
+                  <li>Fileinfo PHP Extension</li>
+                  <li>GD2 PHP Extension</li>
+                  <li>JSON PHP Extension</li>
+                  <li>Mbstring PHP Extension</li>
+                  <li>OpenSSL PHP Extension</li>
+                  <li>PDO PHP Extension</li>
+                  <li>Tokenizer PHP Extension</li>
+                  <li>XML PHP Extension</li>
+                  <li>ZIP PHP Extension</li>
+               </ul>
+
+               
+               <h5 class="mt-4"><code> Installation in Localhost</code></h5>
+               <h6>1) Installation With XAMPP</h6>
+
+               <iframe width="853" height="480" src="https://www.youtube.com/embed/wtakP8ljGJg" 
+                  title="YouTube video player" frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen>
+               </iframe>
+
+               <p>=> Install Xampp via <a href="https://www.apachefriends.org/fr/index.html" target="_blank">Install
+                     Xampp</a></p>
+               <p><code>Step 1 </code>: Extract the stocky.zip to C:/xampp/htdocs/ </p>
+
+               <p><code>Step 2 </code>: Go to C:\Windows\system32\drivers\etc\ open the "hosts" file in Administrator
+                  mode.
+                  Add the following code to it. Here</p>
+               <p>127.0.0.1 stocky.local</p>
+               <p><code>Step 3 </code>: Now go to, C:\xampp\apache\conf\extra for xampp users and for the wamp user
+                  "C:\wamp\bin\apache\Apache2.4.4\conf\extra"
+                  and open "httpd-vhosts.conf" file. Now add the following code into it.</p>
+               <p><code>Notes </code>:Change the Document root as per your project also add domain name as you define
+                  into the "hosts" file. </p>
+               <div class="copy-code">
+                  <button class="btn btn-sm btn-primary btn-clipboard" data-toggle="tooltip" data-placement="top"
+                     title="Copy to clipboard">
+                     Copy
+                  </button>
+               </div>
+               <code class="code" data-code='
+               <VirtualHost stocky.local:80>
+                  ServerAdmin webmaster@stocky.local
+                  DocumentRoot "C:/xampp/htdocs/stocky"
+                  ServerName www.stocky.local
+                  ServerAlias stocky.local
+              
+                   <Directory "C:/xampp/htdocs/stocky">
+                          Options Indexes FollowSymLinks Includes ExecCGI
+                          AllowOverride All
+                          Require all granted
+                      </Directory>
+              
+                  ErrorLog "logs/stocky.local-error.log"
+                  CustomLog "logs/stocky.local-access.log" common
+              </VirtualHost>
+                   '>
+                  </code>
+
+               <p><code>Step 4 </code>: Last but the important step is to restart your Xampp </p>
+               <p><code>Setup Installation </code>: Access the url http://stocky.local/setup </p>
+               <hr>
+               <h6>2) Installation With Laragon</h6>
+               <iframe width="853" height="480" src="https://www.youtube.com/embed/TfjPqffLHsc" 
+                  title="YouTube video player" frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen>
+               </iframe>
+               <p><code>Step 1 </code> Install Laragon : Go to <a href="https://laragon.org/download/">Laragon download
+                     page</a> , download the latest version then just run the installer: Next, Next, Next...
+                  Laragon starts instantly and I recommend to set it up to run when Windows starts.</p>
+               <p><code>Step 2 </code>: Extract the stocky.zip to C:/laragon/www/stocky </p>
+
+               <p><code>Step 3 </code>: start your Laragon </p>
+
+               <code class="code" data-code='
+                  ***** NOTE: Now, you can use pretty url for your awesome project :) ***** 
+                  -------------------------------------------------- 
+                  (Laragon) Project path: C:/laragon/www/stocky 
+                  (Laragon) Pretty url: http://stocky.test 
+                  --------------------------------------------------
+                  '>
+               </code>
+
+
+               <h5 class="mt-4">Nginx</h5>
+               <p>If you are deploying your application to a server that is running Nginx, you may use the following configuration file as a starting point for configuring your web server.</p>
+               <p>Please ensure, like the configuration below, your web server directs all requests to your application's public/index.php file. You should never attempt to move the index.php file to your project's root, as serving the application from the project root will expose many sensitive configuration files to the public Internet:</p>
+
+               <div class="copy-code">
+                  <button class="btn btn-sm btn-primary btn-clipboard" data-toggle="tooltip" data-placement="top"
+                    title="Copy to clipboard">
+                    Copy
+                  </button>
+                </div>
+               <code class="code" data-code='
+               server {
+                  listen 80;
+                  server_name example.com;
+                  root /srv/example.com/public;
+              
+                  add_header X-Frame-Options "SAMEORIGIN";
+                  add_header X-Content-Type-Options "nosniff";
+              
+                  index index.php;
+              
+                  charset utf-8;
+              
+                  location / {
+                      try_files $uri $uri/ /index.php?$query_string;
+                  }
+              
+                  location = /favicon.ico { access_log off; log_not_found off; }
+                  location = /robots.txt  { access_log off; log_not_found off; }
+              
+                  error_page 404 /index.php;
+              
+                  location ~ \.php$ {
+                      fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+                      fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+                      include fastcgi_params;
+                  }
+              
+                  location ~ /\.(?!well-known).* {
+                      deny all;
+                  }
+              }
+              '>
+                  </code>
+                  <p>read more : <a href="https://laravel.com/docs/8.x/deployment#nginx">https://laravel.com/docs/8.x/deployment#nginx</a></p>
+
+                  
+               <h5 class="mt-4"><code> Installation  In Server</code></h5>
+            
+
+               <p class="mt-3"><code>Step 1 </code>: Login to cPanel and navigate to File Manager</p>
+               <p><code>Step 2 </code>: Not develop to work in sub folder. create a subdomain or use it in main domain., then click "Upload"</p>
+               <p><code>Step 3 </code>: Select your zip file and wait for upload to complete</p>
+               <p><code>Step 4 </code>: Unzip the uploaded file</p>
+               <p><code>Step 6 </code>: Go back to Cpanel and navigate to Databases</p>
+               <h2 id="create_database">Creating a new database</h2>
+                    <p>Before installing, you will need to create a new database. If you already know how to do this or have already created one, skip to the next step.Please use <code class="badge badge-info">empty database</code>. In most cases you should be able to create a database from your cpanel.</p>
+                    <section class="small mb-3">
+                    	<div class="font-weight-medium text-muted">Useful resources</div>
+                    	<div><a href="https://documentation.cpanel.net/display/74Docs/MySQL+Database+Wizard" target="_blank" rel="nofollow">cPanel - MySQL Database Wizard</a></div>
+                    	<div><a href="https://docs.plesk.com/en-US/obsidian/customer-guide/website-databases.69535/" target="_blank" rel="nofollow">Plesk - Website databases</a></div>
+                    </section>
+                    <p><img src="assets/images/db1.png" alt="logo" style="width: 100%"></p>
+                    <p><img src="assets/images/db2.png" alt="logo" style="width: 75%"></p>
+                    <p>Now you need to create a new user. On the same page go to create a new database user</p>
+                    <p><img src="assets/images/db3.png" alt="logo" style="width: 75%"></p>
+                    <p>Now add the user to the database</p>
+                    <p><img src="assets/images/db4.png" alt="logo" style="width: 75%"></p>
+                    <p>And select full permissions on the database to that user</p>
+                    <p><img src="assets/images/db5.png" alt="logo" style="width: 75%"></p>
+
+   
+               <p><code>Setup Installation </code>: Access the url yourdomain.com/setup and complete the installation</p>
+            
+            <h5 class="mt-4"><code>Setup Wizard</code></h5>
+               <ul>
+                  <code>Step One:</code>
+                  <li>Name your application</li>
+                  <li>Select Environnement  : Local in localhost and production in Server</li>
+                  <li>App Debug : it's better to choose false In server</li>
+               </ul>
+               <img src="assets/images/step 1.jpg" class="img-responsive " alt="">
+
+               <ul class="mt-3"><code>Step two:</code>
+                  <li>DB HOST</li>
+                  <li>DB PORT</li>
+                  <li>DB DATABASE</li>
+                  <li>DB USERNAME</li>
+                  <li>DB PASSWORD</li>
+                  <li>You can test connexion with database</li>
+               </ul>
+               <img src="assets/images/step 2.jpg" class="img-responsive " alt="">
+
+               <p class="mt-3"><code>Last Step:</code></p>
+               <p> Click in Confirmed and waiting for generate database</p>
+               <p><code>Notes : </code> It is not recommended to close the browser or stop a process Installation</p>
+               <img src="assets/images/last_step.jpg" class="img-responsive " alt="">
+
+               <p class="mt-4">Once the installation has ran the empty file installed will be placed into the /storage directory.
+                  If this file is present the route /setup will abort to the 404 page.
+               </p>
+            </section>
+
+            <section data-section="dev_backend">
+               <h3 class="doc-section-title">
+                  Developer Guide (Backend)
+               </h3>
+               <p>
+                  This guide covers backend development for Stocky (Laravel 12): project setup, environment, database, and common commands.
+               </p>
+               <h5 class="mt-4">Environment & tooling</h5>
+               <ul>
+                  <li>PHP >= 8.2, Composer, MySQL 5.7+</li>
+               </ul>
+               <h5 class="mt-4">Common commands</h5>
+               <ul>
+                  <li><code>php artisan migrate</code> run migrations</li>
+                  <li><code>php artisan cache:clear</code> clear caches</li>
+               </ul>
+               <h5 class="mt-4">Structure</h5>
+               <ul>
+                  <li><code>app/</code> application logic (Models, Http/Controllers, Policies)</li>
+                  <li><code>database/</code> migrations, seeders, factories</li>
+                  <li><code>routes/</code> route definitions (api.php, web.php)</li>
+               </ul>
+               <h5 class="mt-4">Common locations</h5>
+               <ul>
+                  <li>Transactions PDFs: <code>resources/views/pdf</code></li>
+                  <li>Login page: <code>resources/views/auth</code></li>
+                  <li>Online store translations: <code>resources/lang</code></li>
+               </ul>
+            </section>
+
+            <section data-section="dev_frontend">
+               <h3 class="doc-section-title">
+                  Developer Guide (Frontend - Vue.js)
+               </h3>
+               <p>
+                  This guide covers the frontend (Vue.js) workflow: Node.js, dependencies, scripts, and development server.
+               </p>
+               <h5 class="mt-4">Environment & tooling</h5>
+               <ul>
+                  <li>Node.js v20.19.5 and npm</li>
+                  <li>Install dependencies with <code>npm install</code></li>
+               </ul>
+               <h5 class="mt-4">Scripts</h5>
+               <ul>
+                  <li><code>npm run dev</code> start development assets builder</li>
+                  <li><code>npm run prod</code> production build</li>
+               </ul>
+               <h5 class="mt-4">Structure</h5>
+               <ul>
+                  <li><code>resources/src/</code> Vue components, stores, and entrypoints</li>
+                  <li><code>public/js</code> compiled assets served publicly</li>
+               </ul>
+               <h5 class="mt-4">Adjusting pages</h5>
+               <ul>
+                  <li>Pages location: <code>resources/src/views/app/pages</code></li>
+                  <li>Ensure dependencies are installed: <code>npm install</code></li>
+                  <li>After changes: <code>npm run dev</code> (development) or <code>npm run prod</code> (production)</li>
+               </ul>
+            </section>
+
+            <section data-section="Update">
+               <h2 class="doc-section-title">
+                  Update Application
+                </h2>
+
+                <div class="col-md-12 mt-3">
+                  <h5>Please follow these steps, To Update your application</h5>
+                  <p><code>Note: If you have made any changes in the code manually then your changes will be lost.</code></p>
+                  <ul>
+                   <li>
+                      <strong>Step 1 : </strong> Take back up of your database. Go to <strong>/app/settings/Backup</strong>  Click on Generate Backup ,
+                      You will find it in <strong>/storage/app/public/backup</strong>  and save it to your pc To restore it if there is an error , 
+                      or Go to your PhpMyAdmin and export your database then and save it to your pc To restore it if there is an error
+                   </li>
+
+                   <li>
+                     <strong>Step 2 : </strong> Take back up of your files before updating.
+                    </li>
+
+                   <li>
+                     <strong>Step 3 : </strong> Download the latest version from your codecanyon and Extract it .
+                    </li>
+
+                    <br>
+                  <li>
+                     <strong>Step 4 : </strong> Make sure to remove the previous files ,  <strong>EXCEPT</strong> the following : 
+                     <ul>
+                        <li>Folder : <strong>Modules</strong> <code> (If you have any Module installed)</code></li>
+                        <li>file   : <strong>modules_statuses.json </strong> <code> (If you have any Module installed)</code></li>
+                        <li>file   : <strong>.env</strong></li>
+                        <li>Folder : <strong>storage</strong></li>
+                        <li>Folder : <strong>images folder in public : /public/images</strong></li>
+                      </ul>
+                  </li>
+                  <br>
+
+                     <li> <strong>Step 5 : </strong> Re-upload the files and folders from the new update , <strong>EXCEPT</strong> the following : 
+                       <ul>
+                           <li>Folder : <strong>Modules</strong> <code> (If you have any Module installed)</code></li>
+                           <li>file   : <strong>modules_statuses.json </strong> <code> (If you have any Module installed)</code></li>
+                           <li>file   : <strong>.env</strong></li>
+                           <li>Folder : <strong>storage</strong></li>
+                           <li>Folder : <strong>images folder in public : /public/images</strong></li>
+                         </ul>
+                        </li>
+                        <br>
+                    <li>
+                      <strong>Step 6 : </strong> Visit  <strong>http://your_app/update</strong> to update your database  </a>
+                    </li>
+
+                     <li>
+                      <strong>Step 7 : </strong> Hard Clear your cache browser
+                    </li> 
+
+                    <li>
+                     <strong>Step 8 : </strong> You are done! Enjoy the updated application
+                   </li> 
+
+                  </ul>
+                </div>
+                <p><code>Note: If any pages are not loading or blank,  make sure you cleared your browser cache.</code></p>
+               
+            </section>
+
+            
+            <section data-section="backup_db">
+               <h2 class="doc-section-title">
+                  How to backup your database
+                </h2>
+
+                <h3>Method 1 : With system setting</h3>
+                
+                <span>Go to /app/settings/Backup and Click on Generate Backup </span>
+                  <img src="assets/images/backup.jpg" class="img-responsive mt-4" alt="">
+
+                  <p class="mt-4">You will find backup in /storage/app/public/backup , and save it to your pc To restore it if there is an error</p>
+
+                  <p class="mt-4"> <code>if you use xampp and you want to make a backup Please open your '.env' file and change</code> </p>
+                   <p>DUMP_PATH=mysqldump</p>To <p>DUMP_PATH=C:\xampp\mysql\bin\mysqldump.exe</p>
+
+                   <p class="mt-4"> <code>if you use Laragon and you want to make a backup Please open your '.env' file and change</code> </p>
+                   <p>DUMP_PATH=mysqldump</p>To <p>DUMP_PATH=C:\laragon\bin\mysql\mysql-5.7.24-winx64\bin\mysqldump.exe
+                  </p>
+                  
+                  <h6 class="mt-4">if you want make a cron job for generate backup dynamically add this cron on your cpanel : </h6>
+                  php artisan database:backup
+
+                  <h5><code class="mt-4">If there is an error you can use method 2 bellow</code></h5>
+
+                  <h3 class="mt-4">Method 2 : Use PhpMyAdmin</h3>
+                  <span>step 1: log in to cpanel</span>
+                  <span>step 2: in the <strong>DATABASES</strong> section of the cpanel home screen , click <strong>PhpMyAdmin</strong></span>
+                  <img src="assets/images/phpmyadmin1.PNG" class="img-responsive mt-4 mb-3" alt="">
+                  <p>The phpMyAdmin administration page appears in a new window</p>
+
+                  <p>step 3 : In the left pane of the phpMyAdmin page , click the database that you want export</p>
+                  <p>step 4 : Click the Export tab</p>
+                  <p>step 5 : Under Export method , confirm that Quick is selected</p>
+                  <p>step 6 : Click Go or execute .</p>
+
+
+               </section>
+
+
+            <section data-section="printer">
+               <h2 class="doc-section-title">
+                  POS Printer Settings
+                </h2>
+                <p><code>Guide to Setting Up Receipt Printer to work with POS Small Receipts</code> </p>
+               
+               <p class="mt-3"><code>To set up receipt printer do the following: </code></p>
+              <ul>
+                 <li>1) If printer is not already installed, follow manufacturer instructions to set up the printer and
+                  install the software. </li>
+                  <li>2) Go to settings for your printer in your operating system. </li>
+              </ul>
+               <p><code>Note: The next instructions are for Windows 10 printer settings.</code></p>
+               <ul>
+                  <li>
+                     Go to your Start Menu and click the Settings icon. 
+                  </li>
+
+                  <li>
+                     Go to Devices, then Printers and Scanners. This is your printer settings. 
+                  </li>
+
+                  <li>
+                     Once in your printer settings, find the receipt printer. Click the printer icon. 
+
+                  </li>
+
+                  <li>
+                     Next click Manage, then click Printer Properties. 
+                  </li>
+                  <li>
+                     Click the Advanced Tab. 
+                  </li>
+                  <img src="assets/images/printer1.PNG" class="img-responsive mt-3 mb-3" alt="">
+
+                  <li>
+                     Click Printing Defaults.  
+                  </li>
+
+                  <li>
+                     In the lower right corner of the Printing Defaults screen, click Advanced
+                  </li>
+                  <img src="assets/images/printer2.PNG" class="img-responsive mt-3 mb-3" alt="">
+
+                  <li>
+                     In Advanced Options > Advanced Document Settings, under Paper/Output the Paper Size needs to be 72mm X 200mm. If this is different change it and click OK. 
+                  </li>
+
+                  <img src="assets/images/printer3.PNG" class="img-responsive mt-3 mb-3" alt="">
+
+                  <li>
+                     The setup of the receipt printer is complete. It should properly print small receipts.
+                  </li>
+               </ul>
+
+               <p><code>Note: These instructions are for Windows 10. If you are using an earlier version of Windows the
+                  settings should be similar. If you are using another operating system, find your printer size, find where
+                  to set the paper size and set it to 72mm x 200mm. </code>code></p>
+
+            
+
+            </section>
+
+            <section data-section="cash_drawer">
+               <h2 class="doc-section-title">
+                  How to use Cash drawer
+               </h2>
+               <ul>
+                  <li>Install and run <strong>QZ Tray</strong> on each POS machine: <a href="https://qz.io/download/" target="_blank" rel="noopener">https://qz.io/download/</a></li>
+                  <li>Connect the cash drawer to the receipt printer’s RJ11/RJ12 port.</li>
+                  <li>In the app: <strong>Settings → POS Receipt</strong> → enable “Open cash drawer on cash payment” and, if needed, set the <strong>Receipt printer name</strong> (as in QZ Tray / Windows).</li>
+                  <li>Complete a sale with <strong>Cash</strong> as (at least) one payment method → the drawer should open automatically after payment success.</li>
+               </ul>
+               <p><strong>Note:</strong> QZ Tray 2.x can require signed messages. If you see security/signing errors, you’ll need to configure certificate/signing (see <a href="https://qz.io/wiki/signing" target="_blank" rel="noopener">QZ signing</a>). The integration is written so that if QZ is not available or signing fails, the POS still completes the sale and only the drawer open is skipped.</p>
+            </section>
+
+            <section data-section="weight_scale">
+               <h2 class="doc-section-title">Weight Scale Barcodes</h2>
+               <p class="text-lead">
+                  Stocky supports <strong>13-digit weight-embedded barcodes</strong> printed by electronic
+                  scales (CAS, Digi, Bizerba, Mettler Toledo, Rongta, etc.) so cashiers can weigh an item,
+                  stick the printed label on it, and scan it at the POS — quantity and line total are computed
+                  automatically from the weight embedded in the barcode.
+               </p>
+
+               <h3 class="doc-section-title">Barcode Format</h3>
+               <p>The 13 digits are split into three segments:</p>
+
+               <table>
+                  <thead>
+                     <tr>
+                        <th style="width:140px">Position</th>
+                        <th style="width:140px">Length</th>
+                        <th>Meaning</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td><code>1 – 7</code></td>
+                        <td>7 digits</td>
+                        <td>
+                           <strong>Product code prefix</strong> — must match the product's <code>Code</code>
+                           field (barcode / SKU). This is how the POS locates the product.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td><code>8 – 12</code></td>
+                        <td>5 digits</td>
+                        <td>
+                           <strong>Weight</strong> in grams, zero-padded. Example: <code>01234</code> = 1.234&nbsp;kg,
+                           <code>00250</code> = 0.250&nbsp;kg.
+                        </td>
+                     </tr>
+                     <tr>
+                        <td><code>13</code></td>
+                        <td>1 digit</td>
+                        <td><strong>EAN-13 check digit</strong> — generated automatically by the scale.</td>
+                     </tr>
+                  </tbody>
+               </table>
+
+               <h3 class="doc-section-title">Example</h3>
+               <p>
+                  A product whose code is <code>2100001</code> weighed at <strong>1.250&nbsp;kg</strong>
+                  prints as:
+               </p>
+
+               <div class="copy-code">
+                  <button class="btn-clipboard" data-clipboard-action="copy">Copy</button>
+               </div>
+               <code class="code" data-code='2100001 01250 C
+│──────│─────│
+   7      5    1 (check digit)
+product weight EAN-13
+ code   (grams)'></code>
+
+               <p>
+                  When the cashier scans this label at the POS, Stocky reads the first <strong>7 digits</strong>
+                  (<code>2100001</code>) to find the product and the next <strong>5 digits</strong>
+                  (<code>01250</code>) to set the line quantity to <strong>1.250</strong>. The unit price
+                  stored on the product is then multiplied by that weight to produce the line total.
+               </p>
+
+               <h3 class="doc-section-title">Setting Up a Weighted Product</h3>
+               <ul>
+                  <li>Go to <strong>Products → Create / Edit</strong>.</li>
+                  <li>Set the product's <code>Code</code> to a <strong>7-digit</strong> value
+                     (recommended prefix <code>20</code>–<code>29</code>, which is the GS1 range reserved for
+                     in-store weighted items — e.g. <code>2100001</code>).</li>
+                  <li>Choose a <strong>unit</strong> expressed per kilogram (<code>kg</code>,
+                     <code>g</code>, …) and enter the price per kg.</li>
+                  <li>Program the same 7-digit code into the electronic scale for this article /
+                     PLU, so the scale embeds it as the first 7 digits of every label it prints.</li>
+               </ul>
+
+               <div class="card border-left-primary">
+                  <div class="card-body">
+                     <strong>Tip:</strong> Keep your weighted products in a dedicated range (e.g. all codes
+                     starting with <code>21</code>) so you can tell at a glance which items are sold by
+                     weight and avoid collisions with regular EAN-13 packaged items.
+                  </div>
+               </div>
+
+               <div class="card border-danger">
+                  <div class="card-body">
+                     <strong>Important:</strong> the scale must be configured to print labels in the
+                     <strong>7 + 5 + 1</strong> format (7-digit article / 5-digit weight in grams / 1-digit
+                     check). If your scale uses a different layout (e.g. 6 + 5 + 1 or price-embedded
+                     instead of weight-embedded), the POS will not be able to match the product.
+                  </div>
+               </div>
+            </section>
+
+           <section data-section="barcode" class="py-4">
+               <div class="container">
+                  <h2 class="mb-4">📦 Print Barcode / Labels</h2>
+
+                  <div class="mb-4">
+                     <p class="lead">Navigate to <code>/app/products/barcode</code> to start printing your barcodes and labels.</p>
+                     <img src="assets/images/print_barcode.PNG" class="img-fluid rounded shadow-sm mb-4" alt="Print Barcode Page">
+                  </div>
+
+                  <div class="card mb-4">
+                     <div class="card-body">
+                     <h5 class="card-title">🔧 Steps to Print:</h5>
+                     <ol class="ps-3">
+                        <li>Select <strong>Warehouse</strong></li>
+                        <li>Select <strong>Product</strong></li>
+                        <li>Set <strong>Quantity</strong></li>
+                        <li>Choose <strong>Paper Size</strong></li>
+                        <li>Click on <strong>Update</strong></li>
+                        <li>Click on <strong>Print</strong></li>
+                     </ol>
+                     </div>
+                  </div>
+
+                  <img src="assets/images/barcode_page.PNG" class="img-fluid rounded shadow-sm" alt="Barcode Print Preview">
+               </div>
+           </section>
+
+
+
+
+         <section data-section="login" class="py-4">
+         <div class="container">
+            <h2 class="mb-4">🔐 Login</h2>
+
+            <div class="mb-4">
+               <p><code>Login by default</code></p>
+               <ul class="list-unstyled">
+               <li><strong>Email:</strong> <code>admin@example.com</code></li>
+               <li><strong>Password:</strong> <code>123456</code></li>
+               </ul>
+               <p><small class="text-muted">⚠️ You can change the password for security purposes.</small></p>
+               <img src="assets/images/login.jpg" class="img-fluid rounded shadow-sm mt-3 mb-4" alt="Login Screenshot">
+            </div>
+
+            <div>
+               <p>
+               <code>If you forgot your password, enter your email and click the reset button. Then check your email for the reset link.</code>
+               </p>
+               <img src="assets/images/forget_pass.jpg" class="img-fluid rounded shadow-sm mt-2" alt="Forgot Password Screenshot">
+            </div>
+         </div>
+         </section>
+
+        <section data-section="online_store" class="py-4">
+            <div class="container">
+               <h2 class="mb-4 doc-section-title">🛍️ Online Store</h2>
+
+               <!-- Overview -->
+               <div class="card mb-4">
+                  <div class="card-body">
+                  <h5 class="card-title mb-2">Overview</h5>
+                  <p class="mb-0">
+                     Sell online and in-store with a synced inventory. Customers can <strong>register</strong>, <strong>login</strong>,
+                     browse products, add items to the <strong>cart</strong>, and place <strong>orders</strong>.
+                     From the admin panel you can <strong>accept</strong> or <strong>cancel</strong> orders—if accepted, the order is
+                     automatically <strong>converted to a Sale</strong> (invoice) with stock updates.
+                  </p>
+                  </div>
+               </div>
+
+               <!-- Storefront + Customer Account -->
+               <div class="row">
+                  <!-- Storefront -->
+                  <div class="col-12 col-lg-12 mb-3">
+                  <div class="card h-100">
+                     <div class="card-body">
+                        <h5 class="card-title">Storefront</h5>
+                        
+                        <div class="mb-3">
+                        </div>
+                        <img src="assets/images/storefront_home.png" class="img-fluid rounded shadow-sm" alt="Storefront Home (example)">
+                     </div>
+                  </div>
+                  </div>
+               </div>
+            </div>
+         </section>
+
+           <section data-section="dashboard" class="py-4">
+               <div class="container">
+                  <h2 class="mb-4">📊 Dashboard</h2>
+
+                  <p><code>Dynamic dashboard</code></p>
+
+                  <div class="card mb-4">
+                     <div class="card-body">
+                     <h5 class="card-title">📌 Key Metrics & Insights:</h5>
+                     <ul class="mb-0">
+                        <li>Today Sales</li>
+                        <li>Today Purchases</li>
+                        <li>Today Sales Return</li>
+                        <li>Today Purchases Return</li>
+                        <li>This Week Sales & Purchases</li>
+                        <li>Top Selling Products This Month</li>
+                        <li>Payment Sent & Received This Week</li>
+                        <li>Top 5 Customers This Month</li>
+                        <li>Recent Sales</li>
+                     </ul>
+                     </div>
+                  </div>
+
+                  <img src="assets/images/dashboard.jpg" class="img-fluid rounded shadow-sm" alt="Dashboard Screenshot">
+               </div>
+           </section>
+
+           <!-- Languages List Section -->
+            <section data-section="languages">
+            <h2 class="doc-section-title">🌐 Languages Management</h2>
+            <p>This section allows you to manage all languages, define default ones, and control their status.</p>
+
+            <img src="assets/images/language_list.jpg" class="img-responsive" alt="Languages List Screenshot">
+
+            <p>Form Fields to Add Language:</p>
+            <ul>
+               <li><strong>Name</strong>: Name of the language (e.g., English, Français, العربية).</li>
+               <li><strong>Locale</strong>: Locale code (e.g., <code>en</code>, <code>fr</code>, <code>ar</code>).</li>
+               <li><strong>Flag</strong>: Upload the flag icon for visual identification.</li>
+            </ul>
+
+            <p>Language Table Columns:</p>
+            <ul>
+               <li><strong>Flag</strong>: Display the uploaded country flag.</li>
+               <li><strong>Name</strong>: Language name.</li>
+               <li><strong>Locale</strong>: Language locale key.</li>
+               <li><strong>Is Active</strong>: Indicates if this language is currently available in the system.</li>
+               <li><strong>Is Default</strong>: Marks the language as the system's default fallback.</li>
+               <li><strong>Actions</strong>: Edit, Delete, or Open Translations.</li>
+            </ul>
+
+            <!-- Translations Editor Section -->
+            <h2 class="doc-section-title">🈺 Translations Manager</h2>
+            <p>Translate UI texts into any active language. Each key represents a word or phrase used in the system.</p>
+
+            <img src="assets/images/translations.jpg" class="img-responsive" alt="Translation Editor Screenshot">
+
+            <p>Translation Management Features:</p>
+            <ul>
+               <li>🔍 <strong>Search Bar</strong>: Filter translation keys by value or key name.</li>
+               <li>➕ <strong>Add New</strong>: Insert a new translation key/value manually.</li>
+               <li>💾 <strong>Save</strong>: Save changes for each translation key independently.</li>
+               <li>📥 <strong>Save All Changes</strong>: Bulk save after editing multiple fields.</li>
+               <li>🔄 <strong>Reload Reminder</strong>: Prompts user to reload the page after saving to apply changes immediately.</li>
+            </ul>
+
+            <p>✅ Use this interface to manage your Translations</p>
+            </section>
+
+
+
+            <section data-section="products" class="py-4">
+            <div class="container">
+               <h2 class="mb-4">🛒 Products</h2>
+
+               <p><code>To create a new product it's very easy</code></p>
+
+               <div class="card mb-4">
+                  <div class="card-body">
+                  <h5 class="card-title">📌 Product Creation Fields:</h5>
+                  <ul>
+                     <li>Product Name <code>(required)</code></li>
+                     <li>Product Code <code>(required)</code></li>
+                     <li>Category <code>(required)</code></li>
+                     <li>Brand <code>(optional)</code></li>
+                     <li>Barcode Symbology <code>(required)</code></li>
+                     <li>Product Cost <code>(required)</code></li>
+                     <li>Product Price <code>(required)</code></li>
+                     <li>Product Unit <code>(required)</code></li>
+                     <li>Sale Unit <code>(required)</code></li>
+                     <li>Purchase Unit <code>(required)</code></li>
+                     <li>Stock Alert <code>(optional)</code></li>
+                     <li>Order Tax <code>(optional)</code></li>
+                     <li>Tax Method <code>(optional)</code></li>
+                     <li>Note <code>(optional)</code></li>
+                     <li>You can add multiple variants of a product</li>
+                  </ul>
+                  </div>
+               </div>
+
+               <img src="assets/images/create_product.jpg" class="img-fluid rounded shadow-sm mb-5" alt="Create Product Screenshot">
+
+               <p><code>You can manage product list</code></p>
+
+               <div class="card mb-4">
+                  <div class="card-body">
+                  <h5 class="card-title">⚙️ Product Management Features:</h5>
+                  <ul>
+                     <li>Edit Product</li>
+                     <li>View Product Details</li>
+                     <li>Delete Product</li>
+                     <li>Generate Product List in PDF</li>
+                     <li>Generate Product List in Excel</li>
+                     <li>Filter products by code, name, or category</li>
+                  </ul>
+                  </div>
+               </div>
+
+               <img src="assets/images/produc_list.jpg" class="img-fluid rounded shadow-sm mb-5" alt="Product List Screenshot">
+
+               <p><code>Print Barcode</code></p>
+               <img src="assets/images/barcode.jpg" class="img-fluid rounded shadow-sm mb-5" alt="Barcode Print Screenshot">
+
+               <p><code>Opening Stock Import</code></p>
+               <img src="assets/images/opening_stock.JPG" class="img-fluid rounded shadow-sm mb-5" alt="Barcode Print Screenshot">
+
+               <p><code>Import Products by CSV</code></p>
+               <img src="assets/images/import_products.jpg" class="img-fluid rounded shadow-sm" alt="Import Products Screenshot">
+            </div>
+            </section>
+
+
+            <section data-section="transfer">
+                  <h2 class="doc-section-title">
+                        Transfers
+                   </h2>
+                   <p><code>to create a new Transfer it's very easy</code> </p>
+                   <ul>
+                      <li>From Warehouse <code>(required)</code></li>
+                      <li>To Warehouse <code>(required)</code></li>
+                      <li>Status <code>(required)</code></li>
+                   </ul>
+         
+                   <img src="assets/images/create_transfer.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-5"><code>You can manage Transfer list</code> </p>
+                   <ul>
+                        <li>Edit Transfer</li>
+                        <li>View Details Transfer</li>
+                        <li>Delete Transfer</li>
+                        <li>Generate Transfer list in  PDF</li>
+                        <li>Generate Transfer list in  Excel</li>
+                        <li>Filter Transfer by Reference , To warehouse , From Warehouse , Status</li>
+                     </ul>
+
+                   <img src="assets/images/transfer_list.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="adjustment">
+                  <h2 class="doc-section-title">
+                        Adjustments
+                   </h2>
+                   <p><code>to create a new Adjustment it's very easy</code> </p>
+                   <ul>
+                      <li>Warehouse <code>(required)</code></li>
+                      <li>Select Product <code>(required)</code></li>
+                   </ul>
+         
+                   <img src="assets/images/create_adjustment.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-5"><code>You can manage Adjustment list</code> </p>
+                   <ul>
+                        <li>Edit Adjustment</li>
+                        <li>View Details Adjustment</li>
+                        <li>Delete Adjustment</li>
+                        <li>Generate Adjustment list in  PDF</li>
+                        <li>Generate Adjustment list in  Excel</li>
+                        <li>Filter Adjustment by Dtae , Reference , warehouse</li>
+                     </ul>
+
+                   <img src="assets/images/adjustment_list.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="account">
+               <h2 class="doc-section-title">
+                     Accounts
+                </h2>
+                <p><code>to create a new Account it's very easy</code> </p>
+                <ul>
+                   <li>Account num <code>(required)</code></li>
+                   <li>Account Name <code>(required)</code></li>
+                   <li>Initial Balance <code>(required)</code></li>
+                   <li>Details <code>(optional)</code></li>
+                </ul>
+      
+                <img src="assets/images/create_account.jpg" class="img-responsive " alt="">
+
+                <p class="mt-5"><code>You can manage Account list</code> </p>
+                <ul>
+                     <li>Edit Account</li>
+                     <li>Delete Account</li>
+                     <li>Generate Account list in  PDF</li>
+                     <li>Generate Account list in  Excel</li>
+                  </ul>
+
+                <img src="assets/images/list_accounts.jpg" class="img-responsive " alt="">
+
+            </section>
+
+
+            <section data-section="transfer_money">
+               <h2 class="doc-section-title">
+                     Transfer Money
+                </h2>
+                <p><code>to Transfer Money between Your Accounts it's very easy</code> </p>
+                <ul>
+                   <li>Date <code>(required)</code></li>
+                   <li>Amount <code>(required)</code></li>
+                   <li>From Account <code>(required)</code></li>
+                   <li>To Account <code>(required)</code></li>
+                </ul>
+      
+                <img src="assets/images/create_transfer_money.jpg" class="img-responsive " alt="">
+
+                <p class="mt-5"><code>You can manage Transfer Money</code> </p>
+                <ul>
+                     <li>Edit Transfer Money</li>
+                     <li>Delete Transfer Money</li>
+                  </ul>
+
+                <img src="assets/images/list_transfer_money.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="expense">
+                  <h2 class="doc-section-title">
+                        Expenses
+                   </h2>
+                   <p><code>to create a new Expense it's very easy</code> </p>
+                   <ul>
+                      <li>Date <code>(required)</code></li>
+                      <li>Warehouse <code>(required)</code></li>
+                      <li>Account <code>(Optionnal)</code></li>
+                      <li>Expense category <code>(required)</code></li>
+                      <li>Amount <code>(required)</code></li>
+                      <li>Details <code>(optional)</code></li>
+                   </ul>
+         
+                   <img src="assets/images/create_expense.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-5"><code>You can manage Expense list</code> </p>
+                   <ul>
+                        <li>Edit Expense</li>
+                        <li>Delete Expense</li>
+                        <li>Generate Expense list in  PDF</li>
+                        <li>Generate Expense list in  Excel</li>
+                        <li>Filter Expense by Date , Reference , warehouse , Expense category, Account</li>
+                     </ul>
+
+                   <img src="assets/images/expense_list.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="deposit">
+               <h2 class="doc-section-title">
+                     Deposits
+                </h2>
+                <p><code>to create a new Deposit it's very easy</code> </p>
+                <ul>
+                   <li>Date <code>(required)</code></li>
+                   <li>Account <code>(Optionnal)</code></li>
+                   <li>Deposit category <code>(required)</code></li>
+                   <li>Amount <code>(required)</code></li>
+                   <li>Details <code>(optional)</code></li>
+                </ul>
+      
+                <img src="assets/images/create_deposit.jpg" class="img-responsive " alt="">
+
+                <p class="mt-5"><code>You can manage Deposit list</code> </p>
+                <ul>
+                     <li>Edit Deposit</li>
+                     <li>Delete Deposit</li>
+                     <li>Generate Deposit list in  PDF</li>
+                     <li>Generate Deposit list in  Excel</li>
+                     <li>Filter Deposit by Date , Reference , Deposit category, Account</li>
+                  </ul>
+
+                <img src="assets/images/list_deposits.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="quotations">
+                  <h2 class="doc-section-title">
+                     Quotations
+                   </h2>
+                   <p><code>to create a new quotation it's very easy</code> </p>
+                   <ul>
+                      <li>Customer <code>(required)</code></li>
+                      <li>Warehouse <code>(required)</code></li>
+                      <li>Status <code>(required)</code></li>
+                   </ul>
+         
+                   <img src="assets/images/create_quotation.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-5"><code>You can manage quotation list</code> </p>
+                   <ul>
+                        <li>Edit quotation</li>
+                        <li>View Details quotation</li>
+                        <li>Delete quotation</li>
+                        <li>Change to Sale</li>
+                        <li>Send quotation on email</li>
+                        <li>Generate quotation list in  PDF</li>
+                        <li>Generate quotation list in  Excel</li>
+                        <li>Filter quotation by Date, Reference , Customer , Warehouse , Status</li>
+                     </ul>
+
+                   <img src="assets/images/quotation_list.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="sales">
+                  <h2 class="doc-section-title">
+                        Sales
+                   </h2>
+                   <p><code>to create a new sale it's very easy</code> </p>
+                   <ul>
+                      <li>Customer <code>(required)</code></li>
+                      <li>Warehouse <code>(required)</code></li>
+                      <li>Status <code>(required)</code></li>
+                   </ul>
+         
+                   <img src="assets/images/create_sale.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-5"><code>You can manage sale list</code> </p>
+                   <ul>
+                        <li>Edit sale</li>
+                        <li>View Details sale</li>
+                        <li>Delete sale</li>
+                        <li>Change to Sale</li>
+                        <li>Send sale on email</li>
+                        <li>Generate sale list in  PDF</li>
+                        <li>Generate sale list in  Excel</li>
+                        <li>Filter sale by Date, Reference , Customer , Warehouse , Status , Payment status</li>
+                     </ul>
+ 
+                   <img src="assets/images/sale_list.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-4"><code>Show Payment</code> </p>
+                   <img src="assets/images/show_payment_sale.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-4"><code>Add Payment</code> </p>
+                   <img src="assets/images/add_payment_sale.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="pos">
+                  <h2 class="doc-section-title">
+                        Sales POS
+                   </h2>
+                   <p><code>Easy POS</code> </p>
+                   <ul>
+                      <li>Barcode Scanner</li>
+                      <li>you can search for product by name or code</li>
+                      <li>Filter Product by Brand , Category</li>
+                   </ul>
+         
+                   <img src="assets/images/pos.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-4"><code>POS Payment</code> </p>
+                   <img src="assets/images/pos_payment.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-4"><code>POS Invoice</code> </p>
+                   <img src="assets/images/pos_invoice.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="purchases">
+                  <h2 class="doc-section-title">
+                        Purchases
+                   </h2>
+                   <p><code>to create a new purchase it's very easy</code> </p>
+                   <ul>
+                      <li>Supplier <code>(required)</code></li>
+                      <li>Warehouse <code>(required)</code></li>
+                      <li>Status <code>(required)</code></li>
+                   </ul>
+         
+                   <img src="assets/images/create_purchase.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-5"><code>You can manage purchase list</code> </p>
+                   <ul>
+                        <li>Edit purchase</li>
+                        <li>View Details purchase</li>
+                        <li>Delete purchase</li>
+                        <li>Send purchase on email</li>
+                        <li>Generate purchase list in  PDF</li>
+                        <li>Generate purchase list in  Excel</li>
+                        <li>Filter purchase by Date, Reference , Supplier , Warehouse , Status , Payment status</li>
+                     </ul>
+ 
+                   <img src="assets/images/purchase_list.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-4"><code>Show Payment</code> </p>
+                   <img src="assets/images/show_payment_purchase.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-4"><code>Add Payment</code> </p>
+                   <img src="assets/images/add_payment_purchase.jpg" class="img-responsive " alt="">
+            </section>
+
+            <section data-section="returns-sale">
+               <h2 class="doc-section-title">
+                  Sale Returns
+                </h2>
+                <p><code>to create a new Sale Return it's very easy</code> </p>
+      
+                <img src="assets/images/create_return_sale.jpg" class="img-responsive " alt="">
+
+                <p class="mt-5"><code>You can manage Sale Return list</code> </p>
+                <ul>
+                     <li>Edit Sale Return</li>
+                     <li>View Details Sale Return</li>
+                     <li>Delete Sale Return</li>
+                     <li>Send Sale Return on email</li>
+                     <li>Generate Sale Return list in  PDF</li>
+                     <li>Generate Sale Return list in  Excel</li>
+                     <li>Filter Sale Return by Date, Reference , Customer , Warehouse , Status , Payment status</li>
+                  </ul>
+
+                <img src="assets/images/sales_return.jpg" class="img-responsive " alt="">
+
+                <p class="mt-4"><code>Show Payment</code> </p>
+                <img src="assets/images/payments_sale_return.jpg" class="img-responsive " alt="">
+
+                <p class="mt-4"><code>Add Payment</code> </p>
+                <img src="assets/images/create_payment_return_sale.jpg" class="img-responsive " alt="">
+            </section>
+
+            <section data-section="returns-purchase">
+               <h2 class="doc-section-title">
+                  Purchase Returns
+                </h2>
+                <p><code>to create a new Purchase Return it's very easy</code> </p>
+               
+                <img src="assets/images/create_purchase_return.jpg" class="img-responsive " alt="">
+
+                <p class="mt-5"><code>You can manage Purchase Return list</code> </p>
+                <ul>
+                     <li>Edit Purchase Return</li>
+                     <li>View Details Purchase Return</li>
+                     <li>Delete Purchase Return</li>
+                     <li>Send Purchase Return on email</li>
+                     <li>Generate Purchase Return list in  PDF</li>
+                     <li>Generate Purchase Return list in  Excel</li>
+                     <li>Filter Purchase Return by Date, Reference , Supplier , Warehouse , Status , Payment status</li>
+                  </ul>
+
+                <img src="assets/images/purchase_return.jpg" class="img-responsive " alt="">
+
+                <p class="mt-4"><code>Show Payment</code> </p>
+                <img src="assets/images/payments_sale_return.jpg" class="img-responsive " alt="">
+
+                <p class="mt-4"><code>Add Payment</code> </p>
+                <img src="assets/images/create_payment_return_sale.jpg" class="img-responsive " alt="">
+            </section>
+
+            <section data-section="customers">
+                  <h2 class="doc-section-title">
+                        Customers
+                   </h2>
+                   <p><code>to create a new Customer it's very easy</code> </p>
+                   <ul>
+                      <li>Name <code>(required)</code></li>
+                      <li>Email <code>(required)</code></li>
+                   </ul>
+         
+                   <img src="assets/images/create_customer.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-5"><code>You can manage customer list</code> </p>
+                   <ul>
+                        <li>Pay all sell due in single payment</li>
+                        <li>Pay all sell Return due in single payment</li>
+                        <li>Edit customer</li>
+                        <li>Delete customer</li>
+                        <li>Generate customer list in  PDF</li>
+                        <li>Generate customer list in  Excel</li>
+                        <li>Search customer</li>
+                        <li>Filter customer by Name ,Code , phone , Email</li>
+                     </ul>
+ 
+                   <img src="assets/images/customers_list.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-4"><code>Import Customers by csv</code> </p>
+                   <img src="assets/images/import_clients.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="suppliers">
+                  <h2 class="doc-section-title">
+                        Suppliers
+                   </h2>
+                   <p><code>to create a new Supplier it's very easy</code> </p>
+                   <ul>
+                      <li>Name <code>(required)</code></li>
+                      <li>Email <code>(required)</code></li>
+                   </ul>
+         
+                   <img src="assets/images/create_supplier.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-5"><code>You can manage Supplier list</code> </p>
+                   <ul>
+                        <li>Pay all Purchase due in single payment</li>
+                        <li>Pay all Purchase Return due in single payment</li>
+                        <li>Edit Supplier</li>
+                        <li>Delete Supplier</li>
+                        <li>Generate Supplier list in  PDF</li>
+                        <li>Generate Supplier list in  Excel</li>
+                        <li>Search Supplier</li>
+                        <li>Filter customer by Name ,Code , phone , Email</li>
+                     </ul>
+ 
+                   <img src="assets/images/supplier_list.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-4"><code>Import Suppliers by csv</code> </p>
+                   <img src="assets/images/import_suppliers.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="users">
+                  <h2 class="doc-section-title">
+                        Users
+                   </h2>
+                   <p><code>to create a new User it's very easy</code> </p>
+                   <ul>
+                      <li>First Name <code>(required)</code></li>
+                      <li>Last Name <code>(required)</code></li>
+                      <li>Username <code>(required)</code></li>
+                      <li>Phone <code>(required)</code></li>
+                      <li>Email <code>(required)</code></li>
+                      <li>Password <code>(required)</code></li>
+                      <li>Role <code>(required)</code></li>
+                      <li>Avatar <code>(Optional)</code></li>
+
+                   </ul>
+         
+                   <img src="assets/images/create_user.jpg" class="img-responsive " alt="">
+
+                   <p class="mt-5"><code>You can manage User list</code> </p>
+                   <ul>
+                        <li>Change Status User</li>
+                        <li>Edit User</li>
+                        <li>Generate User list in  PDF</li>
+                        <li>Generate User list in  Excel</li>
+                        <li>Search User</li>
+                        <li>Filter User by username , phone , Email , Status</li>
+                     </ul>
+ 
+                   <img src="assets/images/user_list.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            
+         <!-- Project List Section -->
+         <section data-section="projects">
+         <h2 class="doc-section-title">📁 Project List</h2>
+         <p>This section displays an overview of all the projects in the system, including their current status.</p>
+
+         <img src="assets/images/project_list.jpg" class="img-responsive" alt="Project List Screenshot">
+
+         <ul>
+            <li><strong>✅ Completed</strong>: Number of finished projects.</li>
+            <li><strong>⏸️ Not Started</strong>: Projects created but not yet started.</li>
+            <li><strong>🔄 In Progress</strong>: Projects that are currently active.</li>
+            <li><strong>❌ Cancelled</strong>: Projects that have been cancelled.</li>
+         </ul>
+
+         <p>Additional Features:</p>
+         <ul>
+            <li>🔍 Search projects by title, customer, or company.</li>
+            <li>📤 Export project list to PDF or Excel.</li>
+            <li>➕ Click <strong>Create</strong> to add a new project.</li>
+         </ul>
+
+         <h2 class="doc-section-title">📝 Create Project</h2>
+         <p>This form allows users to register a new project with complete details.</p>
+
+         <img src="assets/images/create_project.jpg" class="img-responsive" alt="Create Project Screenshot">
+
+         <ul>
+            <li><strong>Title*</strong>: Enter the name of the project.</li>
+            <li><strong>Start Date*</strong>: Set when the project begins.</li>
+            <li><strong>Finish Date*</strong>: Set when the project should be completed.</li>
+            <li><strong>Customer*</strong>: Choose the client or project owner.</li>
+            <li><strong>Company*</strong>: Select the company responsible for the project.</li>
+            <li><strong>Assigned Employees</strong>: Assign a team to work on the project.</li>
+            <li><strong>Status*</strong>: Set the current status of the project.</li>
+            <li><strong>Details</strong>: Add any relevant notes or information.</li>
+         </ul>
+         </section>
+
+         <!-- Task List Section -->
+         <section data-section="tasks">
+         <h2 class="doc-section-title">🗂️ Task List</h2>
+            <p>This section provides an overview of all tasks associated with various projects.</p>
+
+            <img src="assets/images/task_list.jpg" class="img-responsive" alt="Task List Screenshot">
+
+            <ul>
+               <li><strong>✅ Completed</strong>: Tasks that have been marked as done.</li>
+               <li><strong>⏸️ Not Started</strong>: Tasks that are created but not yet started.</li>
+               <li><strong>🔄 In Progress</strong>: Tasks currently being worked on.</li>
+               <li><strong>❌ Cancelled</strong>: Tasks that were canceled or no longer required.</li>
+            </ul>
+
+            <p>Other Features:</p>
+            <ul>
+               <li>🔍 Search tasks by title, project, or company.</li>
+               <li>📤 Export task list to PDF or Excel format.</li>
+               <li>➕ Use the <strong>Create</strong> button to add a new task.</li>
+            </ul>
+
+         <h2 class="doc-section-title">📝 Create Task</h2>
+         <p>This form allows you to create a new task and assign it to a project and team.</p>
+
+         <img src="assets/images/create_task.jpg" class="img-responsive" alt="Create Task Screenshot">
+
+         <ul>
+            <li><strong>Title*</strong>: Task title or short description.</li>
+            <li><strong>Start Date*</strong>: The date work on the task should begin.</li>
+            <li><strong>Finish Date*</strong>: The date the task is expected to be completed.</li>
+            <li><strong>Project*</strong>: Select the related project this task belongs to.</li>
+            <li><strong>Company*</strong>: Company responsible for the task execution.</li>
+            <li><strong>Assigned Employees</strong>: Select which team members will perform this task.</li>
+            <li><strong>Status*</strong>: Choose the current state of the task (e.g. Not Started, In Progress).</li>
+            <li><strong>Details</strong>: Additional information or notes regarding the task.</li>
+         </ul>
+         </section>
+
+            <!-- Subscription List Section -->
+            <section data-section="subscriptions-list">
+            <h2 class="doc-section-title">🔁 Subscriptions List</h2>
+            <p>This page allows you to view and manage all recurring subscriptions.</p>
+
+            <img src="assets/images/subscription_list.jpg" class="img-responsive" alt="Subscriptions List Screenshot">
+
+            <p>The table includes the following columns:</p>
+            <ul>
+               <li><strong>Client</strong>: The customer subscribed to the product.</li>
+               <li><strong>Product</strong>: The item or service being billed.</li>
+               <li><strong>Warehouse</strong>: The stock location assigned for the product.</li>
+               <li><strong>Billing Cycle</strong>: Frequency of billing (e.g., monthly, weekly).</li>
+               <li><strong>Total Cycle</strong>: Number of cycles set (e.g., 12 monthly).</li>
+               <li><strong>Remaining Cycles</strong>: Number of invoices left to generate.</li>
+               <li><strong>Next Billing Date</strong>: When the next invoice is scheduled.</li>
+               <li><strong>Status</strong>: Active/Inactive toggle.</li>
+               <li><strong>Action</strong>: View, Edit, or Delete subscription.</li>
+            </ul>
+
+            <!-- Create Subscription Section -->
+            <h2 class="doc-section-title">📝 Create Subscription</h2>
+            <p>This form allows you to set up a recurring product or service subscription for a customer.</p>
+
+            <img src="assets/images/create_subscription.jpg" class="img-responsive" alt="Create Subscription Screenshot">
+
+            <ul>
+               <li><strong>Date*</strong>: The subscription start date.</li>
+               <li><strong>Client*</strong>: Select the customer subscribing to the product.</li>
+               <li><strong>Warehouse*</strong>: Assign a stock location.</li>
+               <li><strong>Product*</strong>: The subscribed product or service.</li>
+               <li><strong>Total Cycles*</strong>: Total number of times the customer will be billed (e.g., 12 Months).</li>
+               <li><strong>Billing Cycle*</strong>: Choose how often the invoice is created (Monthly, Weekly, etc.).</li>
+               <li><strong>Price Per Cycle*</strong>: The total cost for one cycle.</li>
+               <li><strong>Quantity*</strong>: Number of units included per billing.</li>
+               <li><strong>Price Per Unit*</strong>: Individual item price, used for detailed breakdowns.</li>
+               <li><strong>Next Billing Date*</strong>: Date when the first (or next) invoice will be created.</li>
+               <li><strong>Status*</strong>: Set as Active or Inactive.</li>
+            </ul>
+
+            <!-- Subscription Cron Jobs -->
+            <h2 class="doc-section-title">⏱️ Subscription Automation</h2>
+            <p>Once a subscription is created, the system uses scheduled commands (cron jobs) to handle billing automatically.</p>
+
+            <h4>1️⃣ Generate Invoices Automatically</h4>
+            <pre><code>php artisan subscriptions:generate-invoices</code></pre>
+            <p>This command will automatically create a new sale (invoice) for each active subscription based on its billing cycle (daily, weekly, monthly, yearly).</p>
+
+            <h4>2️⃣ Send SMS Reminders</h4>
+            <pre><code>php artisan subscriptions:send-sms-reminders</code></pre>
+            <p>This command sends reminder messages to clients for upcoming or due payments via SMS.</p>
+
+            <p>📌 Make sure to schedule these commands in Your Cron Job in your Cpanel to run daily or as needed.</p>
+            </section>
+
+
+
+
+            <section data-section="settings">
+                  <h2 class="doc-section-title">
+                        System Settings
+                   </h2>
+                 
+                   <img src="assets/images/settings.jpg" class="img-responsive " alt="">
+
+                   <h3 class="mt-4">Payment Settings</h3>
+                   <img src="assets/images/payment_settings.PNG" class="img-responsive mt-4 mb-3" alt="">
+
+                   <h3 class="mt-4">SMS Settings</h3>
+                   <img src="assets/images/sms_settings.PNG" class="img-responsive mt-4 mb-3" alt="">
+
+                   <h3 class="mt-4">POS Settings</h3>
+                   <img src="assets/images/pos_settings.PNG" class="img-responsive mt-4 mb-3" alt="">
+
+                   <h3 class="mt-4">Mail Settings</h3>
+                   <img src="assets/images/smtp.PNG" class="img-responsive mt-4 mb-3" alt="">
+ 
+                   <ul>
+                      <li>Host : Host smtp mail server</li>
+                      <li>Port : 25 or 587 or 465 or 2525)</li>
+                      <li>Sender Name : From Name</li>
+                      <li>username : your username smtp mail server</li>
+                      <li>password : your password smtp mail server</li>
+                      <li>Encryption : tls or ssl</li>
+                   </ul>
+                   
+                   <h6 class="mt-4">More Than 110 Permissions</h6>
+                   <p>if you want show all records of all users , Check<code> Show all records of all users</code> </p>
+                   
+                   <img src="assets/images/permissions.jpg" class="img-responsive " alt="">
+
+                   <h6 class="mt-4">Create new Warehouse</h6>
+                   <ul>
+                        <li>Name <code>(required)</code></li>
+                        <li>Phone <code>(optional)</code></li>
+                        <li>Country <code>(optional)</code></li>
+                        <li>City <code>(optional)</code></li>
+                        <li>Email <code>(optional)</code></li>
+                        <li>Zip code <code>(optional)</code></li>
+                   </ul>               
+                  
+                   <img src="assets/images/create_warehouse.jpg" class="img-responsive " alt="">
+
+                   <h6 class="mt-4">You can manage Warehouse list</h6>  
+                   <ul>
+                        <li>Edit Warehouse</li>
+                        <li>Delete Warehouse</li>
+                        <li>Search Warehouse</li>
+                     </ul>                
+                  
+                   <img src="assets/images/warehouse_list.jpg" class="img-responsive " alt="">
+
+
+                   <h6 class="mt-4">You can manage Category list</h6>  
+                   <ul>
+                        <li>Edit Category</li>
+                        <li>Delete Category</li>
+                        <li>Search Category</li>
+                     </ul>                
+                  
+                   <img src="assets/images/category_list.jpg" class="img-responsive " alt="">
+
+                   <h6 class="mt-4">Create new Category</h6>
+                   <ul>
+                        <li>Name <code>(required)</code></li>
+                        <li>Code <code>(required)</code></li>
+                   </ul>               
+                   <img src="assets/images/create_category.jpg" class="img-responsive " alt="">
+
+                   <h6 class="mt-4">You can manage Brand list</h6>  
+                   <ul>
+                        <li>Edit Brand</li>
+                        <li>Delete Brand</li>
+                        <li>Search Brand</li>
+                     </ul>                
+                  
+                   <img src="assets/images/brand_list.jpg" class="img-responsive " alt="">
+
+                   <h6 class="mt-4">Create new Brand</h6>
+                   <ul>
+                        <li>Name <code>(required)</code></li>
+                        <li>Description <code>(optional)</code></li>
+                        <li>Image <code>(optional)</code></li>
+                   </ul>               
+                  
+                   <img src="assets/images/create_brand.jpg" class="img-responsive " alt="">
+
+                   <h6 class="mt-4">You can manage Currency list</h6>  
+                   <ul>
+                        <li>Edit Currency</li>
+                        <li>Delete Currency</li>
+                        <li>Search Currency</li>
+                     </ul>                
+                  
+                   <img src="assets/images/currency_list.jpg" class="img-responsive " alt="">
+
+                   <h6 class="mt-4">Create new Currency</h6>
+                   <p><code>No Live Exchange Just Symbol</code> </p>
+                   <ul>
+                        <li>Code <code>(required)</code></li>
+                        <li>Name <code>(required)</code></li>
+                        <li>Symbol <code>(required)</code></li>
+                   </ul>               
+                  
+                   <img src="assets/images/create_currency.jpg" class="img-responsive " alt="">
+
+
+                   <h6 class="mt-4">You can manage Unit list</h6>  
+                   <ul>
+                        <li>Edit Unit</li>
+                        <li>Delete Unit</li>
+                        <li>Search Unit</li>
+                     </ul>                
+                  
+                   <img src="assets/images/unit_list.jpg" class="img-responsive " alt="">
+
+                   <h6 class="mt-4">Create new Unit</h6>
+                   <ul>
+                        <li>Name <code>(required)</code></li>
+                        <li>Short Name <code>(required)</code></li>
+                        <li>Base Unit <code>(optional)</code></li>
+                   </ul>               
+                  
+                   <img src="assets/images/create_unit.jpg" class="img-responsive " alt="">
+
+            </section>
+
+            <section data-section="multi_units" class="py-4">
+               <div class="container">
+                  <h2 class="doc-section-title mb-4">⚖️ Multi-Unit Conversion</h2>
+
+                  <p class="text-lead">
+                     Stocky supports <strong>multi-unit conversion</strong> so you can purchase, stock and sell the same
+                     product in different units of measure (e.g. buy in <code>Kilograms</code>, sell in <code>Grams</code>;
+                     buy in <code>Boxes</code>, sell in <code>Pieces</code>). Stock levels are kept consistent behind the
+                     scenes by converting every movement back to the product's <strong>base unit</strong>.
+                  </p>
+
+                  <div class="card mb-4">
+                     <div class="card-body">
+                        <h5 class="card-title">📌 Core concepts</h5>
+                        <ul>
+                           <li><strong>Base Unit</strong> — a unit created <em>without</em> a parent. It is the reference
+                              used to store stock in the database (e.g. <code>Kilogram (kg)</code>, <code>Piece (pc)</code>,
+                              <code>Liter (L)</code>).</li>
+                           <li><strong>Sub Unit</strong> — a unit linked to a base unit through an <strong>Operator</strong>
+                              and an <strong>Operation Value</strong>. Stocky uses this rule to convert a sub-unit
+                              quantity to/from the base unit.</li>
+                           <li><strong>Operator</strong> — either <code>Multiply (*)</code> or <code>Divide (/)</code>.</li>
+                           <li><strong>Operation Value</strong> — the numeric factor used with the operator.</li>
+                        </ul>
+                     </div>
+                  </div>
+
+                  <div class="card mb-4">
+                     <div class="card-body">
+                        <h5 class="card-title">🛠️ Creating a Unit</h5>
+                        <p>Go to <code>Products → Units</code> and click <strong>Add</strong>. Fill in:</p>
+                        <ul>
+                           <li><strong>Name</strong> <code>(required)</code> — e.g. <em>Gram</em>.</li>
+                           <li><strong>Short Name</strong> <code>(required)</code> — e.g. <em>g</em>.</li>
+                           <li><strong>Base Unit</strong> <code>(optional)</code> — leave empty to declare a new base unit,
+                              or pick an existing base unit to create a sub-unit.</li>
+                           <li><strong>Operator</strong> <code>(required for sub-units)</code> — <code>*</code> or
+                              <code>/</code>.</li>
+                           <li><strong>Operation Value</strong> <code>(required for sub-units)</code> — the conversion
+                              factor.</li>
+                        </ul>
+                        <p class="mb-0">
+                           <em>Note:</em> the <strong>Operator</strong> and <strong>Operation Value</strong> fields are only
+                           shown after you select a Base Unit.
+                        </p>
+                     </div>
+                  </div>
+
+                  <div class="card mb-4">
+                     <div class="card-body">
+                        <h5 class="card-title">🧮 How the conversion works</h5>
+                        <p>
+                           Let <code>Q<sub>sub</sub></code> be a quantity expressed in the sub-unit and
+                           <code>Q<sub>base</sub></code> the equivalent quantity in the base unit:
+                        </p>
+                        <ul>
+                           <li>If <strong>Operator = *</strong> → <code>Q<sub>base</sub> = Q<sub>sub</sub> * Operation Value</code></li>
+                           <li>If <strong>Operator = /</strong> → <code>Q<sub>base</sub> = Q<sub>sub</sub> / Operation Value</code></li>
+                        </ul>
+                        <p class="mb-0">
+                           The reverse conversion (base → sub) is applied automatically when displaying stock, prices and
+                           reports in a sub-unit.
+                        </p>
+                     </div>
+                  </div>
+
+                  <div class="card mb-4">
+                     <div class="card-body">
+                        <h5 class="card-title">💡 Ready-to-use examples</h5>
+
+                        <h6 class="mt-3">1. Weight — Kilogram &amp; Gram</h6>
+                        <ul>
+                           <li><strong>Kilogram (kg)</strong> — Base unit, no parent.</li>
+                           <li><strong>Gram (g)</strong> — Base Unit: <code>kg</code>, Operator: <code>/</code>,
+                              Operation Value: <code>1000</code>
+                              <br><em>⇒ 1 kg = 1000 g, so 500 g = 500 / 1000 = 0.5 kg in stock.</em></li>
+                           <li><strong>Ton (t)</strong> — Base Unit: <code>kg</code>, Operator: <code>*</code>,
+                              Operation Value: <code>1000</code>
+                              <br><em>⇒ 1 t = 1000 kg.</em></li>
+                        </ul>
+
+                        <h6 class="mt-3">2. Volume — Liter &amp; Milliliter</h6>
+                        <ul>
+                           <li><strong>Liter (L)</strong> — Base unit.</li>
+                           <li><strong>Milliliter (ml)</strong> — Base Unit: <code>L</code>, Operator: <code>/</code>,
+                              Operation Value: <code>1000</code>.</li>
+                        </ul>
+
+                        <h6 class="mt-3">3. Packaging — Box &amp; Piece</h6>
+                        <ul>
+                           <li><strong>Piece (pc)</strong> — Base unit.</li>
+                           <li><strong>Box of 12 (box)</strong> — Base Unit: <code>pc</code>, Operator: <code>*</code>,
+                              Operation Value: <code>12</code>
+                              <br><em>⇒ Buying 5 boxes adds 60 pieces to stock.</em></li>
+                           <li><strong>Dozen (dz)</strong> — Base Unit: <code>pc</code>, Operator: <code>*</code>,
+                              Operation Value: <code>12</code>.</li>
+                        </ul>
+                     </div>
+                  </div>
+
+                  <div class="card mb-4">
+                     <div class="card-body">
+                        <h5 class="card-title">📦 Using multiple units on a product</h5>
+                        <p>When creating or editing a product, three unit fields are used:</p>
+                        <ul>
+                           <li><strong>Product Unit</strong> — the <em>base unit</em> in which stock is stored.</li>
+                           <li><strong>Sale Unit</strong> — the unit used on Sales, POS and Quotations (can be the base
+                              unit or any of its sub-units).</li>
+                           <li><strong>Purchase Unit</strong> — the unit used on Purchases and Returns (can be the base
+                              unit or any of its sub-units).</li>
+                        </ul>
+                        <p class="mb-0">
+                           Example: create a product <em>Flour</em> with Product Unit <code>kg</code>, Purchase Unit
+                           <code>kg</code> and Sale Unit <code>g</code>. You buy 50&nbsp;kg, Stocky stores
+                           <code>50</code> in the base unit; a customer buys <code>250&nbsp;g</code> in POS and stock
+                           automatically decreases by <code>0.25&nbsp;kg</code>.
+                        </p>
+                     </div>
+                  </div>
+
+                  <img src="assets/images/create_unit.jpg" class="img-responsive" alt="Create Unit with Base Unit, Operator and Operation Value">
+               </div>
+            </section>
+
+           <section data-section="reports" class="py-4">
+               <div class="container">
+                  <h2 class="doc-section-title mb-4">Reports</h2>
+
+                  <style>
+                     /* Scoped styles for this section only */
+                     .report-card .card-img-bottom{width:100%;max-height:260px;object-fit:cover}
+                     .report-card .card-title code{font-size:.95rem}
+                     .report-card .card-body{padding:1rem 1.1rem}
+                     .report-card .card-img-bottom{width:100%;max-height:260px;object-fit:cover}
+                     .report-card .card-title code{font-size:.95rem}
+                     .report-card .card-body{padding:1rem 1.1rem}
+
+                     /* New: zoom affordance */
+                     .report-card img{cursor: zoom-in; transition: transform .2s ease}
+                     .report-card img:hover{transform: scale(1.02)}
+
+                     /* Modal look & sizing */
+                     #imgZoomModal .modal-dialog{max-width:95%}
+                     #imgZoomModal .modal-content{background: rgba(0,0,0,.85); border:0; text-align:center}
+                     #zoomedImage{max-height:82vh; width:auto}
+                     #imgZoomModal .close{position:absolute; right:12px; top:10px; opacity:1; color:#fff; font-size:2rem; line-height:1}
+                  </style>
+
+                  <div class="row">
+                     <!-- Inactive Customers Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Inactive Customers Report </code></h5>
+                           <p class="mb-3">Identify clients with no purchases in the last <strong>30</strong>, <strong>60</strong>, or <strong>90</strong> days.</p>
+                        </div>
+                        <img src="assets/images/inactive_customers_report.png" class="card-img-bottom" alt="Inactive Customers Report">
+                     </div>
+                     </div>
+
+                     <!-- Zero Sales Products Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Zero Sales Products Report </code></h5>
+                           <p class="mb-3">Products that haven’t sold at all within a selected timeframe.</p>
+                        </div>
+                        <img src="assets/images/zero_sales_products_report.png" class="card-img-bottom" alt="Zero Sales Products Report">
+                     </div>
+                     </div>
+
+                     <!-- Dead Stock Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Dead Stock Report </code></h5>
+                           <p class="mb-3">Products with no movement or sales within a set period.</p>
+                        </div>
+                        <img src="assets/images/dead_stock_report.png" class="card-img-bottom" alt="Dead Stock Report">
+                     </div>
+                     </div>
+
+                     <!-- Stock Aging Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Stock Aging Report </code></h5>
+                           <p class="mb-3">Shows how long items have stayed in inventory, grouped by aging buckets (e.g., 0–30, 31–60, 61–90, 90+ days).</p>
+                        </div>
+                        <img src="assets/images/stock_aging_report.png" class="card-img-bottom" alt="Stock Aging Report">
+                     </div>
+                     </div>
+
+                     <!-- Stock Transfer Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Stock Transfer Report </code></h5>
+                           <p class="mb-3">Analyze and visualize all stock movements between warehouses with KPIs, charts, and detailed tables.</p>
+                        </div>
+                        <img src="assets/images/stock_transfer_report.png" class="card-img-bottom" alt="Stock Transfer Report">
+                     </div>
+                     </div>
+
+                     <!-- Stock Adjustment Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Stock Adjustment Report </code></h5>
+                           <p class="mb-3">Track and analyze all inventory corrections (additions and removals) with detailed KPIs, charts, and tables.</p>
+                        </div>
+                        <img src="assets/images/stock_adjustment_report.png" class="card-img-bottom" alt="Stock Adjustment Report">
+                     </div>
+                     </div>
+
+                     <!-- Top Suppliers Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Top Suppliers Report </code></h5>
+                           <p class="mb-3">Purchases value &amp; volume by vendor.</p>
+                        </div>
+                        <img src="assets/images/top_suppliers_report.png" class="card-img-bottom" alt="Top Suppliers Report">
+                     </div>
+                     </div>
+
+                     <!-- Draft Invoices Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Draft Invoices Report </code></h5>
+                           <p class="mb-3">View invoices that were created but never finalized or sent.</p>
+                        </div>
+                        <img src="assets/images/draft_invoices_report.png" class="card-img-bottom" alt="Draft Invoices Report">
+                     </div>
+                     </div>
+
+                     <!-- Discount Summary Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Discount Summary Report </code></h5>
+                           <p class="mb-3">Overview of total discount value given by date range</p>
+                        </div>
+                        <img src="assets/images/discount_summary_report.png" class="card-img-bottom" alt="Discount Summary Report">
+                     </div>
+                     </div>
+
+                     <!-- Tax Summary Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Tax Summary Report </code></h5>
+                           <p class="mb-3">Overview of total taxable base and tax collected using the date range picker.</p>
+                        </div>
+                        <img src="assets/images/tax_summary_report.png" class="card-img-bottom" alt="Tax Summary Report">
+                     </div>
+                     </div>
+
+                     <!-- Payments Purchases -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Payments Purchases</code></h5>
+                        </div>
+                        <img src="assets/images/report_payments_purchases.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Payments Sales -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Payments Sales</code></h5>
+                        </div>
+                        <img src="assets/images/report_payment_sale.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Profit & Loss -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Profit & Loss</code></h5>
+                        </div>
+                        <img src="assets/images/profit.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Inventory Valuation -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Inventory Valuation </code></h5>
+                        </div>
+                        <img src="assets/images/report_inventory_valuation.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Expenses Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Expenses Report </code></h5>
+                        </div>
+                        <img src="assets/images/expense_report.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Deposits Report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Deposits Report </code></h5>
+                        </div>
+                        <img src="assets/images/deposit_report.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Product Alert -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Product Alert</code></h5>
+                        </div>
+                        <img src="assets/images/report_product_alert.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Warehouse report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Warehouse report</code></h5>
+                        </div>
+                        <img src="assets/images/warehouse_report.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Sales report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Sales report</code></h5>
+                        </div>
+                        <img src="assets/images/report_sales.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Purchases report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Purchases report</code></h5>
+                        </div>
+                        <img src="assets/images/report_purchases.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Customers report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Customers report</code></h5>
+                        </div>
+                        <img src="assets/images/customers_report.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Suppliers report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Suppliers report</code></h5>
+                        </div>
+                        <img src="assets/images/supplier_report.jpg" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Top selling products report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Top selling products report</code></h5>
+                        </div>
+                        <img src="assets/images/top_selling_products.PNG" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Best Customers report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-4">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Best Customers report</code></h5>
+                        </div>
+                        <img src="assets/images/best_customers.PNG" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                     <!-- Users report -->
+                     <div class="col-12 col-md-6 col-xl-4 mb-2">
+                     <div class="card h-100 shadow-sm border-0 report-card">
+                        <div class="card-body">
+                           <h5 class="card-title"><code> Users report</code></h5>
+                        </div>
+                        <img src="assets/images/users_report.PNG" class="card-img-bottom" alt="">
+                     </div>
+                     </div>
+
+                  </div>
+               </div>
+
+              
+            </section>
+
+
+
+            <section data-section="Reviews">
+                  <h2 class="doc-section-title">
+                        Ratings & review
+                   </h2>
+
+                <h5>If you like our item you can rete it .
+                    If you don’t know how to provide ratings & review please visit
+                     this link: <a href="https://help.market.envato.com/hc/en-us/articles/203269490-Giving-Feedback-On-Items">https://help.market.envato.com/hc/en-us/articles/203269490-Giving-Feedback-On-Items</a> 
+                     Thank you </h5>
+                <img src="assets/images/rate.jpg" class="img-responsive " alt="">
+               </section>
+
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         </div>
+      </div>
+      <script src="assets/vendor/jquery.min.js"></script>
+      <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <script src="assets/vendor/highlightjs/highlight.min.js"></script>
+      <script src="assets/vendor/feather.min.js"></script>
+      <script src="assets/vendor/clipboard.min.js"></script>
+      <script src="assets/js/doc.js"></script>
+      <script src="assets/vendor/jquery.waypoints.min.js"></script>
+      <script src="assets/js/stocky-docs.js"></script>
+
+
+      <!-- Image Zoom Modal -->
+<div class="modal fade" id="imgZoomModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <img id="zoomedImage" src="" alt="" class="img-fluid rounded shadow">
+      <div id="zoomCaption" class="small text-light mt-2"></div>
+    </div>
+  </div>
+</div>
+
+
+      <script>
+      (function($){
+         $(function(){
+            var $modal = $('#imgZoomModal');
+            var $img   = $('#zoomedImage');
+            var $cap   = $('#zoomCaption');
+
+            // Click any report image to zoom
+            $('.report-card img').on('click', function(){
+            var src = $(this).attr('data-full') || $(this).attr('src'); // use data-full if you have higher-res
+            var alt = $(this).attr('alt') || '';
+            $img.attr({ src: src, alt: alt });
+            $cap.text(alt);
+            $modal.modal('show');
+            });
+
+            // Optional: free memory on close
+            $modal.on('hidden.bs.modal', function(){ $img.attr('src',''); });
+         });
+      })(jQuery);
+      </script>
+
+
+
+</body>
+
+</html>

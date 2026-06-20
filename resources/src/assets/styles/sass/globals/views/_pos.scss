@@ -1,0 +1,1909 @@
+// ========================================
+// POS Modern Design - Clean & Minimalist
+// Design inspired by: Stripe Dashboard, Zoho POS, Apple Design
+// ========================================
+
+// ========================================
+// 1. DESIGN TOKENS (SCSS Variables)
+// ========================================
+
+// Color Palette
+$pos-primary: #4c7cff !default;
+$pos-primary-hover: #3d6ae6 !default;
+$pos-primary-light: #e8eeff !default;
+
+$pos-white: #ffffff !default;
+$pos-gray-50: #fafafa !default;
+$pos-gray-100: #f5f5f5 !default;
+$pos-gray-200: #e5e5e5 !default;
+$pos-gray-300: #d4d4d4 !default;
+$pos-gray-400: #a3a3a3 !default;
+$pos-gray-500: #737373 !default;
+$pos-gray-600: #525252 !default;
+$pos-gray-700: #404040 !default;
+$pos-gray-800: #262626 !default;
+$pos-gray-900: #171717 !default;
+
+$pos-success: #10b981 !default;
+$pos-success-light: #d1fae5 !default;
+$pos-danger: #ef4444 !default;
+$pos-danger-light: #fee2e2 !default;
+$pos-warning: #f59e0b !default;
+$pos-warning-light: #fef3c7 !default;
+$pos-info: #3b82f6 !default;
+$pos-info-light: #dbeafe !default;
+
+// Typography
+$pos-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif !default;
+$pos-font-size-xs: 0.75rem !default;    // 12px
+$pos-font-size-sm: 0.875rem !default;   // 14px
+$pos-font-size-base: 1rem !default;     // 16px
+$pos-font-size-lg: 1.125rem !default;   // 18px
+$pos-font-size-xl: 1.25rem !default;    // 20px
+$pos-font-size-2xl: 1.5rem !default;    // 24px
+$pos-font-size-3xl: 1.875rem !default;  // 30px
+
+// Spacing
+$pos-space-1: 0.25rem !default;   // 4px
+$pos-space-2: 0.5rem !default;    // 8px
+$pos-space-3: 0.75rem !default;   // 12px
+$pos-space-4: 1rem !default;      // 16px
+$pos-space-5: 1.25rem !default;   // 20px
+$pos-space-6: 1.5rem !default;    // 24px
+$pos-space-8: 2rem !default;      // 32px
+$pos-space-10: 2.5rem !default;   // 40px
+
+// Border Radius
+$pos-radius-sm: 4px !default;
+$pos-radius: 8px !default;
+$pos-radius-lg: 12px !default;
+$pos-radius-xl: 16px !default;
+$pos-radius-full: 9999px !default;
+
+// Shadows
+$pos-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !default;
+$pos-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !default;
+$pos-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !default;
+$pos-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !default;
+
+// Transitions
+$pos-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !default;
+
+// ========================================
+// 2. MIXINS
+// ========================================
+
+@mixin pos-scrollbar {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $pos-gray-100;
+    border-radius: $pos-radius-full;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $pos-gray-400;
+    border-radius: $pos-radius-full;
+
+    &:hover {
+      background: $pos-gray-500;
+    }
+  }
+}
+
+@mixin pos-focus-ring($color: $pos-primary) {
+  &:focus {
+    outline: none;
+    border-color: $color;
+    box-shadow: 0 0 0 3px rgba($color, 0.2);
+  }
+}
+
+@mixin pos-button-variant($bg-color, $hover-color) {
+  background: $bg-color;
+  color: $pos-white;
+  border: none;
+  transition: $pos-transition;
+
+  &:hover:not(:disabled) {
+    background: $hover-color;
+    transform: translateY(-1px);
+    box-shadow: $pos-shadow-md;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ========================================
+// 3. BASE STYLES & RESETS
+// ========================================
+
+.pos_page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  min-height: 100vh;
+  background: $pos-gray-50;
+  font-family: $pos-font-family;
+  overflow: hidden;
+
+  * {
+    font-family: $pos-font-family;
+    text-transform: none;
+  }
+}
+
+#pos {
+  height: 100vh;
+  overflow: hidden;
+}
+
+// ========================================
+// 4. HEADER STYLES
+// ========================================
+
+.pos-header {
+  background: $pos-white;
+  border-bottom: 1px solid $pos-gray-200;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 $pos-space-6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: $pos-shadow-sm;
+
+  .logo {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 36px;
+      height: 36px;
+      border-radius: $pos-radius;
+      object-fit: cover;
+    }
+  }
+
+  &-actions {
+    display: flex;
+    align-items: center;
+    gap: $pos-space-4;
+    margin-left: auto;
+  }
+
+  &-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $pos-radius;
+    background: $pos-gray-100;
+    color: $pos-gray-700;
+    transition: $pos-transition;
+    cursor: pointer;
+    font-size: 18px;
+    border: none;
+
+    &:hover {
+      background: $pos-gray-200;
+      color: $pos-gray-900;
+    }
+
+    &.active {
+      background: $pos-primary-light;
+      color: $pos-primary;
+    }
+  }
+}
+
+// ========================================
+// 5. LAYOUT - TWO COLUMN GRID
+// ========================================
+
+.pos-layout {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 60px);
+  gap: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+// ========================================
+// 6. LEFT PANEL - CART & ORDER
+// ========================================
+
+.pos-left-panel {
+  background: $pos-white;
+  border-right: 1px solid $pos-gray-200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 420px;
+  min-width: 420px;
+  flex-shrink: 0;
+}
+
+.pos-cart-header {
+  padding: $pos-space-6;
+  border-bottom: 1px solid $pos-gray-200;
+}
+
+.pos-cart-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $pos-space-4;
+  @include pos-scrollbar;
+}
+
+.pos-cart-footer {
+  border-top: 1px solid $pos-gray-200;
+  background: $pos-gray-50;
+}
+
+// Customer & Warehouse Selects
+.pos-select-group {
+  margin-bottom: $pos-space-4;
+
+  label {
+    font-size: $pos-font-size-sm;
+    font-weight: 500;
+    color: $pos-gray-700;
+    margin-bottom: $pos-space-2;
+    display: block;
+  }
+
+  .v-select {
+    border-radius: $pos-radius;
+  }
+
+  .vs__dropdown-toggle {
+    border: 1px solid $pos-gray-300;
+    border-radius: $pos-radius;
+    padding: $pos-space-2;
+    background: $pos-white;
+    transition: $pos-transition;
+
+    &:hover {
+      border-color: $pos-gray-400;
+    }
+
+    &:focus-within {
+      border-color: $pos-primary;
+      box-shadow: 0 0 0 3px $pos-primary-light;
+    }
+  }
+}
+
+// Cart Items Table
+.pos-cart-table {
+  background: $pos-white;
+  border-radius: $pos-radius;
+  overflow: hidden;
+  max-height: calc(100vh - 520px);
+  overflow-y: auto;
+  @include pos-scrollbar;
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  thead {
+    background: $pos-gray-50;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    th {
+      padding: $pos-space-3;
+      font-size: $pos-font-size-xs;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: $pos-gray-600;
+      border-bottom: 1px solid $pos-gray-200;
+      text-align: left;
+    }
+  }
+
+  tbody {
+    td {
+      padding: $pos-space-4 $pos-space-3;
+      font-size: $pos-font-size-sm;
+      color: $pos-gray-700;
+      border-bottom: 1px solid $pos-gray-100;
+    }
+
+    tr:hover {
+      background: $pos-gray-50;
+    }
+  }
+}
+
+.pos-cart-item-name {
+  font-weight: 500;
+  color: $pos-gray-900;
+  margin-bottom: $pos-space-1;
+}
+
+.pos-cart-item-code {
+  font-size: $pos-font-size-xs;
+  color: $pos-gray-500;
+}
+
+// Quantity Controls
+.pos-qty-control {
+  display: flex;
+  align-items: center;
+  gap: $pos-space-1;
+  width: 100px;
+}
+
+.pos-qty-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid $pos-gray-300;
+  background: $pos-white;
+  border-radius: $pos-radius-sm;
+  color: $pos-gray-700;
+  font-size: $pos-font-size-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: $pos-transition;
+  padding: 0;
+
+  &:hover {
+    background: $pos-primary;
+    color: $pos-white;
+    border-color: $pos-primary;
+  }
+}
+
+.pos-qty-input {
+  flex: 1;
+  text-align: center;
+  border: 1px solid $pos-gray-300;
+  border-radius: $pos-radius-sm;
+  height: 28px;
+  font-size: $pos-font-size-sm;
+  padding: 0;
+
+  @include pos-focus-ring;
+}
+
+// Cart Summary
+.pos-cart-summary {
+  padding: $pos-space-6;
+  background: $pos-white;
+}
+
+.pos-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $pos-space-3 0;
+  font-size: $pos-font-size-sm;
+  color: $pos-gray-700;
+  border-bottom: 1px solid $pos-gray-100;
+
+  &.grand-total {
+    padding-top: $pos-space-4;
+    border-top: 2px solid $pos-gray-300;
+    border-bottom: none;
+    margin-top: $pos-space-2;
+
+    .label {
+      font-size: $pos-font-size-lg;
+      font-weight: 600;
+      color: $pos-gray-900;
+    }
+
+    .value {
+      font-size: $pos-font-size-2xl;
+      font-weight: 700;
+      color: $pos-primary;
+    }
+  }
+}
+
+// Discount & Tax Inputs
+.pos-input-group {
+  margin-bottom: $pos-space-4;
+
+  label {
+    font-size: $pos-font-size-sm;
+    font-weight: 500;
+    color: $pos-gray-700;
+    margin-bottom: $pos-space-2;
+    display: block;
+  }
+
+  input {
+    width: 100%;
+    padding: $pos-space-3;
+    border: 1px solid $pos-gray-300;
+    border-radius: $pos-radius;
+    font-size: $pos-font-size-sm;
+    transition: $pos-transition;
+
+    @include pos-focus-ring;
+  }
+}
+
+// Action Buttons
+.pos-action-buttons {
+  padding: $pos-space-4 $pos-space-6;
+  display: flex;
+  gap: $pos-space-3;
+  background: $pos-white;
+  border-top: 1px solid $pos-gray-200;
+}
+
+.pos-btn {
+  flex: 1;
+  padding: $pos-space-4;
+  font-size: $pos-font-size-sm;
+  font-weight: 500;
+  border-radius: $pos-radius;
+  border: none;
+  cursor: pointer;
+  transition: $pos-transition;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $pos-space-2;
+
+  &-primary {
+    @include pos-button-variant($pos-primary, $pos-primary-hover);
+  }
+
+  &-success {
+    @include pos-button-variant($pos-success, darken($pos-success, 8%));
+  }
+
+  &-danger {
+    @include pos-button-variant($pos-danger, darken($pos-danger, 8%));
+  }
+
+  &-light {
+    background: $pos-gray-100;
+    color: $pos-gray-700;
+    border: 1px solid $pos-gray-300;
+
+    &:hover {
+      background: $pos-gray-200;
+    }
+  }
+}
+
+// ========================================
+// 7. RIGHT PANEL - PRODUCTS
+// ========================================
+
+.pos-right-panel {
+  background: $pos-gray-50;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+.pos-search-section {
+  background: $pos-white;
+  padding: $pos-space-6;
+  border-bottom: 1px solid $pos-gray-200;
+}
+
+.pos-search-bar {
+  position: relative;
+  margin-bottom: $pos-space-4;
+}
+
+.pos-search-input {
+  width: 100%;
+  padding: $pos-space-4 $pos-space-4 $pos-space-4 48px;
+  border: 1px solid $pos-gray-300;
+  border-radius: $pos-radius;
+  font-size: $pos-font-size-base;
+  transition: $pos-transition;
+  background: $pos-white;
+
+  @include pos-focus-ring;
+
+  &::placeholder {
+    color: $pos-gray-400;
+  }
+}
+
+.pos-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $pos-gray-400;
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.pos-scan-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: $pos-transition;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Filter Buttons
+.pos-filter-buttons {
+  display: flex;
+  gap: $pos-space-3;
+}
+
+.pos-filter-btn {
+  flex: 1;
+  padding: $pos-space-3;
+  background: $pos-gray-100;
+  border: 1px solid $pos-gray-200;
+  border-radius: $pos-radius;
+  font-size: $pos-font-size-sm;
+  color: $pos-gray-700;
+  cursor: pointer;
+  transition: $pos-transition;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $pos-space-2;
+
+  &:hover {
+    background: $pos-gray-200;
+    border-color: $pos-gray-300;
+  }
+}
+
+// Products Grid
+.pos-products-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: $pos-space-6;
+  @include pos-scrollbar;
+}
+
+.pos-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: $pos-space-4;
+  margin-bottom: $pos-space-6;
+}
+
+.pos-product-card {
+  background: $pos-white;
+  border: 1px solid $pos-gray-200;
+  border-radius: $pos-radius;
+  overflow: hidden;
+  cursor: pointer;
+  transition: $pos-transition;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    border-color: $pos-primary;
+    box-shadow: $pos-shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.pos-product-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  background: $pos-gray-100;
+}
+
+.pos-product-info {
+  padding: $pos-space-3;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.pos-product-name {
+  font-size: $pos-font-size-sm;
+  font-weight: 500;
+  color: $pos-gray-900;
+  margin-bottom: $pos-space-1;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pos-product-code {
+  font-size: $pos-font-size-xs;
+  color: $pos-gray-500;
+  margin-bottom: $pos-space-2;
+}
+
+.pos-product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.pos-product-price {
+  font-size: $pos-font-size-base;
+  font-weight: 600;
+  color: $pos-primary;
+}
+
+.pos-product-stock {
+  font-size: $pos-font-size-xs;
+  padding: 2px 8px;
+  background: $pos-success-light;
+  color: $pos-success;
+  border-radius: $pos-radius-full;
+}
+
+// Pagination
+.pos-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: $pos-space-2;
+  padding: $pos-space-4 0;
+
+  button {
+    width: 36px;
+    height: 36px;
+    border: 1px solid $pos-gray-300;
+    background: $pos-white;
+    border-radius: $pos-radius;
+    color: $pos-gray-700;
+    cursor: pointer;
+    transition: $pos-transition;
+
+    &:hover {
+      border-color: $pos-primary;
+      color: $pos-primary;
+    }
+
+    &.active {
+      background: $pos-primary;
+      border-color: $pos-primary;
+      color: $pos-white;
+    }
+  }
+}
+
+// ========================================
+// 8. MODAL STYLES
+// ========================================
+
+.pos-modal-header {
+  border-bottom: 1px solid $pos-gray-200;
+  padding: $pos-space-6;
+  background: $pos-white;
+}
+
+.pos-modal-title {
+  font-size: $pos-font-size-xl;
+  font-weight: 600;
+  color: $pos-gray-900;
+}
+
+.pos-modal-body {
+  padding: $pos-space-6;
+  background: $pos-gray-50;
+}
+
+.pos-modal-footer {
+  border-top: 1px solid $pos-gray-200;
+  padding: $pos-space-4 $pos-space-6;
+  background: $pos-white;
+  display: flex;
+  gap: $pos-space-3;
+  justify-content: flex-end;
+}
+
+// Payment Modal
+.pos-payment-summary {
+  background: $pos-white;
+  border: 1px solid $pos-gray-200;
+  border-radius: $pos-radius;
+  padding: $pos-space-6;
+
+  &-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $pos-space-4 0;
+    border-bottom: 1px solid $pos-gray-100;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &-label {
+    font-size: $pos-font-size-sm;
+    color: $pos-gray-600;
+    display: flex;
+    align-items: center;
+    gap: $pos-space-2;
+  }
+
+  &-value {
+    font-size: $pos-font-size-base;
+    font-weight: 600;
+    color: $pos-gray-900;
+  }
+}
+
+// Keypad
+.pos-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $pos-space-2;
+  margin-top: $pos-space-4;
+
+  &-btn {
+    padding: $pos-space-4;
+    background: $pos-white;
+    border: 1px solid $pos-gray-300;
+    border-radius: $pos-radius;
+    font-size: $pos-font-size-lg;
+    color: $pos-gray-900;
+    cursor: pointer;
+    transition: $pos-transition;
+    font-weight: 500;
+
+    &:hover {
+      background: $pos-gray-100;
+      border-color: $pos-gray-400;
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+}
+
+// ========================================
+// 9. SIDEBAR STYLES
+// ========================================
+
+.pos-sidebar {
+  background: $pos-white;
+  padding: $pos-space-6;
+
+  &-title {
+    font-size: $pos-font-size-xl;
+    font-weight: 600;
+    color: $pos-gray-900;
+    margin-bottom: $pos-space-6;
+  }
+}
+
+// Category/Brand Grid
+.pos-category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $pos-space-3;
+}
+
+.pos-category-item {
+  background: $pos-white;
+  border: 2px solid $pos-gray-200;
+  border-radius: $pos-radius;
+  padding: $pos-space-4;
+  text-align: center;
+  cursor: pointer;
+  transition: $pos-transition;
+  font-size: $pos-font-size-sm;
+  font-weight: 500;
+  color: $pos-gray-700;
+
+  &:hover {
+    border-color: $pos-gray-400;
+    background: $pos-gray-50;
+  }
+
+  &.active {
+    border-color: $pos-primary;
+    background: $pos-primary-light;
+    color: $pos-primary;
+    font-weight: 600;
+  }
+}
+
+// ========================================
+// 10. UTILITY CLASSES
+// ========================================
+
+.pos-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: $pos-radius-full;
+  font-size: $pos-font-size-xs;
+  font-weight: 500;
+
+  &-success {
+    background: $pos-success-light;
+    color: $pos-success;
+  }
+
+  &-primary {
+    background: $pos-primary-light;
+    color: $pos-primary;
+  }
+
+  &-warning {
+    background: $pos-warning-light;
+    color: $pos-warning;
+  }
+
+  &-danger {
+    background: $pos-danger-light;
+    color: $pos-danger;
+  }
+}
+
+.pos-text-muted {
+  color: $pos-gray-500;
+}
+
+.pos-divider {
+  height: 1px;
+  background: $pos-gray-200;
+  margin: $pos-space-4 0;
+}
+
+// ========================================
+// 11. LOADING & EMPTY STATES
+// ========================================
+
+.pos-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: $pos-gray-50;
+}
+
+.pos-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid $pos-gray-200;
+  border-top-color: $pos-primary;
+  border-radius: 50%;
+  animation: pos-spin 0.8s linear infinite;
+}
+
+@keyframes pos-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pos-empty-state {
+  text-align: center;
+  padding: $pos-space-10;
+  color: $pos-gray-500;
+
+  &-icon {
+    font-size: 48px;
+    margin-bottom: $pos-space-4;
+    opacity: 0.5;
+  }
+
+  &-text {
+    font-size: $pos-font-size-base;
+  }
+}
+
+// ========================================
+// 12. AUTOCOMPLETE RESULTS
+// ========================================
+
+.pos-autocomplete {
+  position: relative;
+
+  &-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: $pos-white;
+    border: 1px solid $pos-gray-300;
+    border-top: none;
+    border-radius: 0 0 $pos-radius $pos-radius;
+    box-shadow: $pos-shadow-lg;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: -8px;
+  }
+
+  &-item {
+    padding: $pos-space-3 $pos-space-4;
+    cursor: pointer;
+    transition: $pos-transition;
+    font-size: $pos-font-size-sm;
+    color: $pos-gray-700;
+    border-bottom: 1px solid $pos-gray-100;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: $pos-gray-50;
+      color: $pos-gray-900;
+    }
+  }
+}
+
+// ========================================
+// 13. PRINT STYLES
+// ========================================
+
+#invoice-POS {
+  font-size: 14px;
+  line-height: 20px;
+  font-family: sans-serif;
+  text-transform: capitalize;
+  max-width: 400px;
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #05070b;
+    font-weight: bolder;
+  }
+
+  table tr {
+    border-bottom: 3px dotted #ddd !important;
+  }
+}
+
+#total tr {
+  background-color: #ddd;
+}
+
+#top .logo {
+  height: 100px;
+  width: 100px;
+  background-size: 100px 100px;
+}
+
+.title {
+  float: right;
+
+  p {
+    text-align: right;
+  }
+}
+
+.tabletitle {
+  font-size: 0.5em;
+  background: #eee;
+}
+
+#legalcopy {
+  margin-top: 5mm;
+
+  p {
+    text-align: center;
+  }
+}
+
+#bar {
+  text-align: center;
+}
+
+@media print {
+  .pos_page {
+    position: static;
+  }
+
+  .pos-header,
+  .pos-action-buttons,
+  .pos-filter-buttons,
+  .pos-search-section {
+    display: none !important;
+  }
+
+  * {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  body {
+    margin: 0.5cm;
+    margin-bottom: 1.6cm;
+    visibility: hidden;
+  }
+
+  #invoice-POS {
+    visibility: visible;
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  @page {
+    margin: 0;
+  }
+}
+
+// ========================================
+// 14. RESPONSIVE ADJUSTMENTS
+// ========================================
+
+@media (max-width: 1200px) {
+  .pos-left-panel {
+    width: 380px;
+    min-width: 380px;
+  }
+}
+
+@media (max-width: 992px) {
+  .pos-layout {
+    flex-direction: column;
+  }
+
+  .pos-left-panel {
+    width: 100%;
+    min-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid $pos-gray-200;
+    max-height: 50vh;
+  }
+  
+  .pos-right-panel {
+    flex: 1;
+  }
+}
+
+@media (min-width: 1400px) {
+  .pos-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .pos-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: $pos-space-3;
+  }
+
+  .pos-action-buttons {
+    flex-wrap: wrap;
+  }
+
+  .pos-btn {
+    flex: 1 1 calc(50% - 6px);
+  }
+}
+
+// ========================================
+// 15. ACCESSIBILITY
+// ========================================
+
+.pos-btn:focus,
+.pos-product-card:focus,
+.pos-category-item:focus {
+  outline: 2px solid $pos-primary;
+  outline-offset: 2px;
+}
+
+.pos-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// ========================================
+// 16. TOAST/NOTIFICATION OVERRIDES
+// ========================================
+
+.b-toaster .b-toast {
+  border-radius: $pos-radius;
+  box-shadow: $pos-shadow-lg;
+}
+
+// ========================================
+// 17. LEGACY SUPPORT & COMPATIBILITY
+// ========================================
+
+// Support for old class names
+.pos-detail {
+  height: 42vh !important;
+
+  .table-responsive {
+    max-height: 40vh !important;
+    height: 40vh !important;
+    border-bottom: none !important;
+
+    tr {
+      font-size: 14px;
+    }
+  }
+}
+
+.card-order {
+  min-height: 100%;
+
+  .main-header {
+    position: relative;
+  }
+}
+
+.grandtotal {
+  text-align: center;
+  height: 40px;
+  background-color: #7ec8ca;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  padding: 5px;
+}
+
+.list-grid {
+  height: 100%;
+  min-height: 100%;
+  overflow: scroll;
+
+  .list-item .list-thumb img {
+    width: 100% !important;
+    height: 100px !important;
+    max-height: 100px !important;
+    object-fit: cover;
+  }
+
+  @media (min-width: 1024px) {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: scroll;
+  }
+}
+
+.brand-Active {
+  border: 2px solid;
+}
+
+.centred {
+  text-align: center;
+  align-content: center;
+}
+
+.card.o-hidden {
+  width: 18%;
+  max-width: 18%;
+  min-width: 130px;
+
+  &:hover {
+    cursor: pointer;
+    border: 1px solid;
+  }
+}
+
+.input-customer {
+  position: relative;
+  display: flex;
+  flex-wrap: unset;
+  align-items: stretch;
+  width: 100%;
+}
+
+.quantity {
+  max-width: 95px;
+  width: 95px;
+
+  input {
+    text-align: center;
+    border: none;
+  }
+
+  .form-control:focus {
+    color: #374151;
+    background-color: unset;
+    border-color: #e1d5fd;
+    outline: 0;
+    box-shadow: unset;
+  }
+
+  span {
+    padding: 8px;
+  }
+}
+
+// ========================================
+// 18. PAYMENT MODAL - ENHANCED LAYOUT
+// ========================================
+
+// Premium Payment Modal
+.premium-payment-modal {
+  .modal-dialog {
+    max-width: 1200px;
+  }
+}
+
+.payment-checkout-wrapper {
+  background: $pos-white;
+  border-radius: $pos-radius-lg;
+  overflow: hidden;
+}
+
+.checkout-header {
+  padding: $pos-space-6;
+  border-bottom: 1px solid $pos-gray-200;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: $pos-white;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.checkout-header-content {
+  flex: 1;
+}
+
+.checkout-title {
+  font-size: $pos-font-size-2xl;
+  font-weight: 700;
+  margin: 0 0 $pos-space-1 0;
+  color: $pos-white;
+}
+
+.checkout-subtitle {
+  font-size: $pos-font-size-base;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.checkout-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: $pos-radius;
+  padding: $pos-space-2;
+  cursor: pointer;
+  transition: $pos-transition;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $pos-white;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.checkout-body {
+  padding: $pos-space-6;
+  background: $pos-gray-50;
+}
+
+// Summary Card
+.summary-col {
+  padding-right: $pos-space-4;
+}
+
+.order-summary-card {
+  background: $pos-white;
+  border: 1px solid $pos-gray-200;
+  border-radius: $pos-radius-lg;
+  padding: $pos-space-6;
+  height: 100%;
+  box-shadow: $pos-shadow-sm;
+}
+
+.summary-card-title {
+  font-size: $pos-font-size-lg;
+  font-weight: 600;
+  color: $pos-gray-900;
+  margin-bottom: $pos-space-5;
+}
+
+.summary-items {
+  margin-bottom: $pos-space-4;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $pos-space-3 0;
+  font-size: $pos-font-size-sm;
+  border-bottom: 1px solid $pos-gray-100;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.summary-label {
+  color: $pos-gray-600;
+}
+
+.summary-value {
+  font-weight: 600;
+  color: $pos-gray-900;
+}
+
+.summary-divider {
+  height: 2px;
+  background: $pos-gray-200;
+  margin: $pos-space-4 0;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $pos-space-4 0;
+  margin-bottom: $pos-space-5;
+}
+
+.total-label {
+  font-size: $pos-font-size-lg;
+  font-weight: 600;
+  color: $pos-gray-900;
+}
+
+.total-amount {
+  font-size: $pos-font-size-3xl;
+  font-weight: 700;
+  color: $pos-primary;
+}
+
+.payment-status {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $pos-space-3;
+}
+
+.status-item {
+  background: $pos-gray-50;
+  padding: $pos-space-3;
+  border-radius: $pos-radius;
+}
+
+.status-label {
+  font-size: $pos-font-size-xs;
+  color: $pos-gray-600;
+  margin-bottom: $pos-space-1;
+}
+
+.status-value {
+  font-size: $pos-font-size-base;
+  font-weight: 600;
+  color: $pos-gray-900;
+}
+
+// Payment Form
+.payment-form-col {
+  padding-left: $pos-space-4;
+}
+
+.payment-form-card {
+  background: $pos-white;
+  border: 1px solid $pos-gray-200;
+  border-radius: $pos-radius-lg;
+  padding: $pos-space-6;
+  box-shadow: $pos-shadow-sm;
+}
+
+.form-section {
+  margin-bottom: $pos-space-6;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $pos-space-4;
+}
+
+.section-title {
+  font-size: $pos-font-size-base;
+  font-weight: 600;
+  color: $pos-gray-900;
+  margin: 0;
+}
+
+.line-count {
+  font-size: $pos-font-size-sm;
+  color: $pos-gray-500;
+  background: $pos-gray-100;
+  padding: $pos-space-1 $pos-space-3;
+  border-radius: $pos-radius-full;
+}
+
+// Payment Method Tabs
+.payment-method-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: $pos-space-2;
+}
+
+.method-tab {
+  background: $pos-white;
+  border: 2px solid $pos-gray-300;
+  border-radius: $pos-radius;
+  padding: $pos-space-3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $pos-space-2;
+  cursor: pointer;
+  transition: $pos-transition;
+
+  &:hover {
+    border-color: $pos-gray-400;
+    background: $pos-gray-50;
+  }
+
+  &.active {
+    border-color: $pos-primary;
+    background: $pos-primary-light;
+
+    .method-icon {
+      color: $pos-primary;
+    }
+
+    .method-name {
+      color: $pos-primary;
+      font-weight: 600;
+    }
+  }
+}
+
+.method-icon {
+  width: 24px;
+  height: 24px;
+  color: $pos-gray-600;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.method-name {
+  font-size: $pos-font-size-sm;
+  color: $pos-gray-700;
+  text-align: center;
+}
+
+// Payment Lines - Enhanced Card Layout
+.payment-lines-list {
+  display: flex;
+  flex-direction: column;
+  gap: $pos-space-4;
+  margin-bottom: $pos-space-4;
+}
+
+.payment-line-card {
+  background: $pos-gray-50;
+  border: 1px solid $pos-gray-200;
+  border-radius: $pos-radius;
+  overflow: hidden;
+}
+
+.payment-line-header {
+  background: $pos-white;
+  border-bottom: 1px solid $pos-gray-200;
+  padding: $pos-space-3 $pos-space-4;
+  display: flex;
+  align-items: center;
+  gap: $pos-space-3;
+}
+
+.line-badge {
+  background: $pos-primary;
+  color: $pos-white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $pos-font-size-xs;
+  font-weight: 600;
+}
+
+.line-title {
+  flex: 1;
+  font-size: $pos-font-size-sm;
+  font-weight: 600;
+  color: $pos-gray-900;
+}
+
+.line-remove-btn {
+  color: $pos-danger;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: $pos-transition;
+  font-size: 18px;
+
+  &:hover {
+    color: darken($pos-danger, 10%);
+    transform: scale(1.1);
+  }
+}
+
+.payment-line-body {
+  padding: $pos-space-4;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: $pos-space-3;
+}
+
+.form-label-sm {
+  font-size: $pos-font-size-sm;
+  font-weight: 500;
+  color: $pos-gray-700;
+  margin-bottom: $pos-space-2;
+}
+
+.amount-input-group {
+  .input-group-text {
+    background: $pos-primary-light;
+    border-color: $pos-gray-300;
+    color: $pos-primary;
+    font-weight: 600;
+  }
+
+  .form-control {
+    border-left: none;
+  }
+}
+
+.line-amount-input {
+  font-size: $pos-font-size-base;
+  font-weight: 600;
+  color: $pos-gray-900;
+}
+
+.payment-method-select {
+  .vs__dropdown-toggle {
+    min-height: 42px;
+  }
+}
+
+.add-line-btn {
+  width: 100%;
+  border-style: dashed;
+  border-width: 2px;
+  background: transparent;
+  color: $pos-primary;
+  font-weight: 500;
+  transition: $pos-transition;
+
+  &:hover {
+    background: $pos-primary-light;
+    border-style: solid;
+  }
+}
+
+// Quick Amount Grid
+.quick-amount-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $pos-space-2;
+}
+
+.quick-btn {
+  padding: $pos-space-3;
+  font-size: $pos-font-size-sm;
+  font-weight: 500;
+  border: 1px solid $pos-gray-300;
+  background: $pos-white;
+  border-radius: $pos-radius;
+  color: $pos-gray-700;
+  cursor: pointer;
+  transition: $pos-transition;
+
+  &:hover {
+    background: $pos-primary;
+    color: $pos-white;
+    border-color: $pos-primary;
+  }
+}
+
+// Keypad
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $pos-space-2;
+}
+
+.keypad-key {
+  padding: $pos-space-4;
+  background: $pos-white;
+  border: 1px solid $pos-gray-300;
+  border-radius: $pos-radius;
+  font-size: $pos-font-size-lg;
+  font-weight: 500;
+  color: $pos-gray-900;
+  cursor: pointer;
+  transition: $pos-transition;
+
+  &:hover {
+    background: $pos-gray-100;
+    border-color: $pos-gray-400;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Credit Card Section
+.saved-cards {
+  margin-top: $pos-space-4;
+}
+
+.saved-cards-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $pos-space-4;
+
+  span {
+    font-size: $pos-font-size-base;
+    font-weight: 600;
+    color: $pos-gray-900;
+  }
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: $pos-space-3;
+}
+
+.card-option {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: $pos-white;
+  border-radius: $pos-radius;
+  padding: $pos-space-4;
+  cursor: pointer;
+  transition: $pos-transition;
+  position: relative;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $pos-shadow-lg;
+  }
+
+  &.selected {
+    box-shadow: 0 0 0 3px $pos-primary;
+  }
+}
+
+.card-chip {
+  width: 30px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  margin-bottom: $pos-space-2;
+}
+
+.card-last-four {
+  font-size: $pos-font-size-lg;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: $pos-space-1;
+}
+
+.card-exp {
+  font-size: $pos-font-size-xs;
+  opacity: 0.9;
+}
+
+.card-checkmark {
+  position: absolute;
+  top: $pos-space-2;
+  right: $pos-space-2;
+  width: 24px;
+  height: 24px;
+  background: $pos-white;
+  color: $pos-primary;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.new-card-form {
+  margin-top: $pos-space-4;
+}
+
+.new-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $pos-space-4;
+}
+
+.card-form-label {
+  font-size: $pos-font-size-base;
+  font-weight: 600;
+  color: $pos-gray-900;
+  margin: 0;
+}
+
+.stripe-card-element {
+  padding: $pos-space-4;
+  border: 1px solid $pos-gray-300;
+  border-radius: $pos-radius;
+  background: $pos-white;
+  transition: $pos-transition;
+
+  &:focus-within {
+    border-color: $pos-primary;
+    box-shadow: 0 0 0 3px $pos-primary-light;
+  }
+}
+
+.card-errors {
+  color: $pos-danger;
+  font-size: $pos-font-size-sm;
+  margin-top: $pos-space-2;
+}
+
+// Notes & Options
+.form-textarea-sm {
+  font-size: $pos-font-size-sm;
+  resize: vertical;
+}
+
+.account-select {
+  .vs__dropdown-toggle {
+    min-height: 42px;
+  }
+}
+
+// Checkboxes
+.checkboxes-group {
+  display: flex;
+  flex-direction: column;
+  gap: $pos-space-3;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: $pos-space-2;
+  font-size: $pos-font-size-sm;
+  color: $pos-gray-700;
+
+  i {
+    font-size: 16px;
+    color: $pos-gray-500;
+  }
+}
+
+// Checkout Footer
+.checkout-footer {
+  background: $pos-white;
+  border-top: 1px solid $pos-gray-200;
+  padding: $pos-space-5 $pos-space-6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $pos-space-4;
+}
+
+.footer-info {
+  display: flex;
+  gap: $pos-space-6;
+  flex: 1;
+}
+
+.footer-amount {
+  display: flex;
+  flex-direction: column;
+  gap: $pos-space-1;
+
+  .label {
+    font-size: $pos-font-size-xs;
+    color: $pos-gray-600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .amount {
+    font-size: $pos-font-size-lg;
+    font-weight: 700;
+    color: $pos-gray-900;
+  }
+}
+
+.footer-actions {
+  display: flex;
+  gap: $pos-space-3;
+  align-items: center;
+}
+
+.btn-cancel {
+  min-width: 120px;
+}
+
+.btn-pay {
+  min-width: 180px;
+  font-size: $pos-font-size-base;
+  font-weight: 600;
+}
+
+// Responsive Adjustments for Payment Modal
+@media (max-width: 992px) {
+  .summary-col,
+  .payment-form-col {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .checkout-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .footer-info {
+    justify-content: space-between;
+  }
+
+  .footer-actions {
+    width: 100%;
+
+    .btn {
+      flex: 1;
+    }
+  }
+}

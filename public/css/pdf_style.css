@@ -1,0 +1,557 @@
+/* ===================================
+   Modern Professional Invoice Design
+   =================================== */
+
+/* Page Setup */
+@page {
+    margin: 0cm 0cm;
+}
+
+/* Root Variables for Easy Customization */
+:root {
+    --primary-color: #1a56db;
+    --secondary-color: #3b82f6;
+    --text-dark: #1f2937;
+    --text-gray: #6b7280;
+    --text-light: #9ca3af;
+    --border-color: #e5e7eb;
+    --bg-light: #f9fafb;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #3b82f6;
+}
+
+/* Body Styles */
+body {
+    background: #ffffff;
+    padding: 30px 40px;
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 13px;
+    font-family: 'dejavu sans', 'Helvetica', 'Arial', sans-serif;
+    line-height: 1.6;
+}
+
+/* Invoice Wrapper */
+.invoice-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+}
+
+/* Clearfix Utility */
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* ===================================
+   HEADER SECTION
+   =================================== */
+
+.invoice-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+}
+
+.header-left {
+    float: left;
+    width: 50%;
+}
+
+.header-right {
+    float: right;
+    width: 48%;
+    text-align: right;
+}
+
+/* Company Logo */
+.company-logo {
+    margin-bottom: 15px;
+}
+
+.company-logo img {
+    max-height: 80px;
+    max-width: 200px;
+    object-fit: contain;
+}
+
+/* Company Details */
+.company-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0 0 10px 0;
+    letter-spacing: -0.5px;
+}
+
+.company-info {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--text-gray);
+}
+
+.company-info span {
+    display: block;
+}
+
+.company-info strong {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+/* Invoice Title */
+.invoice-title h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0 0 10px 0;
+    letter-spacing: 1px;
+}
+
+.invoice-number {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-gray);
+    background: var(--bg-light);
+    padding: 8px 15px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+/* Invoice Meta Information */
+.invoice-meta {
+    margin-top: 15px;
+}
+
+.meta-item {
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.meta-label {
+    font-weight: 600;
+    color: var(--text-gray);
+    display: inline-block;
+    min-width: 100px;
+}
+
+.meta-value {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Status Colors */
+.status-completed,
+.status-paid,
+.payment-paid {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-pending,
+.payment-pending,
+.payment-unpaid {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-partial,
+.payment-partial {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-cancelled,
+.status-returned {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Header Divider */
+.header-divider {
+    height: 3px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    margin: 20px 0 30px 0;
+    border-radius: 2px;
+}
+
+/* ===================================
+   INFO SECTION (Bill To / From)
+   =================================== */
+
+.info-section {
+    margin-bottom: 35px;
+}
+
+.info-box {
+    width: 48%;
+    float: left;
+    background: var(--bg-light);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.info-box.company-info-box {
+    float: right;
+}
+
+.info-header {
+    background: var(--primary-color);
+    padding: 12px 20px;
+    border-bottom: 2px solid var(--secondary-color);
+}
+
+.info-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.info-content {
+    padding: 20px;
+}
+
+.customer-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 12px 0;
+}
+
+.info-line {
+    margin: 8px 0;
+    font-size: 12px;
+    color: var(--text-gray);
+}
+
+.info-line strong {
+    color: var(--text-dark);
+    font-weight: 600;
+    display: inline-block;
+    min-width: 80px;
+}
+
+/* ===================================
+   PRODUCTS TABLE
+   =================================== */
+
+.products-section {
+    margin-bottom: 30px;
+}
+
+.products-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.products-table thead {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.products-table thead th {
+    padding: 14px 12px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.products-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+.products-table tbody tr:nth-child(even) {
+    background: var(--bg-light);
+}
+
+.products-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.products-table tbody td {
+    padding: 14px 12px;
+    font-size: 12px;
+    color: var(--text-dark);
+    vertical-align: top;
+}
+
+/* Product Info Column */
+.product-info {
+    width: 40%;
+}
+
+.product-name {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.product-code {
+    display: block;
+    font-size: 11px;
+    color: var(--text-gray);
+    margin-bottom: 3px;
+}
+
+.product-serial {
+    display: block;
+    font-size: 11px;
+    color: var(--info-color);
+    font-weight: 500;
+}
+
+/* Table Columns */
+.price-col,
+.qty-col,
+.discount-col,
+.tax-col,
+.total-col {
+    text-align: right;
+    font-weight: 500;
+}
+
+.price-col {
+    width: 12%;
+}
+
+.qty-col {
+    width: 12%;
+}
+
+.discount-col {
+    width: 10%;
+    color: var(--danger-color);
+}
+
+.tax-col {
+    width: 10%;
+}
+
+.total-col {
+    width: 14%;
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 13px;
+}
+
+/* ===================================
+   SUMMARY SECTION
+   =================================== */
+
+.summary-section {
+    margin-bottom: 40px;
+    clear: both;
+}
+
+.summary-box {
+    float: right;
+    width: 320px;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.summary-row td {
+    padding: 12px 20px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-row:last-child td {
+    border-bottom: none;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: var(--text-gray);
+    text-align: left;
+}
+
+.summary-value {
+    font-weight: 600;
+    color: var(--text-dark);
+    text-align: right;
+    font-size: 14px;
+}
+
+/* Total Row */
+.total-row {
+    background: var(--primary-color);
+}
+
+.total-row .summary-label,
+.total-row .summary-value {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 16px 20px;
+}
+
+/* Paid Row */
+.paid-row {
+    background: #d1fae5;
+}
+
+.paid-row .summary-label,
+.paid-row .summary-value {
+    color: #065f46;
+    font-weight: 700;
+}
+
+/* Due Row */
+.due-row {
+    background: #fef3c7;
+}
+
+.due-row .summary-label,
+.due-row .summary-value {
+    color: #92400e;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+/* ===================================
+   FOOTER SECTION
+   =================================== */
+
+.invoice-footer {
+    clear: both;
+    margin-top: 50px;
+    padding-top: 25px;
+    border-top: 2px solid var(--border-color);
+}
+
+.footer-content {
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: var(--bg-light);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 4px;
+}
+
+.footer-content p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-gray);
+    line-height: 1.6;
+}
+
+.footer-notice {
+    text-align: center;
+    padding: 15px 0;
+}
+
+.footer-notice p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+}
+
+/* ===================================
+   PRINT OPTIMIZATION
+   =================================== */
+
+@media print {
+    body {
+        padding: 0;
+    }
+    
+    .invoice-wrapper {
+        width: 100%;
+        max-width: none;
+    }
+    
+    .products-table {
+        page-break-inside: auto;
+    }
+    
+    .products-table tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+    
+    .summary-section {
+        page-break-inside: avoid;
+    }
+    
+    .invoice-footer {
+        page-break-inside: avoid;
+    }
+}
+
+/* ===================================
+   UTILITY CLASSES
+   =================================== */
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}

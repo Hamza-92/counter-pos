@@ -1,0 +1,23 @@
+<template>
+  <router-view />
+</template>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

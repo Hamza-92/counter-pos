@@ -1,0 +1,22 @@
+.app-footer {
+    margin-top: 2rem;
+    background: $gray-200;
+    padding: 1.25rem;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    .footer-bottom {
+        width: 100%;
+        .logo {
+            width: 3rem;
+            height: auto;
+            margin: 4px;
+        }
+    }
+}
+
+// Dashboard mobile: fixed bottom tab bar sits above the footer in the layout stack
+@media (max-width: 767px) {
+    body.dashboard-mobile-tabbar .footer_wrap {
+        padding-bottom: calc(5.35rem + env(safe-area-inset-bottom, 0px));
+    }
+}

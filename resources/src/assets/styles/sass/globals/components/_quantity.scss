@@ -1,0 +1,106 @@
+/* ===== Quantity stepper (used in sales/purchase/quotation/transfer/etc. detail tables) ===== */
+.quantity {
+  display: inline-block;
+  width: 150px;
+  max-width: 100%;
+
+  .input-group {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .input-group-prepend,
+  .input-group-append {
+    flex: 0 0 auto;
+    display: flex;
+    margin: 0 !important; /* kill Bootstrap's -1px shift that clips the + button */
+  }
+
+  .input-group > .input-group-prepend > .btn,
+  .input-group > .input-group-append  > .btn,
+  .input-group .btn {
+    box-sizing: border-box;
+    flex: 0 0 25px !important;
+    width: 25px !important;
+    min-width: 25px !important;
+    max-width: 25px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #f8fafc;
+    color: #4f46e5;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    user-select: none;
+    box-shadow: none;
+    z-index: auto;
+  }
+
+  .input-group .btn:hover,
+  .input-group-prepend .btn:hover,
+  .input-group-append .btn:hover {
+    background: #4f46e5;
+    color: #fff;
+  }
+
+  .input-group .btn:focus,
+  .input-group-prepend .btn:focus,
+  .input-group-append .btn:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .input-group .btn:active,
+  .input-group-prepend .btn:active,
+  .input-group-append .btn:active {
+    background: #4338ca;
+    color: #fff;
+  }
+
+  .form-control {
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 40px;
+    height: 34px;
+    text-align: center;
+    border: 0;
+    border-left: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
+    box-shadow: none;
+    padding: 0 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+    background: #fff;
+    border-radius: 0;
+  }
+
+  .form-control:focus {
+    outline: none;
+    box-shadow: none;
+    background: #fff;
+  }
+
+  /* hide native number spinners */
+  .form-control::-webkit-outer-spin-button,
+  .form-control::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .form-control[type="number"] { -moz-appearance: textfield; }
+}
