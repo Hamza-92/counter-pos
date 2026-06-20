@@ -29,7 +29,7 @@ class AddApprovalStatusToTransfersTable extends Migration
 
         // For NEW rows, the business default is "pending".
         // We enforce this at the DB level after backfilling existing data.
-        // Note: This uses MySQL syntax and assumes the default Stocky stack.
+        // Note: This uses MySQL syntax and assumes the default Counter POS stack.
         try {
             DB::statement("ALTER TABLE transfers MODIFY COLUMN approval_status VARCHAR(50) NOT NULL DEFAULT 'pending'");
         } catch (\Throwable $e) {
@@ -52,7 +52,6 @@ class AddApprovalStatusToTransfersTable extends Migration
         });
     }
 }
-
 
 
 

@@ -4,7 +4,7 @@
       <div class="d-flex align-items-start">
         <lucide-icon class="mr-3 mt-1" name="info" />
         <div>
-          Orders are synced from WooCommerce to Stocky (Woo → Stocky).
+          Orders are synced from WooCommerce to Counter POS (Woo → Counter POS).
         </div>
       </div>
     </b-alert>
@@ -19,7 +19,7 @@
         >
           <template v-if="!syncing">
             <lucide-icon class="mr-2" name="chevron-down" />
-            Sync WooCommerce Orders to Stocky
+            Sync WooCommerce Orders to Counter POS
           </template>
           <template v-else>
             <span class="mini-spinner mr-2"></span>
@@ -66,7 +66,7 @@
           </div>
           <div class="stat-content">
             <div class="stat-value">{{ importedStats.total_imported != null ? importedStats.total_imported : '—' }}</div>
-            <div class="stat-label">Imported in Stocky</div>
+            <div class="stat-label">Imported in Counter POS</div>
           </div>
           <div class="stat-decoration"></div>
         </div>

@@ -4,7 +4,7 @@
       <div class="d-flex align-items-start">
         <lucide-icon class="mr-3 mt-1" name="info" />
         <div>
-          <strong>Two-way customer sync:</strong> Sync customers between Stocky and WooCommerce.<br>
+          <strong>Two-way customer sync:</strong> Sync customers between Counter POS and WooCommerce.<br>
           <strong>Email is required</strong> for sync; customers without email are skipped.<br>
           Matching uses <strong>Email</strong> as the unique identifier to prevent duplicates.<br>
           <span v-if="lastSyncResult" class="d-block mt-2">
@@ -21,11 +21,11 @@
     </b-alert>
 
     <b-tabs v-model="activeTab" content-class="mt-3" @input="onTabChanged">
-      <!-- Stocky Customers Tab -->
-      <b-tab title="Stocky Customers" active>
+      <!-- Counter POS Customers Tab -->
+      <b-tab title="Counter POS Customers" active>
         <template slot="title">
           <lucide-icon class="mr-2" name="user" />
-          Stocky Customers
+          Counter POS Customers
           <span v-if="loadingStockyTab" class="mini-spinner ml-2"></span>
         </template>
 
@@ -37,7 +37,7 @@
             <b-button variant="info" class="btn-action-primary mr-3 mb-2 d-inline-flex align-items-center" @click="manualSync('push')" :disabled="syncing || syncMode !== null">
               <template v-if="!syncing || syncMode !== 'push'">
                 <lucide-icon class="mr-2" name="arrow-right" />
-                Sync Stocky to WooCommerce
+                Sync Counter POS to WooCommerce
               </template>
               <template v-else>
                 <span class="mini-spinner mr-2"></span>
@@ -88,7 +88,7 @@
           </div>
         </div>
 
-        <!-- Stocky Customers Table -->
+        <!-- Counter POS Customers Table -->
         <b-card>
           <vue-good-table
             mode="remote"
@@ -157,7 +157,7 @@
             <b-button variant="success" class="btn-action-secondary mr-3 mb-2 d-inline-flex align-items-center" @click="manualSync('pull')" :disabled="syncing || syncMode !== null">
               <template v-if="!syncing || syncMode !== 'pull'">
                 <lucide-icon class="mr-2" name="arrow-left" />
-                Sync WooCommerce to Stocky
+                Sync WooCommerce to Counter POS
               </template>
               <template v-else>
                 <span class="mini-spinner mr-2"></span>
@@ -361,7 +361,7 @@ export default {
       loadingWooTab: false,
       loadingIssuesTab: false,
       
-      // Stocky customers
+      // Counter POS customers
       stockyCustomers: [],
       stockyTotalRows: 0,
       stockyStatsData: {
@@ -386,7 +386,7 @@ export default {
       },
       wooSearch: '',
 
-      // Sync issues (Stocky clients with sync_issue_type set)
+      // Sync issues (Counter POS clients with sync_issue_type set)
       syncIssues: [],
       issuesTotalRows: 0,
       issuesServerParams: {
@@ -657,7 +657,7 @@ export default {
       return axios.get('woocommerce/customers', { params })
         .then(({ data }) => {
           if (data.ok) {
-            // Load all Stocky customers to check sync status
+            // Load all Counter POS customers to check sync status
             return axios.get('clients', { params: { limit: 10000 } })
               .then(({ data: stockyData }) => {
                 const allStockyCustomers = stockyData.clients || [];
@@ -688,7 +688,7 @@ export default {
                 this.wooTotalRows = data.totalRows || 0;
               })
               .catch(() => {
-                // If we can't load Stocky customers, just show WooCommerce customers without sync status
+                // If we can't load Counter POS customers, just show WooCommerce customers without sync status
                 this.wooCustomers = (data.customers || []).map(c => ({
                   ...c,
                   stocky_id: null,
@@ -778,7 +778,7 @@ export default {
               skipped: Math.max(0, parseInt(result.skipped, 10) || 0),
             };
             
-            const direction = mode === 'push' ? 'Stocky → WooCommerce' : 'WooCommerce → Stocky';
+            const direction = mode === 'push' ? 'Counter POS → WooCommerce' : 'WooCommerce → Counter POS';
             const message = `${direction}: Created ${this.lastSyncResult.created}, Updated ${this.lastSyncResult.updated}`;
             this.toast('success', message);
             resolve();

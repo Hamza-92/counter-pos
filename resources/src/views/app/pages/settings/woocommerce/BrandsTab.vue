@@ -1,11 +1,11 @@
 <template>
   <div>
     <b-tabs v-model="activeMiniTab" content-class="mt-3">
-      <!-- Stocky -> WooCommerce -->
+      <!-- Counter POS -> WooCommerce -->
       <b-tab active>
         <template #title>
           <lucide-icon class="mr-2" name="arrow-right" />
-          Stocky → WooCommerce
+          Counter POS → WooCommerce
         </template>
 
         <div class="stats-dashboard">
@@ -69,11 +69,11 @@
         </b-card>
       </b-tab>
 
-      <!-- WooCommerce -> Stocky -->
+      <!-- WooCommerce -> Counter POS -->
       <b-tab>
         <template #title>
           <lucide-icon class="mr-2" name="arrow-left" />
-          WooCommerce → Stocky
+          WooCommerce → Counter POS
         </template>
 
         <div class="stats-dashboard">
@@ -94,7 +94,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ pullStats.imported != null ? pullStats.imported : '—' }}</div>
-              <div class="stat-label">Imported to Stocky</div>
+              <div class="stat-label">Imported to Counter POS</div>
             </div>
             <div class="stat-decoration"></div>
           </div>
@@ -121,7 +121,7 @@
             >
               <template v-if="!syncing">
                 <lucide-icon class="mr-2" name="play" />
-                Sync WooCommerce to Stocky
+                Sync WooCommerce to Counter POS
               </template>
               <template v-else>
                 <span class="mini-spinner mr-2"></span>

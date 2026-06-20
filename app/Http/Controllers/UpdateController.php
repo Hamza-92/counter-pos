@@ -19,41 +19,44 @@ class UpdateController extends Controller
     {
         $currentVersion = trim(File::get(base_path('version.txt')));
 
-        // Fetch latest version info from update server
+        // Fetch latest version info only when a Counter POS update feed is configured.
         $latestVersion = '';
         $latestInfo = null;
         $changelog = [];
+        $feedUrl = $this->updateFeedUrl();
 
-        try {
-            $ctx = stream_context_create([
-                'http' => ['timeout' => 10],
-                'https' => ['timeout' => 10],
-            ]);
-            $json = @file_get_contents('https://update-stocky.ui-lib.com/stocky_version.json', false, $ctx);
-            if ($json !== false) {
-                $latestInfo = json_decode($json, true);
-                $latestVersion = $latestInfo['version'] ?? '';
+        if ($feedUrl !== null) {
+            try {
+                $ctx = stream_context_create([
+                    'http' => ['timeout' => 10],
+                    'https' => ['timeout' => 10],
+                ]);
+                $json = @file_get_contents($feedUrl, false, $ctx);
+                if ($json !== false) {
+                    $latestInfo = json_decode($json, true);
+                    $latestVersion = $latestInfo['version'] ?? '';
 
-                // Build changelog from remote data if available
-                if (!empty($latestInfo['changelog'])) {
-                    $changelog = $latestInfo['changelog'];
-                } elseif (!empty($latestInfo['release_notes'])) {
-                    $changelog = [
-                        [
-                            'version' => $latestVersion,
-                            'date' => $latestInfo['date'] ?? now()->toDateString(),
-                            'items' => array_map(function ($note) {
-                                if (is_string($note)) {
-                                    return ['type' => 'misc', 'text' => $note];
-                                }
-                                return $note;
-                            }, (array) $latestInfo['release_notes']),
-                        ],
-                    ];
+                    // Build changelog from remote data if available
+                    if (!empty($latestInfo['changelog'])) {
+                        $changelog = $latestInfo['changelog'];
+                    } elseif (!empty($latestInfo['release_notes'])) {
+                        $changelog = [
+                            [
+                                'version' => $latestVersion,
+                                'date' => $latestInfo['date'] ?? now()->toDateString(),
+                                'items' => array_map(function ($note) {
+                                    if (is_string($note)) {
+                                        return ['type' => 'misc', 'text' => $note];
+                                    }
+                                    return $note;
+                                }, (array) $latestInfo['release_notes']),
+                            ],
+                        ];
+                    }
                 }
+            } catch (\Throwable $e) {
+                // Silently fail - we'll just show current version
             }
-        } catch (\Throwable $e) {
-            // Silently fail - we'll just show current version
         }
 
         // Load update history
@@ -70,7 +73,16 @@ class UpdateController extends Controller
             'latest_info' => $latestInfo,
             'changelog' => $changelog,
             'update_history' => array_slice($updateHistory, 0, 10),
+            'updates_enabled' => $feedUrl !== null,
+            'update_message' => $feedUrl === null ? 'No Counter POS update feed is configured.' : null,
         ]);
+    }
+
+    private function updateFeedUrl(): ?string
+    {
+        $url = trim((string) config('services.counter_pos.update_feed_url', ''));
+
+        return $url !== '' ? $url : null;
     }
 
     public function viewStep1(Request $request)

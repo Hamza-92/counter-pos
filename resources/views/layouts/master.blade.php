@@ -13,17 +13,17 @@
     <meta name="theme-color" content="#2f3640">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="{{ $app_settings->app_name ?? 'Stocky' }}">
+    <meta name="apple-mobile-web-app-title" content="{{ $app_settings->app_name ?? 'Counter POS' }}">
     <link rel="apple-touch-icon" href="/pwa_images/pwa-icon-192.png">
 
-    <title>{{ $app_settings->app_name ?? 'Stocky | Ultimate Inventory With POS' }}</title>
+    <title>{{ $app_settings->app_name ?? 'Counter POS' }}</title>
 
   </head>
 
   <body class="text-left">
     <noscript>
       <strong>
-        We're sorry but Stocky doesn't work properly without JavaScript
+        We're sorry but Counter POS doesn't work properly without JavaScript
         enabled. Please enable it to continue.</strong
       >
     </noscript>

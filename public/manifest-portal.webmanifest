@@ -1,5 +1,5 @@
 {
-  "name": "Stocky Client Portal",
+  "name": "Counter POS Client Portal",
   "short_name": "Portal",
   "description": "Client Portal",
   "start_url": "/portal",

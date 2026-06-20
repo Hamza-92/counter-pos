@@ -23493,7 +23493,7 @@ div.tab-border {
 
 .homepage {
   padding: 80px 0;
-  background: url(https://ui-lib.com/wp-content/uploads/2019/04/bg-1.png);
+  background: radial-gradient(circle at 18% 18%,rgba(20,184,166,.22),transparent 30%),radial-gradient(circle at 82% 12%,rgba(59,130,246,.18),transparent 28%),linear-gradient(135deg,#f8fafc 0%,#eef7f6 48%,#f8fafc 100%);
   background-size: contain;
   background-repeat: no-repeat; }
   .homepage .main-content .logo {

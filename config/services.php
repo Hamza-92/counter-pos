@@ -41,5 +41,10 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'counter_pos' => [
+        'update_feed_url' => env('COUNTER_POS_UPDATE_FEED_URL'),
+        'update_allowed_hosts' => array_values(array_filter(array_map('trim', explode(',', env('COUNTER_POS_UPDATE_ALLOWED_HOSTS', ''))))),
+    ],
+
 
 ];

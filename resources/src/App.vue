@@ -53,14 +53,14 @@ export default {
       return p === '/app/pos' || p.startsWith('/app/pos_') || p.startsWith('/app/pos/');
     },
     titleTemplate() {
-      return `%s | ${this.currentUser?.page_title_suffix || "Ultimate Inventory With POS"}`;
+      return `%s | ${this.currentUser?.page_title_suffix || "Point of Sale & Inventory"}`;
     }
   },
 
   metaInfo() {
     return {
       // if no subcomponents specify a metaInfo.title, this title will be used
-      title: "Stocky",
+      title: "Counter POS",
       titleTemplate: this.titleTemplate,
 
       bodyAttrs: {

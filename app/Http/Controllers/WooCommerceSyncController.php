@@ -1698,7 +1698,7 @@ class WooCommerceSyncController extends BaseController
 
     /**
      * GET /api/woocommerce/customers/sync-issues
-     * List Stocky clients that have a sync issue recorded.
+     * List Counter POS clients that have a sync issue recorded.
      */
     public function getCustomerSyncIssues(Request $request)
     {
@@ -1767,7 +1767,7 @@ class WooCommerceSyncController extends BaseController
 
     /**
      * POST /api/woocommerce/customers/sync-issues/{id}/resolve
-     * Clears the issue fields for a Stocky client.
+     * Clears the issue fields for a Counter POS client.
      */
     public function resolveCustomerSyncIssue(Request $request, int $id)
     {
@@ -1786,7 +1786,7 @@ class WooCommerceSyncController extends BaseController
     /**
      * POST /api/woocommerce/customers/sync-issues/{id}/link
      * Body: { woocommerce_id: int }
-     * Manually links a Stocky client to a WooCommerce customer ID and clears the issue.
+     * Manually links a Counter POS client to a WooCommerce customer ID and clears the issue.
      */
     public function manualLinkCustomerSyncIssue(Request $request, int $id)
     {

@@ -82,8 +82,8 @@ Vue.component('qrcode-scanner', {
 
 });
 
-import StockyKit from "./plugins/stocky.kit";
-Vue.use(StockyKit);
+import CounterPosKit from "./plugins/counter-pos.kit";
+Vue.use(CounterPosKit);
 import VueCookies from 'vue-cookies'
 Vue.use(VueCookies);
 

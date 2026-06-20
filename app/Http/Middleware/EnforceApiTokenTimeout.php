@@ -158,20 +158,21 @@ class EnforceApiTokenTimeout
             'status' => $status,
         ], 401);
 
-        // Prevent frontend redirect loops: also clear the "Stocky_token" cookie (used by route guards).
+        // Prevent frontend redirect loops: also clear SPA token cookies used by route guards.
         $serverName = $request->server('SERVER_NAME') ?: ($_SERVER['SERVER_NAME'] ?? null);
         $domain = null;
         if ($serverName) {
             $domain = $serverName !== 'localhost' ? $serverName : '.'.$serverName;
         }
 
-        // Try to expire cookie with the same domain rule as BaseController::setCookie()
-        if ($domain) {
-            $response->headers->setCookie(cookie('Stocky_token', '', -2628000, '/', $domain));
+        // Try to expire cookies with the same domain rule as BaseController::setCookie()
+        foreach (['CounterPOS_token', 'Stocky_token'] as $cookieName) {
+            if ($domain) {
+                $response->headers->setCookie(cookie($cookieName, '', -2628000, '/', $domain));
+            }
+            $response->headers->setCookie(cookie($cookieName, '', -2628000, '/'));
         }
-        $response->headers->setCookie(cookie('Stocky_token', '', -2628000, '/'));
 
         return $response;
     }
 }
-

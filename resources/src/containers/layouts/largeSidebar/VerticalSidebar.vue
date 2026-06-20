@@ -20,7 +20,7 @@
             </div>
           </div>
           <div class="company-name" v-if="!isCollapsed && currentUser && !currentUser.hide_site_name">
-            {{ currentUser.company || 'Stocky' }}
+            {{ currentUser.company || 'Counter POS' }}
           </div>
         </div>
       </div>
@@ -2185,5 +2185,4 @@ html[dir="rtl"] .submenu-arrow {
   }
 }
 </style>
-
 

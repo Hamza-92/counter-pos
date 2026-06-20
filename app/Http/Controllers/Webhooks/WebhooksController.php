@@ -131,7 +131,7 @@ class WebhooksController extends BaseController
 
         $payload = [
             'test' => true,
-            'message' => 'This is a test event from Stocky.',
+            'message' => 'This is a test event from Counter POS.',
             'timestamp' => now()->toIso8601String(),
             'user_id' => optional($request->user('api'))->id,
         ];

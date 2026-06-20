@@ -1,5 +1,5 @@
 /*
- * Stocky POS Service Worker
+ * Counter POS Service Worker
  *
  * Goals:
  *   - Make the POS installable and bootable offline (app shell).
@@ -18,7 +18,7 @@
  */
 
 // Bump this when deploying changes so old caches are purged.
-const VERSION = 'stocky-pwa-v5';
+const VERSION = 'counter-pos-pwa-v1';
 const STATIC_CACHE = `${VERSION}-static`;
 const SHELL_CACHE = `${VERSION}-shell`;
 

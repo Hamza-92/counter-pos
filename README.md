@@ -296,7 +296,7 @@
 
 2) Bug Fixes and Improvements
 
-+ Stocky now requires PHP 8.1.0 or greater.
++ Counter POS now requires PHP 8.1.0 or greater.
 + Updated some packages in Vue.js.
 + Fixed the issue with exclusive tax calculations for products.
 + Updated the documentation for better clarity.
@@ -457,7 +457,7 @@
 
 ✅ Added QuickBooks Integration for advanced accounting and auto-syncing invoices and clients
 
-✅ Upgraded to Laravel 12 — Stocky now requires PHP ≥ 8.2
+✅ Upgraded to Laravel 12 — Counter POS now requires PHP ≥ 8.2
 
 ✅ Updated Node.js and all dependencies for better performance and build speed
 

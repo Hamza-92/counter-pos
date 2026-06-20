@@ -36,7 +36,7 @@ return new class extends Migration
             $table->text('backup_gdrive_client_secret')->nullable()->after('backup_gdrive_client_id');
 
             // -------- Dropbox settings --------
-            // Destination path (folder) in Dropbox, e.g. /StockyBackups
+            // Destination path (folder) in Dropbox, e.g. /CounterPOSBackups
             $table->string('backup_dropbox_path', 191)->nullable()->after('backup_gdrive_client_secret');
             $table->text('backup_dropbox_access_token')->nullable()->after('backup_dropbox_path');
         });
@@ -69,5 +69,4 @@ return new class extends Migration
         });
     }
 };
-
 

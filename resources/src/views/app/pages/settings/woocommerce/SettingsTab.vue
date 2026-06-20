@@ -168,7 +168,7 @@
           </h6>
           <p class="guide-intro mb-2">These fields are used only for product images. The WooCommerce API (Store URL + Consumer key/secret) handles sync for products, stock, categories, brands, customers, and orders; the WordPress REST API handles the Media Library (search and upload images).</p>
           <ul class="guide-list mb-2">
-            <li><lucide-icon class="mr-2 text-primary" name="image" />When syncing products or stock, Stocky can attach product images: it first searches the WordPress Media Library for an existing image by filename; if not found, it uploads the image via the WordPress API.</li>
+            <li><lucide-icon class="mr-2 text-primary" name="image" />When syncing products or stock, Counter POS can attach product images: it first searches the WordPress Media Library for an existing image by filename; if not found, it uploads the image via the WordPress API.</li>
             <li><lucide-icon class="mr-2 text-primary" name="key" />Use a WordPress user that can manage media (e.g. Administrator). Create an Application Password in WordPress: Users → Profile (or your user) → Application Passwords — add a new one and paste it here.</li>
             <li><lucide-icon class="mr-2 text-primary" name="info" />If you leave these blank, sync still works for all data (products, stock, categories, brands, customers, orders); only product image attachment (search/upload) is skipped.</li>
           </ul>
@@ -192,7 +192,7 @@
             Manual sync (on demand)
           </h6>
           <ul class="guide-list">
-            <li><lucide-icon class="mr-2 text-primary" name="arrow-right-left" />Sync works in both directions: Stocky → WooCommerce and WooCommerce → Stocky.</li>
+            <li><lucide-icon class="mr-2 text-primary" name="arrow-right-left" />Sync works in both directions: Counter POS → WooCommerce and WooCommerce → Counter POS.</li>
             <li><lucide-icon class="mr-2 text-primary" name="menu" />Manual sync is available in all WooCommerce tabs (Products, Stock, etc.); use the sync actions in each tab to run sync on demand.</li>
           </ul>
         </div>
@@ -204,7 +204,7 @@
           </h6>
           <ul class="guide-list mb-0">
             <li><lucide-icon class="mr-2 text-warning" name="alert-circle" />Changing Store URL or API keys resets mappings (products, categories, brands, customers); items will sync again to the (new) store.</li>
-            <li><lucide-icon class="mr-2 text-warning" name="alert-circle" />Keep SKUs consistent between Stocky and WooCommerce to avoid duplicate products and to relink safely.</li>
+            <li><lucide-icon class="mr-2 text-warning" name="alert-circle" />Keep SKUs consistent between Counter POS and WooCommerce to avoid duplicate products and to relink safely.</li>
           </ul>
         </div>
       </b-card-text>
@@ -506,5 +506,4 @@ export default {
   to { transform: rotate(360deg); }
 }
 </style>
-
 

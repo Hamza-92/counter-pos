@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/master.css">
     
     <link rel="icon" href="{{ asset('images/' . ($app_settings->favicon ?? 'favicon.ico')) }}">
-    <title>{{ $app_settings->app_name ?? 'Stocky | Ultimate Inventory With POS' }}</title>
+    <title>{{ $app_settings->app_name ?? 'Counter POS' }}</title>
     <style>
       .auth-wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f7ff,#eef9ff);padding:24px}
       .auth-card{width:100%;max-width:480px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:28px}
@@ -33,7 +33,7 @@
   <body class="text-left">
     <noscript>
       <strong>
-        We're sorry but Stocky doesn't work properly without JavaScript
+        We're sorry but Counter POS doesn't work properly without JavaScript
         enabled. Please enable it to continue.</strong>
     </noscript>
     <div class="auth-wrapper">

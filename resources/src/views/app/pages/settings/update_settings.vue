@@ -291,7 +291,7 @@
                   </li>
 
                   <li>
-                    <strong>Step 3 : </strong>  Download the latest version from your codecanyon and Extract it .
+                    <strong>Step 3 : </strong>  Download the latest Counter POS release package and extract it.
                   </li>
 
                   <li>
@@ -362,6 +362,8 @@ export default {
       progressTimer: null,
       changelog: [],
       updateHistory: [],
+      updatesEnabled: false,
+      updateMessage: "",
     };
   },
 
@@ -393,6 +395,7 @@ export default {
     },
 
     statusTitle() {
+      if (!this.updatesEnabled) return "Automatic Updates Disabled";
       if (this.updating) return this.$t("Updating_Application");
       if (this.updateFailed) return this.$t("Update_Failed");
       if (this.hasUpdate) return this.$t("Update_Available");
@@ -400,6 +403,9 @@ export default {
     },
 
     statusDescription() {
+      if (!this.updatesEnabled) {
+        return this.updateMessage || "Configure COUNTER_POS_UPDATE_FEED_URL to use your own update feed.";
+      }
       if (this.updating) return this.$t("Please_wait_update_in_progress");
       if (this.updateFailed) return this.$t("Update_failed_rolled_back");
       if (this.hasUpdate)
@@ -415,6 +421,7 @@ export default {
     },
 
     statusLabel() {
+      if (!this.updatesEnabled) return "Local Only";
       if (this.updating) return this.$t("Updating");
       if (this.updateFailed) return this.$t("Failed");
       if (this.hasUpdate) return this.$t("Update_Available");
@@ -445,8 +452,8 @@ export default {
       }
       if (this.preflight.network) {
         items.push({
-          label: "Update server reachable",
-          ok: this.preflight.network.ok
+          label: this.preflight.network.configured ? "Update feed reachable" : "Update feed configured",
+          ok: this.preflight.network.configured ? this.preflight.network.ok : false
         });
       }
       if (this.preflight.disk) {
@@ -528,8 +535,11 @@ export default {
             self.latestInfo = data.latest_info || null;
             self.changelog = data.changelog || [];
             self.updateHistory = data.update_history || [];
+            self.updatesEnabled = !!data.updates_enabled;
+            self.updateMessage = data.update_message || "";
           } else if (typeof data === "string" && data) {
             self.latestVersion = data;
+            self.updatesEnabled = true;
           }
           self.lastChecked = Date.now();
         })

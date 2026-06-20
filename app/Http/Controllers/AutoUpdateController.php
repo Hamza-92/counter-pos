@@ -22,6 +22,10 @@ class AutoUpdateController extends Controller
         ini_set('memory_limit', '-1');
         ignore_user_abort(true);
 
+        if ($this->updateFeedUrl() === null) {
+            return response()->json(['message' => 'Counter POS update feed is not configured'], 400);
+        }
+
         $this->logUpdate('=== One-Click Update started at '.now().' ===');
         $this->updateProgress('starting', 0);
 
@@ -72,7 +76,7 @@ class AutoUpdateController extends Controller
                 return response()->json(['message' => 'Update URL not found'], 400);
             }
 
-            if (! $this->isAllowedHost($downloadUrl, ['update-stocky.ui-lib.com'])) {
+            if (! $this->isAllowedHost($downloadUrl, $this->allowedUpdateHosts())) {
                 $this->logUpdate('Blocked update from untrusted host: '.$downloadUrl);
                 Artisan::call('up');
 
@@ -289,9 +293,33 @@ class AutoUpdateController extends Controller
 
     private function getLastVersion()
     {
-        $content = file_get_contents('https://update-stocky.ui-lib.com/stocky_version.json');
+        $feedUrl = $this->updateFeedUrl();
+        if ($feedUrl === null) {
+            throw new \RuntimeException('Counter POS update feed is not configured');
+        }
+
+        $content = file_get_contents($feedUrl);
 
         return json_decode($content, true);
+    }
+
+    private function updateFeedUrl(): ?string
+    {
+        $url = trim((string) config('services.counter_pos.update_feed_url', ''));
+
+        return $url !== '' ? $url : null;
+    }
+
+    private function allowedUpdateHosts(): array
+    {
+        $hosts = (array) config('services.counter_pos.update_allowed_hosts', []);
+        $feedUrl = $this->updateFeedUrl();
+        $feedHost = $feedUrl ? parse_url($feedUrl, PHP_URL_HOST) : null;
+        if ($feedHost) {
+            $hosts[] = $feedHost;
+        }
+
+        return array_values(array_unique(array_filter($hosts)));
     }
 
     private function isAllowedHost(string $url, array $allowedHosts): bool
@@ -322,12 +350,12 @@ class AutoUpdateController extends Controller
             'http' => [
                 'timeout' => 60,
                 'follow_location' => 1,
-                'header' => "User-Agent: Stocky-Updater\r\n",
+                'header' => "User-Agent: CounterPOS-Updater\r\n",
             ],
             'https' => [
                 'timeout' => 60,
                 'follow_location' => 1,
-                'header' => "User-Agent: Stocky-Updater\r\n",
+                'header' => "User-Agent: CounterPOS-Updater\r\n",
             ],
         ]);
 
@@ -1024,17 +1052,23 @@ class AutoUpdateController extends Controller
         foreach ($paths as $k => $p) {
             $perms[$k] = ['path' => $p, 'writable' => is_writable($p)];
         }
-        // Network/version JSON
-        $net = ['ok' => false, 'error' => null];
-        try {
-            $ctx = stream_context_create(['http' => ['timeout' => 10], 'https' => ['timeout' => 10]]);
-            $json = @file_get_contents('https://update-stocky.ui-lib.com/stocky_version.json', false, $ctx);
-            if ($json !== false) {
-                $net['ok'] = true;
-                $net['size'] = strlen($json);
+        // Network/version JSON. Disabled unless a Counter POS update feed is configured.
+        $net = ['ok' => false, 'error' => null, 'configured' => false];
+        $feedUrl = $this->updateFeedUrl();
+        if ($feedUrl === null) {
+            $net['error'] = 'Counter POS update feed is not configured';
+        } else {
+            $net['configured'] = true;
+            try {
+                $ctx = stream_context_create(['http' => ['timeout' => 10], 'https' => ['timeout' => 10]]);
+                $json = @file_get_contents($feedUrl, false, $ctx);
+                if ($json !== false) {
+                    $net['ok'] = true;
+                    $net['size'] = strlen($json);
+                }
+            } catch (\Throwable $e) {
+                $net['error'] = $e->getMessage();
             }
-        } catch (\Throwable $e) {
-            $net['error'] = $e->getMessage();
         }
         // Disk space
         $freeBase = @disk_free_space(base_path());

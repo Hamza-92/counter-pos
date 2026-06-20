@@ -1,5 +1,5 @@
 {
-  "name": "Stocky Customer Display",
+  "name": "Counter POS Customer Display",
   "short_name": "Display",
   "description": "Customer-facing POS display",
   "start_url": "/customer-display",

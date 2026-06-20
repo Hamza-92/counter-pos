@@ -1,7 +1,7 @@
 {
-  "name": "Stocky POS",
-  "short_name": "Stocky",
-  "description": "Ultimate Inventory with POS",
+  "name": "Counter POS",
+  "short_name": "Counter POS",
+  "description": "Point of sale and inventory management",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

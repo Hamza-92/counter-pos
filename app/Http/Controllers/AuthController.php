@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends BaseController
 {
+    private const AUTH_COOKIE = 'CounterPOS_token';
+    private const LEGACY_AUTH_COOKIE = 'Stocky_token';
+
     // --------------- Function Login ----------------\\
 
     public function getAccessToken(Request $request)
@@ -37,9 +40,11 @@ class AuthController extends BaseController
         $user = auth()->user();
         $tokenResult = $user->createToken('Access Token');
         $token = $tokenResult->token;
-        $this->setCookie('Stocky_token', $tokenResult->accessToken);
+        $this->setCookie(self::AUTH_COOKIE, $tokenResult->accessToken);
+        $this->setCookie(self::LEGACY_AUTH_COOKIE, $tokenResult->accessToken);
 
         return response()->json([
+            'CounterPOS_token' => $tokenResult->accessToken,
             'Stocky_token' => $tokenResult->accessToken,
             'username' => Auth::User()->username,
             'status' => true,
@@ -53,7 +58,8 @@ class AuthController extends BaseController
         if (Auth::check()) {
             $user = Auth::user()->token();
             $user->revoke();
-            $this->destroyCookie('Stocky_token');
+            $this->destroyCookie(self::AUTH_COOKIE);
+            $this->destroyCookie(self::LEGACY_AUTH_COOKIE);
 
             return response()->json('success');
         }

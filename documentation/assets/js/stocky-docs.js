@@ -1,5 +1,5 @@
 /* =========================================================
-   Stocky SaaS — Docs UX layer
+   Counter POS — Docs UX layer
    Adds on top of doc.js: theme toggle, collapsible sidebar
    groups, search filter, back-to-top button.
    ========================================================= */

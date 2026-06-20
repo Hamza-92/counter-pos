@@ -59,7 +59,7 @@ class WebhookDeliveryJob implements ShouldQueue
 
         $headers = array_merge([
             'Content-Type'        => 'application/json',
-            'User-Agent'          => 'Stocky-Webhooks/1.0',
+            'User-Agent'          => 'CounterPOS-Webhooks/1.0',
             'X-Webhook-Event'     => $delivery->event,
             'X-Webhook-Id'        => (string) $webhook->id,
             'X-Webhook-Delivery'  => (string) $delivery->id,

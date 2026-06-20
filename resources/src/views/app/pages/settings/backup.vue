@@ -34,7 +34,7 @@
                   <b-form-group label="Cloud path / folder (optional)" v-if="backupDestination === 'cloud'">
                     <b-form-input
                       v-model="setting.backup_cloud_path"
-                      placeholder="e.g. StockyBackups/"
+                      placeholder="e.g. CounterPOSBackups/"
                     />
                   </b-form-group>
                 </b-col>
@@ -126,7 +126,7 @@
               <b-row v-if="backupDestination === 'cloud' && setting.backup_cloud_provider === 'dropbox'">
                 <b-col lg="6" md="6" sm="12" class="mb-3">
                   <b-form-group label="Dropbox folder path (optional)">
-                    <b-form-input v-model="setting.backup_dropbox_path" placeholder="e.g. /StockyBackups" />
+                    <b-form-input v-model="setting.backup_dropbox_path" placeholder="e.g. /CounterPOSBackups" />
                   </b-form-group>
                 </b-col>
                 <b-col lg="6" md="6" sm="12" class="mb-3">

@@ -925,7 +925,7 @@ return [
 'Update_History' => 'Update History',
 'manual_step_1_text' => 'Take a backup of your database from the Backup page',
 'manual_step_2_text' => 'Take a backup of your files before updating',
-'manual_step_3_text' => 'Download the latest version from CodeCanyon and extract it',
+'manual_step_3_text' => 'Download the latest Counter POS release package and extract it',
 'manual_step_4_text' => 'Replace all files except the following:',
 'manual_step_5_text' => 'Visit /update to run database migrations',
 'manual_step_6_text' => 'Clear your browser cache (hard refresh)',

@@ -5,7 +5,7 @@
    <meta charset="UTF-8" />
    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-   <title>Stocky - Ultimate Inventory Management with POS</title>
+   <title>Counter POS - Inventory Management with POS</title>
    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 
    <!-- Modern typography: Inter (UI) + JetBrains Mono (code). System fonts fall back if offline. -->
@@ -36,12 +36,12 @@
                      <path d="M4 17l8 4 8-4" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                </span>
-               <span class="brand-text">Stocky <small>Docs</small></span>
+               <span class="brand-text">Counter POS <small>Docs</small></span>
             </a>
          </div>
          <span class="flex-grow-1"></span>
-         <a href="https://stocky.getstocky.com/" class="btn btn-link btn-link-secondary mr-md d-none d-sm-block">
-            <i class="fas fa-external-link-alt mr-1"></i> Live Preview
+         <a href="/" class="btn btn-link btn-link-secondary mr-md d-none d-sm-block">
+            <i class="fas fa-external-link-alt mr-1"></i> Open App
          </a>
          <button type="button" class="theme-toggle" aria-label="Toggle theme">
             <i class="fas fa-moon icon-moon"></i>
@@ -173,7 +173,7 @@
                         <a data-nav-section="reports" href="#">Reports</a>
                      </li>
                      <li>
-                        <a data-nav-section="Reviews" href="#">Rate Us</a>
+                        <a data-nav-section="Reviews" href="#">Support Notes</a>
                      </li>
                   </ul>
             </ul>
@@ -185,11 +185,11 @@
                   Introduction
                </h1>
               <p class="text-lead">
-                  Stocky - Ultimate Inventory with POS and Online Store.
+                  Counter POS - Inventory with POS and Online Store.
                </p>
                   </br>
                <p class="text-lead">
-                  Stocky is a complete inventory management system with POS and an integrated Online Store.  
+                  Counter POS is a complete inventory management system with POS and an integrated Online Store.  
                   It allows you to manage inventory, sales, purchases, customers, invoices, payments, and now — sell online directly from your store!  
                   Access your business anywhere, anytime, whether you manage a small shop or a large enterprise.  
                   It’s the all-in-one solution you need to control inventory, purchases, sales, and your online presence effortlessly.
@@ -205,7 +205,7 @@
                   Features
                </h3>
                <p>
-                  Stocky Offers Lots of Awesome Features out of the box, such as :
+                  Counter POS offers lots of useful features out of the box, such as:
                </p>
                <div class="card">
                   <div class="card-body">
@@ -326,7 +326,7 @@
                   Installation
                </h3>
                <p>
-                  Stocky is built with Laravel 12. Please ensure your server meets the following requirements:
+                  Counter POS is built with Laravel 12. Please ensure your server meets the following requirements:
                </p>
                <ul>
                   <li>PHP >= 8.2.0</li>
@@ -527,7 +527,7 @@
                   Developer Guide (Backend)
                </h3>
                <p>
-                  This guide covers backend development for Stocky (Laravel 12): project setup, environment, database, and common commands.
+                  This guide covers backend development for Counter POS (Laravel 12): project setup, environment, database, and common commands.
                </p>
                <h5 class="mt-4">Environment & tooling</h5>
                <ul>
@@ -602,7 +602,7 @@
                     </li>
 
                    <li>
-                     <strong>Step 3 : </strong> Download the latest version from your codecanyon and Extract it .
+                     <strong>Step 3 : </strong> Download the latest Counter POS release package and extract it.
                     </li>
 
                     <br>
@@ -765,7 +765,7 @@
             <section data-section="weight_scale">
                <h2 class="doc-section-title">Weight Scale Barcodes</h2>
                <p class="text-lead">
-                  Stocky supports <strong>13-digit weight-embedded barcodes</strong> printed by electronic
+                  Counter POS supports <strong>13-digit weight-embedded barcodes</strong> printed by electronic
                   scales (CAS, Digi, Bizerba, Mettler Toledo, Rongta, etc.) so cashiers can weigh an item,
                   stick the printed label on it, and scan it at the POS — quantity and line total are computed
                   automatically from the weight embedded in the barcode.
@@ -823,7 +823,7 @@ product weight EAN-13
  code   (grams)'></code>
 
                <p>
-                  When the cashier scans this label at the POS, Stocky reads the first <strong>7 digits</strong>
+                  When the cashier scans this label at the POS, Counter POS reads the first <strong>7 digits</strong>
                   (<code>2100001</code>) to find the product and the next <strong>5 digits</strong>
                   (<code>01250</code>) to set the line quantity to <strong>1.250</strong>. The unit price
                   stored on the product is then multiplied by that weight to produce the line total.
@@ -1778,7 +1778,7 @@ product weight EAN-13
                   <h2 class="doc-section-title mb-4">⚖️ Multi-Unit Conversion</h2>
 
                   <p class="text-lead">
-                     Stocky supports <strong>multi-unit conversion</strong> so you can purchase, stock and sell the same
+                     Counter POS supports <strong>multi-unit conversion</strong> so you can purchase, stock and sell the same
                      product in different units of measure (e.g. buy in <code>Kilograms</code>, sell in <code>Grams</code>;
                      buy in <code>Boxes</code>, sell in <code>Pieces</code>). Stock levels are kept consistent behind the
                      scenes by converting every movement back to the product's <strong>base unit</strong>.
@@ -1792,7 +1792,7 @@ product weight EAN-13
                               used to store stock in the database (e.g. <code>Kilogram (kg)</code>, <code>Piece (pc)</code>,
                               <code>Liter (L)</code>).</li>
                            <li><strong>Sub Unit</strong> — a unit linked to a base unit through an <strong>Operator</strong>
-                              and an <strong>Operation Value</strong>. Stocky uses this rule to convert a sub-unit
+                              and an <strong>Operation Value</strong>. Counter POS uses this rule to convert a sub-unit
                               quantity to/from the base unit.</li>
                            <li><strong>Operator</strong> — either <code>Multiply (*)</code> or <code>Divide (/)</code>.</li>
                            <li><strong>Operation Value</strong> — the numeric factor used with the operator.</li>
@@ -1886,7 +1886,7 @@ product weight EAN-13
                         </ul>
                         <p class="mb-0">
                            Example: create a product <em>Flour</em> with Product Unit <code>kg</code>, Purchase Unit
-                           <code>kg</code> and Sale Unit <code>g</code>. You buy 50&nbsp;kg, Stocky stores
+                           <code>kg</code> and Sale Unit <code>g</code>. You buy 50&nbsp;kg, Counter POS stores
                            <code>50</code> in the base unit; a customer buys <code>250&nbsp;g</code> in POS and stock
                            automatically decreases by <code>0.25&nbsp;kg</code>.
                         </p>
@@ -2192,14 +2192,10 @@ product weight EAN-13
 
             <section data-section="Reviews">
                   <h2 class="doc-section-title">
-                        Ratings & review
+                        Support Notes
                    </h2>
 
-                <h5>If you like our item you can rete it .
-                    If you don’t know how to provide ratings & review please visit
-                     this link: <a href="https://help.market.envato.com/hc/en-us/articles/203269490-Giving-Feedback-On-Items">https://help.market.envato.com/hc/en-us/articles/203269490-Giving-Feedback-On-Items</a> 
-                     Thank you </h5>
-                <img src="assets/images/rate.jpg" class="img-responsive " alt="">
+                <h5>Use this section to keep internal release notes, support instructions, or review guidance for your Counter POS deployment.</h5>
                </section>
 
 

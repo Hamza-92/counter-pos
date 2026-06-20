@@ -1,11 +1,11 @@
 <template>
   <div>
     <b-tabs v-model="activeMiniTab" content-class="mt-3">
-      <!-- Stocky -> WooCommerce -->
+      <!-- Counter POS -> WooCommerce -->
       <b-tab active>
         <template #title>
           <lucide-icon class="mr-2" name="arrow-right" />
-          Stocky → WooCommerce
+          Counter POS → WooCommerce
         </template>
 
         <div class="d-flex justify-content-end mb-2">
@@ -138,11 +138,11 @@
         </b-card>
       </b-tab>
 
-      <!-- WooCommerce -> Stocky -->
+      <!-- WooCommerce -> Counter POS -->
       <b-tab>
         <template #title>
           <lucide-icon class="mr-2" name="arrow-left" />
-          WooCommerce → Stocky
+          WooCommerce → Counter POS
         </template>
 
         <div class="stats-dashboard">
@@ -163,7 +163,7 @@
             </div>
             <div class="stat-content">
               <div class="stat-value">{{ pullStats.imported != null ? pullStats.imported : '—' }}</div>
-              <div class="stat-label">Imported to Stocky</div>
+              <div class="stat-label">Imported to Counter POS</div>
             </div>
             <div class="stat-decoration"></div>
           </div>
@@ -273,7 +273,7 @@
 
             <h6 class="mt-4 font-weight-bold">
               <lucide-icon class="mr-1" name="package" />
-              Stocky products without WooCommerce link
+              Counter POS products without WooCommerce link
               <b-badge variant="warning" class="ml-1">{{ unmappedReport.unlinked_products.total }}</b-badge>
             </h6>
             <div class="text-muted small">Showing latest {{ unmappedReport.unlinked_products.sample.length }} of {{ unmappedReport.unlinked_products.total }}.</div>
@@ -285,7 +285,7 @@
 
             <h6 class="mt-4 font-weight-bold">
               <lucide-icon class="mr-1" name="layers" />
-              Stocky variants without WooCommerce link
+              Counter POS variants without WooCommerce link
               <b-badge variant="warning" class="ml-1">{{ unmappedReport.unlinked_variants.total }}</b-badge>
             </h6>
             <div class="text-muted small">Showing latest {{ unmappedReport.unlinked_variants.sample.length }} of {{ unmappedReport.unlinked_variants.total }}.</div>
@@ -312,7 +312,7 @@
           <div class="progress-header mb-3">
             <h6 class="mb-0 font-weight-bold">
               <lucide-icon class="mr-2 text-primary" name="loader" />
-              Syncing Products (Woo → Stocky)
+              Syncing Products (Woo → Counter POS)
             </h6>
           </div>
           <b-progress :value="displayPercentage" :max="100" height="32px" show-progress animated class="progress-modern mb-3">
@@ -888,7 +888,7 @@ export default {
       this.fastPoller = null;
     }
     this.progress = { total_products: 0, processed: 0, synced_products: 0, failed_products: 0, percentage: 0, created: 0, updated: 0 };
-    // Restore user preference (Stocky -> Woo push)
+    // Restore user preference (Counter POS -> Woo push)
     try {
       const pref = localStorage.getItem('woo_products_push_only_unsynced');
       if (pref === '1' || pref === 'true') {
@@ -1127,5 +1127,3 @@ export default {
   to { transform: rotate(360deg); }
 }
 </style>
-
-

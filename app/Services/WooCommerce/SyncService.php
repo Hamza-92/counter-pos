@@ -28,7 +28,8 @@ class SyncService
 {
     // ---- Meta keys used to create a deterministic mapping POS <-> Woo ----
     private const WOO_META_EXTERNAL_PRODUCT_ID = 'external_product_id';
-    private const WOO_META_STOCKY_PRODUCT_ID   = '_stocky_product_id';
+    private const WOO_META_COUNTER_POS_PRODUCT_ID = '_counter_pos_product_id';
+    private const WOO_META_LEGACY_STOCKY_PRODUCT_ID = '_stocky_product_id';
     private const WOO_META_EXTERNAL_VARIANT_ID = 'external_variant_id';
     private const WOO_SYNC_ABORT_EXCEPTION     = '__WOO_SYNC_ABORT__';
 
@@ -1710,9 +1711,11 @@ class SyncService
         $skuOk = ($expectedSku !== '' && $remoteSku !== '' && strcasecmp($remoteSku, $expectedSku) === 0);
 
         $meta1 = $this->wooMetaValue($data, self::WOO_META_EXTERNAL_PRODUCT_ID);
-        $meta2 = $this->wooMetaValue($data, self::WOO_META_STOCKY_PRODUCT_ID);
+        $meta2 = $this->wooMetaValue($data, self::WOO_META_COUNTER_POS_PRODUCT_ID);
+        $legacyMeta = $this->wooMetaValue($data, self::WOO_META_LEGACY_STOCKY_PRODUCT_ID);
         $metaOk = ($meta1 !== null && $meta1 === (string) $localProductId)
-            || ($meta2 !== null && $meta2 === (string) $localProductId);
+            || ($meta2 !== null && $meta2 === (string) $localProductId)
+            || ($legacyMeta !== null && $legacyMeta === (string) $localProductId);
 
         // If meta is unavailable (fallback context), rely on SKU match.
         return $skuOk || $metaOk;
@@ -1738,7 +1741,8 @@ class SyncService
                 'type' => (string) ($data['type'] ?? ''),
                 'sku'  => (string) ($data['sku'] ?? ''),
                 'external_product_id' => $this->wooMetaValue($data, self::WOO_META_EXTERNAL_PRODUCT_ID),
-                'stocky_product_id'   => $this->wooMetaValue($data, self::WOO_META_STOCKY_PRODUCT_ID),
+                'counter_pos_product_id' => $this->wooMetaValue($data, self::WOO_META_COUNTER_POS_PRODUCT_ID),
+                'legacy_stocky_product_id' => $this->wooMetaValue($data, self::WOO_META_LEGACY_STOCKY_PRODUCT_ID),
             ];
         } catch (\Throwable $e) {
             return ['ok' => false, 'status' => null, 'body' => $e->getMessage()];
@@ -1835,9 +1839,14 @@ class SyncService
                             $remoteByExternalId[$external] = $rid;
                         }
 
-                        $stocky = $this->wooMetaValue($it, self::WOO_META_STOCKY_PRODUCT_ID);
-                        if ($stocky !== null && !isset($remoteByExternalId[$stocky])) {
-                            $remoteByExternalId[$stocky] = $rid;
+                        $counterPos = $this->wooMetaValue($it, self::WOO_META_COUNTER_POS_PRODUCT_ID);
+                        if ($counterPos !== null && !isset($remoteByExternalId[$counterPos])) {
+                            $remoteByExternalId[$counterPos] = $rid;
+                        }
+
+                        $legacyStocky = $this->wooMetaValue($it, self::WOO_META_LEGACY_STOCKY_PRODUCT_ID);
+                        if ($legacyStocky !== null && !isset($remoteByExternalId[$legacyStocky])) {
+                            $remoteByExternalId[$legacyStocky] = $rid;
                         }
                     }
                 }
@@ -1868,7 +1877,7 @@ class SyncService
 
     /**
      * Resolve Woo ID for a local product using ONLY strong sources:
-     * 1) Remote meta mapping (external_product_id / _stocky_product_id) from cached index
+     * 1) Remote meta mapping (external_product_id / _counter_pos_product_id / legacy _stocky_product_id) from cached index
      * 2) Remote SKU mapping from cached index
      * 3) Fallback to GET /products?sku=... (short timeout) ONLY if index has no answer
      *
@@ -2664,7 +2673,7 @@ class SyncService
             $res = Http::timeout(30)
                 ->connectTimeout(5)
                 ->withHeaders([
-                    'User-Agent' => 'StockyWooSync/1.0',
+                    'User-Agent' => 'CounterPOS-WooSync/1.0',
                     'Accept' => '*/*',
                 ])
                 ->get($url);
@@ -3394,7 +3403,7 @@ class SyncService
                         'status' => 'publish',
                         'meta_data' => [
                             ['key' => self::WOO_META_EXTERNAL_PRODUCT_ID, 'value' => (string) $product->id],
-                            ['key' => self::WOO_META_STOCKY_PRODUCT_ID,   'value' => (string) $product->id],
+                            ['key' => self::WOO_META_COUNTER_POS_PRODUCT_ID, 'value' => (string) $product->id],
                         ],
                     ];
 
@@ -3964,7 +3973,7 @@ class SyncService
 
                                 $payloadAlt = $payload;
                                 $payloadAlt['sku'] = $altSku;
-                                $payloadAlt['meta_data'][] = ['key' => '_stocky_original_sku', 'value' => $sku];
+                                $payloadAlt['meta_data'][] = ['key' => '_counter_pos_original_sku', 'value' => $sku];
 
                                 $resAlt = $this->client->postNoRetry('products', $payloadAlt, 20, 5);
                                 if ($resAlt->successful()) {
@@ -5886,7 +5895,7 @@ class SyncService
     /**
      * Push POS clients (customers) to WooCommerce.
      *
-     * Loop Stocky customers:
+     * Loop Counter POS customers:
      *   - If woocommerce_id exists → UPDATE
      *   - Else:
      *       - Search Woo by email (best & safest)
@@ -5951,10 +5960,10 @@ class SyncService
                     if ($wooCountry !== '') {
                         $billing['country'] = $wooCountry;
                     } else {
-                        $this->setClientSyncIssue($client, 'country_unmapped', 'Could not map Stocky country to a valid WooCommerce country code. Use a supported country name (Woo language) or ISO code.', 'push');
+                        $this->setClientSyncIssue($client, 'country_unmapped', 'Could not map Counter POS country to a valid WooCommerce country code. Use a supported country name (Woo language) or ISO code.', 'push');
                     }
                     if ($wooState === '' && trim((string) ($client->state ?? '')) !== '') {
-                        $this->setClientSyncIssue($client, 'state_unmapped', 'Could not map Stocky state to a valid WooCommerce state code for the selected country.', 'push');
+                        $this->setClientSyncIssue($client, 'state_unmapped', 'Could not map Counter POS state to a valid WooCommerce state code for the selected country.', 'push');
                     }
                     if ($email !== '') {
                         $billing['email'] = $email;
@@ -6012,7 +6021,7 @@ class SyncService
                     if ($email === '' && $wooId === null) {
                         $skipped++;
                         $this->log('customers.push', 'info', 'Skipped client without email (requires manual link)', ['client_id' => $client->id]);
-                        $this->setClientSyncIssue($client, 'missing_email', 'Stocky customer has no email. Add an email or manually link to a Woo customer.', 'push');
+                        $this->setClientSyncIssue($client, 'missing_email', 'Counter POS customer has no email. Add an email or manually link to a Woo customer.', 'push');
                         $processed++;
                         continue;
                     }
@@ -6064,7 +6073,7 @@ class SyncService
                         if ($email === '') {
                             $skipped++;
                             $this->log('customers.push', 'info', 'Skipped client without email after Woo ID cleared (requires manual link)', ['client_id' => $client->id]);
-                            $this->setClientSyncIssue($client, 'missing_email', 'Stocky customer has no email. Add an email or manually link to a Woo customer.', 'push');
+                            $this->setClientSyncIssue($client, 'missing_email', 'Counter POS customer has no email. Add an email or manually link to a Woo customer.', 'push');
                             $processed++;
                             continue;
                         }
@@ -6213,7 +6222,7 @@ class SyncService
     }
 
     /**
-     * Push a single Stocky customer to WooCommerce
+     * Push a single Counter POS customer to WooCommerce
      */
     public function pushSingleCustomer(int $customerId): array
     {
@@ -6258,10 +6267,10 @@ class SyncService
             if ($wooCountry !== '') {
                 $billing['country'] = $wooCountry;
             } else {
-                $this->setClientSyncIssue($client, 'country_unmapped', 'Could not map Stocky country to a valid WooCommerce country code. Use a supported country name (Woo language) or ISO code.', 'push');
+                $this->setClientSyncIssue($client, 'country_unmapped', 'Could not map Counter POS country to a valid WooCommerce country code. Use a supported country name (Woo language) or ISO code.', 'push');
             }
             if ($wooState === '' && trim((string) ($client->state ?? '')) !== '') {
-                $this->setClientSyncIssue($client, 'state_unmapped', 'Could not map Stocky state to a valid WooCommerce state code for the selected country.', 'push');
+                $this->setClientSyncIssue($client, 'state_unmapped', 'Could not map Counter POS state to a valid WooCommerce state code for the selected country.', 'push');
             }
             if ($email !== '') {
                 $billing['email'] = $email;
@@ -6317,7 +6326,7 @@ class SyncService
 
             // If email is empty and we don't have a Woo ID → can't match/create (manual link required)
             if ($email === '' && $wooId === null) {
-                $this->setClientSyncIssue($client, 'missing_email', 'Stocky customer has no email. Add an email or manually link to a Woo customer.', 'push');
+                $this->setClientSyncIssue($client, 'missing_email', 'Counter POS customer has no email. Add an email or manually link to a Woo customer.', 'push');
                 return ['ok' => false, 'error' => 'Customer must have an email to sync (requires manual link)'];
             }
 
@@ -6366,7 +6375,7 @@ class SyncService
             if ($wooId === null) {
                 // If woocommerce_id IS null → Match by email (normalize: trim + lowercase)
                 if ($email === '') {
-                    $this->setClientSyncIssue($client, 'missing_email', 'Stocky customer has no email. Add an email or manually link to a Woo customer.', 'push');
+                    $this->setClientSyncIssue($client, 'missing_email', 'Counter POS customer has no email. Add an email or manually link to a Woo customer.', 'push');
                     return ['ok' => false, 'error' => 'Customer must have an email to sync (requires manual link)'];
                 }
 
@@ -6573,7 +6582,7 @@ class SyncService
 
                         // Find existing customer by email (normalize: trim + lowercase)
                         // Enforce email uniqueness: unique('clients', 'email')->whereNull('deleted_at')
-                        // First check if a Stocky customer already has this woocommerce_id
+                        // First check if a Counter POS customer already has this woocommerce_id
                         $client = PosClient::where('woocommerce_id', $wooId)
                             ->whereNull('deleted_at')
                             ->first();
@@ -6629,7 +6638,7 @@ class SyncService
                                             'email' => $email,
                                         ]);
                                         $hadIssue = true;
-                                        $this->setClientSyncIssue($client, 'email_conflict', 'Woo email conflicts with an existing Stocky client email. Manual review required.', 'pull');
+                                        $this->setClientSyncIssue($client, 'email_conflict', 'Woo email conflicts with an existing Counter POS client email. Manual review required.', 'pull');
                                     }
                                 } else {
                                     $hadIssue = true;
@@ -6849,7 +6858,7 @@ class SyncService
                 }
             }
 
-            // First check if a Stocky customer already has this woocommerce_id (primary key)
+            // First check if a Counter POS customer already has this woocommerce_id (primary key)
             $client = PosClient::where('woocommerce_id', $wooId)
                 ->whereNull('deleted_at')
                 ->first();
@@ -6887,7 +6896,7 @@ class SyncService
                             'email' => $email,
                         ]);
                         $hadIssue = true;
-                        $this->setClientSyncIssue($client, 'email_conflict', 'Woo email conflicts with an existing Stocky client email. Manual review required.', 'pull');
+                        $this->setClientSyncIssue($client, 'email_conflict', 'Woo email conflicts with an existing Counter POS client email. Manual review required.', 'pull');
                     }
                 } else {
                     $hadIssue = true;
@@ -6912,7 +6921,7 @@ class SyncService
                 ->first();
 
             if ($client) {
-                // If a Stocky customer with that email exists → link it by saving woocommerce_id
+                // If a Counter POS customer with that email exists, link it by saving woocommerce_id.
                 $client->name = $name;
                 $client->firstname = $firstName !== '' ? $firstName : null;
                 $client->lastname = $lastName !== '' ? $lastName : null;

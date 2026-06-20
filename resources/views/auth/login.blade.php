@@ -12,10 +12,10 @@
     <meta name="theme-color" content="#2f3640">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="{{ $app_settings->app_name ?? 'Stocky' }}">
+    <meta name="apple-mobile-web-app-title" content="{{ $app_settings->app_name ?? 'Counter POS' }}">
     <link rel="apple-touch-icon" href="/pwa_images/pwa-icon-192.png">
 
-    <title>{{ $app_settings->app_name ?? 'Stocky | Ultimate Inventory With POS' }}</title>
+    <title>{{ $app_settings->app_name ?? 'Counter POS' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -644,7 +644,7 @@
         <div class="auth-card">
           <header class="auth-card-header">
             <div class="auth-logo">
-              <img src="{{ asset('images/' . ($app_settings->logo ?? 'logo.png')) }}" alt="{{ $app_settings->app_name ?? 'Stocky' }}">
+              <img src="{{ asset('images/' . ($app_settings->logo ?? 'logo.png')) }}" alt="{{ $app_settings->app_name ?? 'Counter POS' }}">
             </div>
             <h2 class="auth-card-title">{{ $app_settings->login_panel_title ?? 'Welcome back' }}</h2>
             <p class="auth-card-subtitle">
@@ -719,7 +719,7 @@
           </form>
 
           <div class="auth-footer">
-            {{ $app_settings->login_footer_text ?? '© ' . date('Y') . ' ' . ($app_settings->app_name ?? 'Stocky') . '. All rights reserved.' }}
+            {{ $app_settings->login_footer_text ?? '© ' . date('Y') . ' ' . ($app_settings->app_name ?? 'Counter POS') . '. All rights reserved.' }}
           </div>
         </div>
       </section>

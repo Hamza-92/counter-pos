@@ -17,7 +17,7 @@
           </div>
           <div>
             <h3 class="module-header-title">{{ $t('module_settings') || 'Module Settings' }}</h3>
-            <p class="module-header-desc">Install, manage and configure modules to extend your Stocky application.</p>
+            <p class="module-header-desc">Install, manage and configure modules to extend your Counter POS application.</p>
           </div>
         </div>
         <div class="module-header-stats">
@@ -199,7 +199,7 @@
           <lucide-icon name="puzzle" style="font-size: 48px;" />
         </div>
         <h5 class="empty-state-title">No Modules Installed</h5>
-        <p class="empty-state-desc">Upload a module zip file above to get started. Modules add new features and functionality to your Stocky application.</p>
+        <p class="empty-state-desc">Upload a module zip file above to get started. Modules add new features and functionality to your Counter POS application.</p>
       </div>
 
     </div>
@@ -291,7 +291,7 @@ export default {
         'Reports': 'Advanced reporting and business analytics.',
         'Recruit': 'Recruitment management with jobs, candidates, applications, interviews and reports.',
       };
-      return descriptions[name] || 'Extends your Stocky application with additional functionality.';
+      return descriptions[name] || 'Extends your Counter POS application with additional functionality.';
     },
 
     async onFileSelected(e) {
