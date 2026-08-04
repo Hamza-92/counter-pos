@@ -302,3 +302,4 @@ Route::get('/customer-display', function (HttpRequest $request) {
 
     return view('customer_display');
 })->middleware(['web']);
+
