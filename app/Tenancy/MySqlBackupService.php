@@ -10,6 +10,10 @@ use Symfony\Component\Process\Process;
 
 final class MySqlBackupService
 {
+    public function __construct(private readonly PortableMySqlBackup $portable)
+    {
+    }
+
     public function create(Tenant $tenant, TenantDatabase $database): TenantBackup
     {
         $directory = storage_path('app/tenants/'.$tenant->id.'/private/backups');
@@ -19,19 +23,22 @@ final class MySqlBackupService
 
         $filename = now()->format('Ymd_His').'_'.bin2hex(random_bytes(5)).'.sql';
         $target = $directory.DIRECTORY_SEPARATOR.$filename;
-        $defaults = $this->temporaryDefaultsFile($database, $directory);
-
-        try {
-            $process = new Process([
-                $this->binary('mysqldump'), '--defaults-extra-file='.$defaults,
-                '--single-transaction', '--quick', '--routines', '--triggers', '--events',
-                '--result-file='.$target, $database->database_name,
-            ]);
-            $process->setTimeout(1800);
-            $process->mustRun();
-        } finally {
-            if (isset($defaults) && is_file($defaults)) {
-                @unlink($defaults);
+        if ($this->usesPortableDriver()) {
+            $this->portable->dump($target, $database->database_name);
+        } else {
+            $defaults = $this->temporaryDefaultsFile($database, $directory);
+            try {
+                $process = new Process([
+                    $this->binary('mysqldump'), '--defaults-extra-file='.$defaults,
+                    '--single-transaction', '--quick', '--routines', '--triggers', '--events',
+                    '--result-file='.$target, $database->database_name,
+                ]);
+                $process->setTimeout(1800);
+                $process->mustRun();
+            } finally {
+                if (isset($defaults) && is_file($defaults)) {
+                    @unlink($defaults);
+                }
             }
         }
 
@@ -61,26 +68,40 @@ final class MySqlBackupService
             throw new RuntimeException('Backup integrity verification failed.');
         }
 
-        $directory = dirname($path);
-        $defaults = $this->temporaryDefaultsFile($database, $directory);
-        $input = fopen($path, 'rb');
-        if ($input === false) {
-            @unlink($defaults);
-            throw new RuntimeException('Unable to read the verified backup.');
-        }
-        try {
-            $process = new Process([
-                $this->binary('mysql'), '--defaults-extra-file='.$defaults, $database->database_name,
-            ]);
-            $process->setInput($input);
-            $process->setTimeout(1800);
-            $process->mustRun();
-        } finally {
-            fclose($input);
-            if (isset($defaults) && is_file($defaults)) {
+        if ($this->usesPortableDriver()) {
+            $this->portable->restore($path, $database->database_name);
+        } else {
+            $directory = dirname($path);
+            $defaults = $this->temporaryDefaultsFile($database, $directory);
+            $input = fopen($path, 'rb');
+            if ($input === false) {
                 @unlink($defaults);
+                throw new RuntimeException('Unable to read the verified backup.');
+            }
+            try {
+                $process = new Process([
+                    $this->binary('mysql'), '--defaults-extra-file='.$defaults, $database->database_name,
+                ]);
+                $process->setInput($input);
+                $process->setTimeout(1800);
+                $process->mustRun();
+            } finally {
+                fclose($input);
+                if (isset($defaults) && is_file($defaults)) {
+                    @unlink($defaults);
+                }
             }
         }
+    }
+
+    private function usesPortableDriver(): bool
+    {
+        $driver = strtolower((string) config('tenancy.backup_driver', 'auto'));
+        if (! in_array($driver, ['auto', 'process', 'php'], true)) {
+            throw new RuntimeException('TENANT_BACKUP_DRIVER must be auto, process, or php.');
+        }
+
+        return $driver === 'php' || ($driver === 'auto' && ! function_exists('proc_open'));
     }
 
     private function temporaryDefaultsFile(TenantDatabase $database, string $directory): string
