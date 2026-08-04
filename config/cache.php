@@ -48,6 +48,15 @@ return [
             'connection' => null,
         ],
 
+        // CLI provisioning locks must never fall back to the legacy/default
+        // tenant connection. This store is always central and explicit.
+        'control_database' => [
+            'driver' => 'database',
+            'table' => 'cache',
+            'connection' => 'control',
+            'lock_connection' => 'control',
+        ],
+
         'file' => [
             'driver' => 'file',
             'path' => storage_path('framework/cache/data'),

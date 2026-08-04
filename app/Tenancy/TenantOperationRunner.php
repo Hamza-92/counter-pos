@@ -6,6 +6,7 @@ use App\Models\ControlPlane\ProvisioningRun;
 use App\Models\ControlPlane\Tenant;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -22,7 +23,7 @@ final class TenantOperationRunner
         }
 
         $tenant = Tenant::query()->findOrFail($tenantId);
-        $lock = Cache::store('database')->lock('tenant-operation:'.$tenantId, 1800);
+        $lock = Cache::store('control_database')->lock('tenant-operation:'.$tenantId, 1800);
 
         try {
             return $lock->block(5, function () use ($tenant, $action, $operation, $migrationCredentials) {
@@ -36,7 +37,24 @@ final class TenantOperationRunner
 
                 try {
                     $database = $this->database->initializeForTenant($tenant->id, $migrationCredentials);
-                    $result = $operation($tenant, $database);
+                    $previousCache = [
+                        'default' => config('cache.default'),
+                        'connection' => config('cache.stores.database.connection'),
+                        'prefix' => config('cache.prefix'),
+                    ];
+                    Config::set('cache.default', 'database');
+                    Config::set('cache.stores.database.connection', 'tenant');
+                    Config::set('cache.prefix', 'tenant_'.$tenant->id.'_cache');
+                    Cache::forgetDriver('database');
+
+                    try {
+                        $result = $operation($tenant, $database);
+                    } finally {
+                        Config::set('cache.default', $previousCache['default']);
+                        Config::set('cache.stores.database.connection', $previousCache['connection']);
+                        Config::set('cache.prefix', $previousCache['prefix']);
+                        Cache::forgetDriver('database');
+                    }
                     $run->forceFill([
                         'status' => 'succeeded',
                         'result' => is_array($result) ? $result : ['result' => $result],
