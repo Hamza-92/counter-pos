@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Store\NewsletterController;
 use App\Http\Controllers\QuickBooksController;
 use App\Http\Controllers\StoreAuthController;
 use App\Http\Controllers\StoreFrontController;
+use App\Http\Controllers\TenantMediaController;
 use Illuminate\Http\Request as HttpRequest;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,13 @@ use Laravel\Passport\Passport;
 // Passport::routes();
 
 // Login route will be defined explicitly below with middleware
+
+if (config('tenancy.enabled', false)) {
+    Route::get('/{area}/{path}', [TenantMediaController::class, 'show'])
+        ->where('area', 'images|flags')
+        ->where('path', '.*')
+        ->name('tenant.media');
+}
 
 Route::get('password/find/{token}', 'PasswordResetController@find');
 

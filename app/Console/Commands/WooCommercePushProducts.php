@@ -139,7 +139,7 @@ class WooCommercePushProducts extends Command
         // Optional image sync
         $imageName = (string) ($product->image ?? '');
         if ($imageName !== '') {
-            $publicPath = public_path('images/products/'.$imageName);
+            $publicPath = tenant_public_path('images/products/'.$imageName);
             if (is_file($publicPath)) {
                 $payload['images'] = [
                     ['src' => asset('images/products/'.$imageName)],

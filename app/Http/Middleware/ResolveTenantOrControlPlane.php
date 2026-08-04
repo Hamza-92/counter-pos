@@ -42,9 +42,17 @@ class ResolveTenantOrControlPlane
             if (hash_equals($controlHost, $host)) {
                 $this->databaseManager->useControlConnection();
                 $this->tenancy->enterControlPlane(new ControlPlaneContext($host));
+                Config::set('session.driver', 'database');
                 Config::set('session.connection', 'control');
                 Config::set('session.cookie', config('tenancy.cookies.control'));
+                Config::set('session.domain', null);
+                Config::set('session.same_site', 'strict');
+                Config::set('session.secure', $request->isSecure());
+                Config::set('cache.default', 'database');
+                Config::set('cache.stores.database.connection', 'control');
                 Config::set('cache.prefix', 'counterpos_control_cache');
+                Config::set('queue.connections.database.connection', 'control');
+                Config::set('queue.failed.database', 'control');
             } else {
                 $tenant = $this->resolver->resolve($host);
                 if ($tenant === null) {
@@ -57,10 +65,22 @@ class ResolveTenantOrControlPlane
 
                 $this->databaseManager->initialize($tenant);
                 $this->tenancy->enterTenant($tenant);
+                Config::set('session.driver', 'database');
                 Config::set('session.connection', 'tenant');
                 Config::set('session.cookie', config('tenancy.cookies.tenant_prefix').substr(hash('sha256', $tenant->tenantId), 0, 16));
+                Config::set('session.domain', null);
+                Config::set('session.same_site', 'lax');
+                Config::set('session.secure', $request->isSecure());
+                Config::set('cache.default', 'database');
+                Config::set('cache.stores.database.connection', 'tenant');
                 Config::set('cache.prefix', 'tenant_'.$tenant->tenantId.'_cache');
-                Config::set('app.url', $request->getScheme().'://'.$tenant->primaryHost);
+                Config::set('queue.connections.database.connection', 'control');
+                Config::set('queue.failed.database', 'control');
+                $tenantUrl = $request->getScheme().'://'.$tenant->primaryHost;
+                Config::set('filesystems.disks.public.root', storage_path('app/public/tenants/'.$tenant->tenantId));
+                Config::set('filesystems.disks.public.url', $tenantUrl.'/storage/tenants/'.$tenant->tenantId);
+                Config::set('filesystems.disks.local.root', storage_path('app/tenants/'.$tenant->tenantId.'/private'));
+                Config::set('app.url', $tenantUrl);
                 $request->attributes->set('tenant_id', $tenant->tenantId);
             }
 

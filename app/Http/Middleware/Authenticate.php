@@ -16,7 +16,7 @@ class Authenticate extends Middleware
     protected function redirectTo($request)
     {
         // If setup not completed, always redirect to setup
-        if (! Storage::disk('public')->exists('installed')) {
+        if (! config('tenancy.enabled', false) && ! Storage::disk('public')->exists('installed')) {
             return route('setup');
         }
 

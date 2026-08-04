@@ -1,10 +1,10 @@
 # Shared-Code, Database-per-Domain Architecture Plan
 
-> **Status: implementation plan only.** Do not point customer domains at the shared installation until the safety gates and isolation tests below pass.
+> **Status: locally implemented and verified.** Production deployment still requires hPanel-specific database users, HTTPS, backups, and a canary customer rehearsal.
 
 ## Implementation status (2026-08-03)
 
-The Phase 0/1 safety foundation has started. Tenancy remains **disabled by default** and is not ready for customer traffic.
+The shared-code/database-per-domain implementation is complete for local testing. It remains opt-in in the example configuration; the supplied local installation has tenancy enabled for the `.localhost` domains listed below.
 
 Implemented:
 
@@ -18,25 +18,53 @@ Implemented:
 - Shared-mode blocks for installer, updater, global config mutation, global cache, payment/SMS/mail configuration, and QuickBooks paths until tenant-scoped replacements exist.
 - Permanently disabled legacy `auto:Migrate` command that previously ran `migrate:fresh`.
 - Explicit `control:migrate --confirm-control` command.
-- Standalone global scheduler commands are disabled when tenancy mode is on until tenant-aware replacements exist.
+- Standalone global scheduler commands are disabled in tenancy mode and replaced by explicit per-tenant scheduled commands.
 - Automated foundation tests covering hostile hosts, exact domain resolution, domain verification, subscriptions, control-host reservation, credential policy, central schema, append-only records, and dangerous-operation blocking.
+- Password plus mandatory TOTP/recovery-code superadmin authentication, recent-2FA timeout, strict control-host routing, security headers, request IDs, and audit history.
+- Superadmin customer, exact-domain, encrypted database credential, subscription, manual payment/reversal, plan, activation, and health views/workflows.
+- Tenant-specific database sessions, cache, queue payload/bootstrap, scheduled jobs, URL/filesystem roots, and guarded media delivery.
+- Safe, one-tenant-at-a-time provision, migrate, seed, health, backup, restore, staging-file import, and local isolation commands with database identity checks and locks.
+- Tenant-aware replacement of legacy shared upload locations and blocking of installer, updater, module upload, backup UI, global configuration mutation, and other unsafe shared-mode HTTP paths.
+- Two-real-MySQL-database local isolation verification, including independent cache writes, full migration/health checks, backup, and restore.
+- Modernized email verification and repaired attendance route, allowing the complete route table to load.
 
-Not yet implemented and therefore blocking `TENANCY_ENABLED=true` in production:
+Production-only work remaining:
 
-- Authenticated superadmin UI/2FA and tenant management workflows.
-- Tenant-aware file migration, database sessions/cache tables, queue middleware, scheduler jobs, backups, signed URLs, OAuth/webhooks, and integrations.
-- Safe tenant provision/migrate/backup/restore commands.
-- Conversion of all existing business models and raw queries to guarded tenant execution.
-- Two-real-MySQL-database isolation suite, canary rollout, and hPanel deployment rehearsal.
-- Resolution of the pre-existing `attendance_by_employee` API route, which currently references the absent `App\\Http\\Controllers\\hrm\\EmployeeSessionController` and prevents `artisan route:list` from completing.
+- Create least-privilege runtime and migration database users for each hPanel database. Never reuse the hosting account's broad database user.
+- Configure `admin.counterpos.pk`, customer domains, HTTPS, secure cookies, trusted proxies, production secrets, `APP_DEBUG=false`, cron, queue worker, and off-host backup retention.
+- Perform a staging/hPanel rehearsal, restore drill, log review, then a monitored canary migration of one customer before adding more customers.
+- Review each external OAuth/webhook provider's callback-domain policy before enabling that integration on customer aliases.
 
-The control schema can be prepared only after supplying a dedicated control DB and reviewing its target:
+The control schema can be prepared after supplying a dedicated control DB and reviewing its target:
 
 ```bash
 php artisan control:migrate --confirm-control
 ```
 
-Do not set `TENANCY_ENABLED=true` on a customer-facing deployment yet.
+Do not enable customer traffic until the production-only checklist above is complete.
+
+### Local test installation
+
+The current workspace is configured for XAMPP PHP 8.2 and local MySQL. Start it with:
+
+```powershell
+C:\\xampp\\php\\php.exe artisan serve --host=0.0.0.0 --port=8000
+```
+
+Then open:
+
+- Control plane: `http://admin.counterpos.localhost:8000`
+- Existing local database: `http://shop-a.counterpos.localhost:8000`
+- Newly provisioned isolated database: `http://shop-b.counterpos.localhost:8000`
+
+Credentials are intentionally not committed to this document. The command below creates/reconciles the fixed local databases and prints newly rotated local credentials:
+
+```powershell
+C:\\xampp\\php\\php.exe artisan tenancy:local-bootstrap --confirm-local
+C:\\xampp\\php\\php.exe artisan tenancy:verify-local-isolation --confirm-local
+```
+
+`tenancy:local-bootstrap` is loopback-only, does not drop or wipe a database, and rotates the local control and Tenant B passwords every time it runs.
 
 ## 1. Architecture decision
 
@@ -335,6 +363,8 @@ If hPanel cannot split runtime/migration users, still use a unique one-database 
 - Sensitive superadmin writes use optimistic-lock versions to prevent stale-tab overwrites.
 
 ## 12. Implementation phases
+
+Phases 0-4 are complete and locally verified. Phase 5 is deliberately deployment-specific and must be performed on hPanel with real DNS, TLS, least-privilege users, and backups.
 
 ### Phase 0 - Safety freeze
 

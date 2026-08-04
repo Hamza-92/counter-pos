@@ -28,9 +28,12 @@ class Kernel extends ConsoleKernel
     {
 
         if (config('tenancy.enabled', false)) {
-            // Tenant-aware backup, asset, queue and subscription schedules are
-            // introduced in later phases. Never run the standalone global
-            // commands against an arbitrary default tenant connection.
+            $schedule->command('queue:work database --once --queue=default --sleep=1 --tries=1 --timeout='.((int) env('QUEUE_WORKER_TIMEOUT', 1200)))
+                ->everyMinute()->withoutOverlapping()->evenInMaintenanceMode();
+            $schedule->command('tenant:scheduled assets')->daily()->withoutOverlapping();
+            $schedule->command('tenant:scheduled invoices')->dailyAt('00:10')->withoutOverlapping();
+            $schedule->command('tenant:scheduled reminders')->dailyAt('09:00')->withoutOverlapping();
+
             return;
         }
 

@@ -841,7 +841,7 @@ class QuotationsController extends BaseController
             $Html = substr_replace($Html, $utf8ar, $p[$i - 1], $p[$i] - $p[$i - 1]);
         }
 
-        // When rendering as HTML in the browser, filesystem paths like public_path('images/...')
+        // When rendering as HTML in the browser, filesystem paths like tenant_public_path('images/...')
         // do not work as <img src>. Convert any ".../public/images/<file>" path (Windows or Unix)
         // into a proper web URL so logos/images display.
         try {

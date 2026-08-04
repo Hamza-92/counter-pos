@@ -19,8 +19,33 @@ final class TenantDatabaseManager
             throw new TenantDatabaseException('No tenant database is configured.');
         }
 
+        $this->initializeDatabase($database);
+    }
+
+    public function initializeForTenant(string $tenantId, bool $useMigrationCredentials = false): TenantDatabase
+    {
+        $database = TenantDatabase::query()->where('tenant_id', $tenantId)->first();
+
+        if ($database === null) {
+            throw new TenantDatabaseException('No tenant database is configured.');
+        }
+
+        $this->initializeDatabase($database, $useMigrationCredentials);
+
+        return $database;
+    }
+
+    public function initializeDatabase(TenantDatabase $database, bool $useMigrationCredentials = false): void
+    {
         $this->assertCredentialPolicy($database);
         $this->previousDefaultConnection = DB::getDefaultConnection();
+
+        $username = $useMigrationCredentials && $database->migration_username
+            ? $database->migration_username
+            : $database->username;
+        $password = $useMigrationCredentials && $database->migration_username
+            ? $database->migration_password
+            : $database->password;
 
         $template = (array) config('database.connections.tenant', []);
         Config::set('database.connections.tenant', array_merge($template, [
@@ -28,8 +53,8 @@ final class TenantDatabaseManager
             'host' => $database->host,
             'port' => (string) $database->port,
             'database' => $database->database_name,
-            'username' => $database->username,
-            'password' => $database->password,
+            'username' => $username,
+            'password' => $password,
         ]));
 
         DB::purge('tenant');

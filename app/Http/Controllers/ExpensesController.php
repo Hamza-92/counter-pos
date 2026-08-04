@@ -221,7 +221,7 @@ class ExpensesController extends BaseController
 
         if ($request->hasFile('documents')) {
             // Create directory if it doesn't exist
-            $uploadPath = public_path('images/expense_documents');
+            $uploadPath = tenant_public_path('images/expense_documents');
             if (! file_exists($uploadPath)) {
                 mkdir($uploadPath, 0755, true);
             }
@@ -277,7 +277,7 @@ class ExpensesController extends BaseController
             ], 404);
         }
 
-        $filePath = public_path($document->path);
+        $filePath = tenant_public_path($document->path);
 
         if (! file_exists($filePath)) {
             return response()->json([
@@ -313,7 +313,7 @@ class ExpensesController extends BaseController
             ->update(['deleted_at' => Carbon::now()]);
 
         // Optionally delete the physical file
-        $filePath = public_path($document->path);
+        $filePath = tenant_public_path($document->path);
         if (file_exists($filePath)) {
             unlink($filePath);
         }

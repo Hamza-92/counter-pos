@@ -12,6 +12,7 @@ return [
     'require_subscription' => (bool) env('TENANT_REQUIRE_SUBSCRIPTION', true),
     'resolution_cache_seconds' => (int) env('TENANT_RESOLUTION_CACHE_SECONDS', 30),
     'resolution_cache_store' => (string) env('TENANT_RESOLUTION_CACHE_STORE', 'file'),
+    'control_auth_timeout_seconds' => (int) env('CONTROL_AUTH_TIMEOUT_SECONDS', 1800),
 
     'database' => [
         'allowed_drivers' => ['mysql'],
@@ -31,6 +32,8 @@ return [
         'setup', 'setup/*', 'update', 'update/*',
         'api/get_version_info', 'api/one_click_update', 'api/update/*',
         'api/clear_cache', 'api/update_status_module',
+        'api/get_backup', 'api/generate_new_backup', 'api/delete_backup/*',
+        'api/upload_module',
         'api/get_config_mail', 'api/update_config_mail/*', 'api/test_config_mail',
         'api/get_sms_config*', 'api/update_*_config', 'api/update_Default_SMS',
         'api/payment_gateway', 'api/get_payment_gateway*',

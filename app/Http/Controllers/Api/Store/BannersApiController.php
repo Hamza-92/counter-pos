@@ -59,7 +59,7 @@ class BannersApiController extends Controller
             $filename = rand(11111111, 99999999).$image->getClientOriginalName();
 
             // Create folder if it doesn’t exist
-            $path = public_path('images/banners');
+            $path = tenant_public_path('images/banners');
             if (! file_exists($path)) {
                 mkdir($path, 0755, true);
             }
@@ -114,7 +114,7 @@ class BannersApiController extends Controller
             if (! empty($b->image) && $b->image !== 'no-image.png') {
                 // if DB ever stored a path, basename() keeps it safe
                 $oldName = basename($b->image);
-                $pathIMG = public_path().'/images/banners/'.$oldName;
+                $pathIMG = tenant_public_path().'/images/banners/'.$oldName;
                 if (file_exists($pathIMG)) {
                     @unlink($pathIMG);
                 }
@@ -125,7 +125,7 @@ class BannersApiController extends Controller
             $filename = rand(11111111, 99999999).$image->getClientOriginalName();
 
             $img = Image::make($image->getRealPath());
-            $img->save(public_path('/images/banners/'.$filename));
+            $img->save(tenant_public_path('/images/banners/'.$filename));
 
             // store only the filename in DB
             $data['image'] = 'images/banners/'.$filename;
@@ -150,7 +150,7 @@ class BannersApiController extends Controller
         if (! empty($b->image)) {
             $filename = basename($b->image); // in case a path was stored
             if ($filename !== 'no-image.png') {
-                $pathIMG = public_path('/images/banenrs/'.$filename);
+                $pathIMG = tenant_public_path('/images/banenrs/'.$filename);
                 if (file_exists($pathIMG)) {
                     @unlink($pathIMG);
                 }

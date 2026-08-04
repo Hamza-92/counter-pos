@@ -206,7 +206,7 @@ class SettingsApiController extends Controller
         $s = StoreSetting::first() ?: new StoreSetting;
 
         // --- Ensure storage directory exists ---
-        $targetDir = public_path('images/store');
+        $targetDir = tenant_public_path('images/store');
         if (! File::exists($targetDir)) {
             File::makeDirectory($targetDir, 0755, true);
         }
@@ -217,8 +217,8 @@ class SettingsApiController extends Controller
 
         // --- LOGO (200x200 max) ---
         if ($request->hasFile('logo')) {
-            if ($s->logo_path && File::exists(public_path($s->logo_path))) {
-                File::delete(public_path($s->logo_path));
+            if ($s->logo_path && File::exists(tenant_public_path($s->logo_path))) {
+                File::delete(tenant_public_path($s->logo_path));
             }
 
             $ext = strtolower($request->file('logo')->guessExtension() ?: 'png');
@@ -237,8 +237,8 @@ class SettingsApiController extends Controller
 
         // --- FAVICON ---
         if ($request->hasFile('favicon')) {
-            if ($s->favicon_path && File::exists(public_path($s->favicon_path))) {
-                File::delete(public_path($s->favicon_path));
+            if ($s->favicon_path && File::exists(tenant_public_path($s->favicon_path))) {
+                File::delete(tenant_public_path($s->favicon_path));
             }
 
             $file = $request->file('favicon');
@@ -261,8 +261,8 @@ class SettingsApiController extends Controller
 
         // --- HERO IMAGE (1600x800 max) ---
         if ($request->hasFile('hero_image')) {
-            if ($s->hero_image_path && File::exists(public_path($s->hero_image_path))) {
-                File::delete(public_path($s->hero_image_path));
+            if ($s->hero_image_path && File::exists(tenant_public_path($s->hero_image_path))) {
+                File::delete(tenant_public_path($s->hero_image_path));
             }
 
             $ext = strtolower($request->file('hero_image')->guessExtension() ?: 'jpg');

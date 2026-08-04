@@ -30,7 +30,7 @@ class SettingsController extends Controller
         // Only process logo if a file was actually uploaded
         if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
             $image = $request->file('logo');
-            $path = public_path().'/images';
+            $path = tenant_public_path().'/images';
             $filename = rand(11111111, 99999999).$image->getClientOriginalName();
 
             $image_resize = Image::make($image->getRealPath());
@@ -39,7 +39,7 @@ class SettingsController extends Controller
              $image_resize->resize(800, 800, function ($constraint) {
                 $constraint->aspectRatio();
                 $constraint->upsize();
-            })->save(public_path('/images/'.$filename));
+            })->save(tenant_public_path('/images/'.$filename));
 
             $userPhoto = $path.'/'.$currentAvatar;
             if (file_exists($userPhoto)) {
@@ -170,6 +170,7 @@ class SettingsController extends Controller
             'dashboard_font_size' => $request['dashboard_font_size'] ?? null,
             'dashboard_font_family' => $request['dashboard_font_family'] ?? null,
             'date_format' => $request['date_format'] ?? 'YYYY-MM-DD',
+            'timezone' => $request['timezone'] ?? $setting->timezone ?? 'UTC',
             'sale_prefix' => $request['sale_prefix'] ?? null,
             'purchase_prefix' => $request['purchase_prefix'] ?? null,
             'quotation_prefix' => $request['quotation_prefix'] ?? null,
@@ -230,7 +231,14 @@ class SettingsController extends Controller
             }
         }
 
-        // Prepare environment values
+        if (config('tenancy.enabled', false)) {
+            // Shared installations keep customer timezone/settings inside the
+            // tenant database. A tenant request must never rewrite shared .env
+            // or clear installation-wide caches.
+            return response()->json(['success' => true]);
+        }
+
+        // Prepare environment values (standalone mode only)
         $envValues = [
             'APP_TIMEZONE' => $request['timezone'] !== null ? '"'.$request['timezone'].'"' : '"UTC"',
         ];
@@ -650,10 +658,8 @@ class SettingsController extends Controller
             $item['company_name_ar'] = $settings->company_name_ar;
             $item['vat_number'] = $settings->vat_number;
             $item['zatca_enabled'] = (bool) $settings->zatca_enabled;
-            // Timezone from .env file - read directly from file to avoid cache issues
-            $item['timezone'] = $this->getEnvValue('APP_TIMEZONE', 'UTC');
-            // Debug Mode from .env file - read directly from file to avoid cache issues
-            $item['debug_mode'] = $this->getEnvValue('APP_DEBUG', 'false') === 'true';
+            $item['timezone'] = config('tenancy.enabled', false) ? ($settings->timezone ?: 'UTC') : $this->getEnvValue('APP_TIMEZONE', 'UTC');
+            $item['debug_mode'] = config('tenancy.enabled', false) ? false : $this->getEnvValue('APP_DEBUG', 'false') === 'true';
             $item['date_format'] = $settings->date_format ?? 'YYYY-MM-DD';
             // Optional price format for frontend display (used by POS)
             $item['price_format'] = $settings->price_format;
@@ -857,10 +863,8 @@ class SettingsController extends Controller
             $item['company_name_ar'] = $settings->company_name_ar;
             $item['vat_number'] = $settings->vat_number;
             $item['zatca_enabled'] = (bool) $settings->zatca_enabled;
-            // Timezone from .env file - read directly from file to avoid cache issues
-            $item['timezone'] = $this->getEnvValue('APP_TIMEZONE', 'UTC');
-            // Debug Mode from .env file - read directly from file to avoid cache issues
-            $item['debug_mode'] = $this->getEnvValue('APP_DEBUG', 'false') === 'true';
+            $item['timezone'] = config('tenancy.enabled', false) ? ($settings->timezone ?: 'UTC') : $this->getEnvValue('APP_TIMEZONE', 'UTC');
+            $item['debug_mode'] = config('tenancy.enabled', false) ? false : $this->getEnvValue('APP_DEBUG', 'false') === 'true';
             $item['date_format'] = $settings->date_format ?? 'YYYY-MM-DD';
             // Optional price format for frontend display (used by POS)
             $item['price_format'] = $settings->price_format;
@@ -1077,13 +1081,13 @@ class SettingsController extends Controller
         if ($request->hasFile('logo') && $request->file('logo') != $currentLogo) {
             $logo = $request->file('logo');
             $logoFilename = rand(11111111, 99999999).$logo->getClientOriginalName();
-            $logoPath = public_path('/images/'.$logoFilename);
+            $logoPath = tenant_public_path('/images/'.$logoFilename);
 
             $imageResize = Image::make($logo->getRealPath())->resize(80, 80);
             $imageResize->save($logoPath);
 
             if ($currentLogo && $currentLogo != 'logo-default.png') {
-                $oldLogoPath = public_path('/images/'.$currentLogo);
+                $oldLogoPath = tenant_public_path('/images/'.$currentLogo);
                 if (file_exists($oldLogoPath)) {
                     @unlink($oldLogoPath);
                 }
@@ -1097,11 +1101,11 @@ class SettingsController extends Controller
 
             if (in_array($extension, ['ico', 'png'])) {
                 $faviconFilename = uniqid().'.'.$extension;
-                $favicon->move(public_path('images'), $faviconFilename);
+                $favicon->move(tenant_public_path('images'), $faviconFilename);
 
                 // Delete old favicon if it exists and is not default
                 if ($currentFavicon && $currentFavicon !== 'favicon.ico') {
-                    $oldFaviconPath = public_path('images/'.$currentFavicon);
+                    $oldFaviconPath = tenant_public_path('images/'.$currentFavicon);
                     if (file_exists($oldFaviconPath)) {
                         @unlink($oldFaviconPath);
                     }

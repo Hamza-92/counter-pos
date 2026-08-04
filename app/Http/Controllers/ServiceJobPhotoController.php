@@ -53,7 +53,7 @@ class ServiceJobPhotoController extends BaseController
         $job = ServiceJob::whereNull('deleted_at')->findOrFail($serviceJobId);
         $stage = $validated['stage'] ?? 'intake';
 
-        $uploadPath = public_path('images/service_photos/'.$job->id);
+        $uploadPath = tenant_public_path('images/service_photos/'.$job->id);
         if (! file_exists($uploadPath)) {
             mkdir($uploadPath, 0755, true);
         }
@@ -107,7 +107,7 @@ class ServiceJobPhotoController extends BaseController
             ->findOrFail($id);
 
         if ($photo->path) {
-            $absolute = public_path($photo->path);
+            $absolute = tenant_public_path($photo->path);
             if (file_exists($absolute)) {
                 @unlink($absolute);
             }

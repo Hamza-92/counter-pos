@@ -26,6 +26,7 @@ class Kernel extends HttpKernel
     ];
 
     protected $middleware = [
+        \App\Http\Middleware\AssignRequestId::class,
         // Must resolve the host and database before sessions/auth/models.
         \App\Http\Middleware\ResolveTenantOrControlPlane::class,
         \App\Http\Middleware\BlockUnsafeSharedOperations::class,
@@ -102,6 +103,7 @@ class Kernel extends HttpKernel
         'portal.auth' => \App\Http\Middleware\EnsurePortalAuth::class,
         'tenant.host' => \App\Http\Middleware\RequireTenantHost::class,
         'control.host' => \App\Http\Middleware\RequireControlPlaneHost::class,
+        'control.secure' => \App\Http\Middleware\ControlSecurity::class,
 
     ];
 }

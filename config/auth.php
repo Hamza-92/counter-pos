@@ -49,26 +49,7 @@ return [
         'portal' => ['driver' => 'session', 'provider' => 'portal_clients'],
     ],
 
-    'providers' => [
-        'users' => ['driver' => 'eloquent', 'model' => App\Models\User::class],
-
-        // add (or verify) this block
-        'ecommerce_clients' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\EcommerceClient::class,
-        ],
-    ],
-
     // optional but recommended if you’ll use password resets for store users:
-    'passwords' => [
-        'ecommerce_clients' => [
-            'provider' => 'ecommerce_clients',
-            'table' => 'password_reset_tokens', // 'password_resets' on older Laravel
-            'expire' => 60,
-            'throttle' => 60,
-        ],
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | User Providers

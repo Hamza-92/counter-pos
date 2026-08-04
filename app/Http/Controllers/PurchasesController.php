@@ -1216,7 +1216,7 @@ class PurchasesController extends BaseController
             $Html = substr_replace($Html, $utf8ar, $p[$i - 1], $p[$i] - $p[$i - 1]);
         }
 
-        // When rendering as HTML in the browser, filesystem paths like public_path('images/...')
+        // When rendering as HTML in the browser, filesystem paths like tenant_public_path('images/...')
         // do not work as <img src>. Convert any ".../public/images/<file>" path (Windows or Unix)
         // into a proper web URL so logos/images display.
         try {
@@ -2286,7 +2286,7 @@ class PurchasesController extends BaseController
 
         if ($request->hasFile('documents')) {
             // Create directory if it doesn't exist
-            $uploadPath = public_path('images/purchase_documents');
+            $uploadPath = tenant_public_path('images/purchase_documents');
             if (!file_exists($uploadPath)) {
                 mkdir($uploadPath, 0755, true);
             }
@@ -2342,7 +2342,7 @@ class PurchasesController extends BaseController
             ], 404);
         }
 
-        $filePath = public_path($document->path);
+        $filePath = tenant_public_path($document->path);
 
         if (!file_exists($filePath)) {
             return response()->json([
@@ -2378,7 +2378,7 @@ class PurchasesController extends BaseController
             ->update(['deleted_at' => Carbon::now()]);
 
         // Optionally delete the physical file
-        $filePath = public_path($document->path);
+        $filePath = tenant_public_path($document->path);
         if (file_exists($filePath)) {
             unlink($filePath);
         }

@@ -88,9 +88,9 @@ return new class extends Migration
             $table->foreignUuid('tenant_id')->constrained('tenants')->restrictOnDelete();
             $table->foreignUuid('plan_id')->constrained('plans')->restrictOnDelete();
             $table->string('status', 24)->default('pending')->index();
-            $table->timestamp('starts_at');
-            $table->timestamp('ends_at');
-            $table->timestamp('grace_ends_at')->nullable();
+            $table->dateTime('starts_at');
+            $table->dateTime('ends_at');
+            $table->dateTime('grace_ends_at')->nullable();
             $table->decimal('agreed_amount', 18, 2);
             $table->char('currency', 3);
             $table->uuid('created_by')->nullable();
@@ -108,11 +108,11 @@ return new class extends Migration
             $table->string('reference')->nullable()->unique();
             $table->decimal('amount', 18, 2);
             $table->char('currency', 3);
-            $table->timestamp('paid_at');
+            $table->dateTime('paid_at');
             $table->string('method', 80)->nullable();
             $table->text('notes')->nullable();
             $table->uuid('recorded_by');
-            $table->timestamp('recorded_at');
+            $table->dateTime('recorded_at');
             $table->timestamps();
             $table->index(['tenant_id', 'paid_at']);
         });

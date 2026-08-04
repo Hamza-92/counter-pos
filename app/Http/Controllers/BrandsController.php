@@ -68,7 +68,7 @@ class BrandsController extends Controller
 
                 $image_resize = Image::make($image->getRealPath());
                 $image_resize->resize(200, 200);
-                $image_resize->save(public_path('/images/brands/'.$filename));
+                $image_resize->save(tenant_public_path('/images/brands/'.$filename));
 
             } else {
                 $filename = 'no-image.png';
@@ -115,12 +115,12 @@ class BrandsController extends Controller
 
             if ($currentImage && $request->image != $currentImage) {
                 $image = $request->file('image');
-                $path = public_path().'/images/brands';
+                $path = tenant_public_path().'/images/brands';
                 $filename = rand(11111111, 99999999).$image->getClientOriginalName();
 
                 $image_resize = Image::make($image->getRealPath());
                 $image_resize->resize(200, 200);
-                $image_resize->save(public_path('/images/brands/'.$filename));
+                $image_resize->save(tenant_public_path('/images/brands/'.$filename));
 
                 $BrandImage = $path.'/'.$currentImage;
                 if (file_exists($BrandImage)) {
@@ -130,12 +130,12 @@ class BrandsController extends Controller
                 }
             } elseif (! $currentImage && $request->image != 'null') {
                 $image = $request->file('image');
-                $path = public_path().'/images/brands';
+                $path = tenant_public_path().'/images/brands';
                 $filename = rand(11111111, 99999999).$image->getClientOriginalName();
 
                 $image_resize = Image::make($image->getRealPath());
                 $image_resize->resize(200, 200);
-                $image_resize->save(public_path('/images/brands/'.$filename));
+                $image_resize->save(tenant_public_path('/images/brands/'.$filename));
             } else {
                 $filename = $currentImage ? $currentImage : 'no-image.png';
             }
