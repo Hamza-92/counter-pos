@@ -27,6 +27,13 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
+        if (config('tenancy.enabled', false)) {
+            // Tenant-aware backup, asset, queue and subscription schedules are
+            // introduced in later phases. Never run the standalone global
+            // commands against an arbitrary default tenant connection.
+            return;
+        }
+
         $schedule->command('database:backup');
 
         $schedule->command('assets:check-validation-due')->daily();

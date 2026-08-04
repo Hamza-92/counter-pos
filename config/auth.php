@@ -40,6 +40,7 @@ return [
     'guards' => [
         'web' => ['driver' => 'session', 'provider' => 'users'],
         'api' => ['driver' => 'passport', 'provider' => 'users', 'hash' => false],
+        'control' => ['driver' => 'session', 'provider' => 'super_admins'],
 
         // storefront customers
         'store' => ['driver' => 'session', 'provider' => 'ecommerce_clients'],
@@ -99,6 +100,11 @@ return [
         'portal_clients' => [
             'driver' => 'eloquent',
             'model' => App\Models\PortalClient::class,
+        ],
+
+        'super_admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\ControlPlane\SuperAdmin::class,
         ],
 
         // 'users' => [

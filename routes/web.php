@@ -38,7 +38,7 @@ Route::get('password/find/{token}', 'PasswordResetController@find');
 //     Route::post('/admin/store/settings', [AdminStoreSettings::class, 'update']);
 // });
 
-$installed = Storage::disk('public')->exists('installed');
+$installed = config('tenancy.enabled', false) || Storage::disk('public')->exists('installed');
 
 // ------------------------------------------------------------------\\
 // ONLINE STORE ROUTES (Only if installed)
@@ -125,9 +125,9 @@ if ($installed === true) {
 
 // ------------------------------------------------------------------\\
 
-$installed = Storage::disk('public')->exists('installed');
+$installed = config('tenancy.enabled', false) || Storage::disk('public')->exists('installed');
 
-if ($installed === false) {
+if (! config('tenancy.enabled', false) && $installed === false) {
     Route::get('/setup', [
         'uses' => 'SetupController@viewCheck',
     ])->name('setup');
@@ -189,13 +189,14 @@ if ($installed === false) {
         return redirect('/setup', 301);
     });
 
-} else {
+} elseif (! config('tenancy.enabled', false)) {
     Route::any('/setup/{vue}', function () {
         abort(403);
     });
 }
 
-Route::group(['middleware' => ['web', 'auth:web', 'Is_Active']], function () {
+if (! config('tenancy.enabled', false)) {
+    Route::group(['middleware' => ['web', 'auth:web', 'Is_Active']], function () {
 
     // QuickBooks OAuth + status
     Route::get('/quickbooks/connect', [QuickBooksController::class, 'connect'])->name('quickbooks.connect');
@@ -205,12 +206,13 @@ Route::group(['middleware' => ['web', 'auth:web', 'Is_Active']], function () {
     Route::get('/google-calendar/connect', [\App\Http\Controllers\GoogleCalendarConnectController::class, 'connect'])->name('google_calendar.connect');
     Route::get('/google-calendar/callback', [\App\Http\Controllers\GoogleCalendarConnectController::class, 'callback'])->name('google_calendar.callback');
     Route::get('/google-calendar/disconnect', [\App\Http\Controllers\GoogleCalendarConnectController::class, 'disconnect'])->name('google_calendar.disconnect');
-});
+    });
+}
 
 // ------------------------------------------------------------------\\
 // Client Portal - if no portal auth, send directly to login (no Vue app load)
 Route::get('/portal/{vue?}', function (\Illuminate\Http\Request $request, $vue = null) {
-    $installed = Storage::disk('public')->exists('installed');
+    $installed = config('tenancy.enabled', false) || Storage::disk('public')->exists('installed');
     if ($installed === false) {
         return redirect('/setup');
     }
@@ -238,7 +240,7 @@ Route::group(['middleware' => ['web', 'auth:web', 'Is_Active', 'request.safety']
 
     Route::get('/{vue?}',
         function () {
-            $installed = Storage::disk('public')->exists('installed');
+            $installed = config('tenancy.enabled', false) || Storage::disk('public')->exists('installed');
 
             if ($installed === false) {
                 return redirect('/setup');
@@ -271,7 +273,8 @@ Route::post('email/resend', 'Auth\\VerificationController@resend')->name('verifi
 
 // ------------------------- -UPDATE ----------------------------------------\\
 
-Route::group(['middleware' => ['web', 'auth:web', 'Is_Active']], function () {
+if (! config('tenancy.enabled', false)) {
+    Route::group(['middleware' => ['web', 'auth:web', 'Is_Active']], function () {
 
     Route::get('/update', 'UpdateController@viewStep1');
 
@@ -284,7 +287,8 @@ Route::group(['middleware' => ['web', 'auth:web', 'Is_Active']], function () {
         'as' => 'update_lastStep', 'uses' => 'UpdateController@lastStep',
     ]);
 
-});
+    });
+}
 
 // -------------------- Public Invoice View (HMAC-signed, no login required) --------------------
 Route::get('/invoice/{id}/{signature}', 'SalesController@publicInvoiceView')

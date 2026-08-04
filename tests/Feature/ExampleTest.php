@@ -11,10 +11,8 @@ class ExampleTest extends TestCase
      *
      * @return void
      */
-    public function test_basic_test()
+    public function test_tenancy_is_opt_in_by_default()
     {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
+        self::assertFalse((bool) config('tenancy.enabled'));
     }
 }

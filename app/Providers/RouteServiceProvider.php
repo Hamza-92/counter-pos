@@ -43,6 +43,11 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function map()
     {
+        // Register the exact control domain first. The tenant routes are
+        // intentionally domainless because customers bring their own hosts;
+        // registering them first would shadow matching control-plane paths.
+        $this->mapControlRoutes();
+
         $this->mapApiRoutes();
 
         $this->mapWebRoutes();
@@ -50,12 +55,23 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapPortalRoutes();
     }
 
+    protected function mapControlRoutes()
+    {
+        if (! config('tenancy.enabled', false)) {
+            return;
+        }
+
+        Route::domain(config('tenancy.control_host'))
+            ->middleware(['web', 'control.host'])
+            ->group(base_path('routes/control.php'));
+    }
+
     /**
      * Define the client portal API routes (session-based auth).
      */
     protected function mapPortalRoutes()
     {
-        Route::middleware('web')
+        Route::middleware($this->tenantMiddleware('web'))
             ->namespace($this->namespace)
             ->group(base_path('routes/portal.php'));
     }
@@ -69,7 +85,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        Route::middleware('web')
+        Route::middleware($this->tenantMiddleware('web'))
             ->namespace($this->namespace)
             ->group(base_path('routes/web.php'));
     }
@@ -84,8 +100,13 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapApiRoutes()
     {
         Route::prefix('api')
-            ->middleware('api')
+            ->middleware($this->tenantMiddleware('api'))
             ->namespace($this->namespace)
             ->group(base_path('routes/api.php'));
+    }
+
+    private function tenantMiddleware(string $group): array
+    {
+        return config('tenancy.enabled', false) ? [$group, 'tenant.host'] : [$group];
     }
 }

@@ -2,6 +2,42 @@
 
 > **Status: implementation plan only.** Do not point customer domains at the shared installation until the safety gates and isolation tests below pass.
 
+## Implementation status (2026-08-03)
+
+The Phase 0/1 safety foundation has started. Tenancy remains **disabled by default** and is not ready for customer traffic.
+
+Implemented:
+
+- Opt-in `config/tenancy.php` and `.env.tenancy.example`.
+- Separate static `control` and runtime-configured `tenant` database connections.
+- Strict host normalization, exact verified-domain resolver, immutable tenant/control contexts, and fail-closed access decisions.
+- Tenant DB driver/host/name allowlists, control-DB rejection, connection purge, and exact `SELECT DATABASE()` verification.
+- Earliest global tenancy middleware plus strict tenant/control route-zone middleware.
+- Control-plane schema for superadmins, tenants, domains, encrypted credentials, plans, subscriptions, append-only payments, provisioning history, audit history, sessions, cache, and jobs.
+- Explicit central Eloquent models; tenant model guard for new tenant-owned models.
+- Shared-mode blocks for installer, updater, global config mutation, global cache, payment/SMS/mail configuration, and QuickBooks paths until tenant-scoped replacements exist.
+- Permanently disabled legacy `auto:Migrate` command that previously ran `migrate:fresh`.
+- Explicit `control:migrate --confirm-control` command.
+- Standalone global scheduler commands are disabled when tenancy mode is on until tenant-aware replacements exist.
+- Automated foundation tests covering hostile hosts, exact domain resolution, domain verification, subscriptions, control-host reservation, credential policy, central schema, append-only records, and dangerous-operation blocking.
+
+Not yet implemented and therefore blocking `TENANCY_ENABLED=true` in production:
+
+- Authenticated superadmin UI/2FA and tenant management workflows.
+- Tenant-aware file migration, database sessions/cache tables, queue middleware, scheduler jobs, backups, signed URLs, OAuth/webhooks, and integrations.
+- Safe tenant provision/migrate/backup/restore commands.
+- Conversion of all existing business models and raw queries to guarded tenant execution.
+- Two-real-MySQL-database isolation suite, canary rollout, and hPanel deployment rehearsal.
+- Resolution of the pre-existing `attendance_by_employee` API route, which currently references the absent `App\\Http\\Controllers\\hrm\\EmployeeSessionController` and prevents `artisan route:list` from completing.
+
+The control schema can be prepared only after supplying a dedicated control DB and reviewing its target:
+
+```bash
+php artisan control:migrate --confirm-control
+```
+
+Do not set `TENANCY_ENABLED=true` on a customer-facing deployment yet.
+
 ## 1. Architecture decision
 
 Counter POS will use a **shared-code, multi-database architecture**:
@@ -452,4 +488,3 @@ Customer rollout starts only when:
 - A canary tenant succeeds on hPanel before wider rollout.
 
 Shared code solves the inode problem. The implementation must still isolate every database, credential, session, cache entry, file, token, job, integration, backup, and administrative action.
-

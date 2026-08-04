@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Setting;
+use App\Tenancy\TenancyManager;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -20,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(TenancyManager::class);
     }
 
     /**
@@ -41,6 +42,10 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         View::composer('*', function ($view) {
+            if (config('tenancy.enabled', false) && ! app(TenancyManager::class)->hasTenant()) {
+                return;
+            }
+
             $excluded = [
                 'api',
                 'setup',

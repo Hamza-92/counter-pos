@@ -915,10 +915,12 @@ Route::middleware(['auth:api', 'Is_Active', 'request.safety', 'token.timeout'])-
 
     // ------------------------------- Update Settings ------------------------\\
 
-    Route::get('get_version_info', 'UpdateController@get_version_info');
-    Route::post('one_click_update', 'AutoUpdateController@oneClickUpdate');
-    Route::get('update/preflight', 'AutoUpdateController@preflight');
-    Route::get('update/progress', 'AutoUpdateController@progress');
+    if (! config('tenancy.enabled', false)) {
+        Route::get('get_version_info', 'UpdateController@get_version_info');
+        Route::post('one_click_update', 'AutoUpdateController@oneClickUpdate');
+        Route::get('update/preflight', 'AutoUpdateController@preflight');
+        Route::get('update/progress', 'AutoUpdateController@progress');
+    }
 
     // ------------------------------- Backup --------------------------\\
     // ------------------------------------------------------------------\\
