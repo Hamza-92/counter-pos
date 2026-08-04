@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ControlPlane\TenantBackup;
 use App\Models\Setting;
 use App\Services\CloudBackupUploader;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use App\Tenancy\MySqlBackupService;
+use App\Tenancy\TenantOperationRunner;
+use App\Tenancy\TenancyManager;
 
 class BackupController extends Controller
 {
@@ -16,6 +20,27 @@ class BackupController extends Controller
     {
 
         $this->authorizeForUser($request->user('api'), 'backup', User::class);
+
+        if (config('tenancy.enabled', false)) {
+            $tenantId = app(TenancyManager::class)->tenant()->tenantId;
+            $backups = TenantBackup::query()
+                ->where('tenant_id', $tenantId)
+                ->latest()
+                ->get();
+            $data = $backups->values()->map(fn (TenantBackup $backup, int $index) => [
+                'id' => $index + 1,
+                'date' => $backup->created_at?->format('Y-m-d H:i:s').' ('.$backup->id.')',
+                'size' => $this->formatSizeUnits($backup->size_bytes),
+                'status' => $backup->status,
+                // Shared-mode backup history is intentionally append-only.
+                // Hiding the legacy delete action prevents a misleading 404
+                // and, more importantly, prevents accidental loss of the
+                // only verified restore point for a customer.
+                'deletable' => false,
+            ])->all();
+
+            return response()->json(['backups' => $data, 'totalRows' => count($data)]);
+        }
 
         $data = [];
         $id = 0;
@@ -42,6 +67,33 @@ class BackupController extends Controller
     {
 
         $this->authorizeForUser($request->user('api'), 'backup', User::class);
+
+        if (config('tenancy.enabled', false)) {
+            $tenantId = app(TenancyManager::class)->tenant()->tenantId;
+            try {
+                $backup = app(TenantOperationRunner::class)->run(
+                    $tenantId,
+                    'backup',
+                    fn ($tenant, $database) => app(MySqlBackupService::class)->create($tenant, $database),
+                );
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Verified tenant backup generated successfully',
+                    'backup_id' => $backup->id,
+                    'cloud' => null,
+                ]);
+            } catch (\Throwable $exception) {
+                report($exception);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Backup generation failed',
+                    'error' => 'Review the application log for the recorded provisioning run.',
+                    'cloud' => null,
+                ], 500);
+            }
+        }
 
         // Run backup command
         $exitCode = Artisan::call('database:backup');

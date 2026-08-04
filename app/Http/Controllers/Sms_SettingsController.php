@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use App\Models\sms_gateway;
+use App\Tenancy\TenantOptionStore;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 
 class Sms_SettingsController extends Controller
 {
@@ -14,29 +14,26 @@ class Sms_SettingsController extends Controller
     public function get_sms_config(Request $request)
     {
         $this->authorizeForUser($request->user('api'), 'sms_settings', Setting::class);
-        Artisan::call('config:cache');
-        Artisan::call('config:clear');
-
-        $twilio['TWILIO_SID'] = env('TWILIO_SID');
-        $twilio['TWILIO_FROM'] = env('TWILIO_FROM');
+        $twilio['TWILIO_SID'] = tenant_option('TWILIO_SID');
+        $twilio['TWILIO_FROM'] = tenant_option('TWILIO_FROM');
         $twilio['TWILIO_TOKEN'] = '';
 
-        $termi['TERMI_KEY'] = env('TERMI_KEY');
-        $termi['TERMI_SECRET'] = env('TERMI_SECRET');
-        $termi['TERMI_SENDER'] = env('TERMI_SENDER');
+        $termi['TERMI_KEY'] = tenant_option('TERMI_KEY');
+        $termi['TERMI_SECRET'] = '';
+        $termi['TERMI_SENDER'] = tenant_option('TERMI_SENDER');
 
-        $infobip['base_url'] = env('base_url');
-        $infobip['api_key'] = env('api_key');
-        $infobip['sender_from'] = env('sender_from');
+        $infobip['base_url'] = tenant_option('base_url');
+        $infobip['api_key'] = '';
+        $infobip['sender_from'] = tenant_option('sender_from');
 
         $custom = [
-            'api_url' => env('CUSTOM_SMS_API_URL'),
-            'method' => env('CUSTOM_SMS_METHOD', 'POST'),
-            'content_type' => env('CUSTOM_SMS_CONTENT_TYPE', 'json'),
-            'sender' => env('CUSTOM_SMS_SENDER'),
-            'success_keyword' => env('CUSTOM_SMS_SUCCESS_KEYWORD'),
-            'headers' => $this->decodeConfigJson(env('CUSTOM_SMS_HEADERS')),
-            'payload' => $this->decodeConfigJson(env('CUSTOM_SMS_PAYLOAD')),
+            'api_url' => tenant_option('CUSTOM_SMS_API_URL'),
+            'method' => tenant_option('CUSTOM_SMS_METHOD', 'POST'),
+            'content_type' => tenant_option('CUSTOM_SMS_CONTENT_TYPE', 'json'),
+            'sender' => tenant_option('CUSTOM_SMS_SENDER'),
+            'success_keyword' => tenant_option('CUSTOM_SMS_SUCCESS_KEYWORD'),
+            'headers' => $this->decodeConfigJson(tenant_option('CUSTOM_SMS_HEADERS')),
+            'payload' => $this->decodeConfigJson(tenant_option('CUSTOM_SMS_PAYLOAD')),
         ];
 
         $sms_gateway = sms_gateway::where('deleted_at', '=', null)->get(['id', 'title']);
@@ -69,13 +66,10 @@ class Sms_SettingsController extends Controller
         $this->authorizeForUser($request->user('api'), 'sms_settings', Setting::class);
 
         $this->setEnvironmentValue([
-            'TWILIO_SID' => $request['TWILIO_SID'] !== null ? '"'.$request['TWILIO_SID'].'"' : '"'.env('TWILIO_SID').'"',
-            'TWILIO_TOKEN' => $request['TWILIO_TOKEN'] !== null ? '"'.$request['TWILIO_TOKEN'].'"' : '"'.env('TWILIO_TOKEN').'"',
-            'TWILIO_FROM' => $request['TWILIO_FROM'] !== null ? '"'.$request['TWILIO_FROM'].'"' : '"'.env('TWILIO_FROM').'"',
+            'TWILIO_SID' => $request['TWILIO_SID'] !== null ? '"'.$request['TWILIO_SID'].'"' : '"'.tenant_option('TWILIO_SID').'"',
+            'TWILIO_TOKEN' => $request['TWILIO_TOKEN'] !== null ? '"'.$request['TWILIO_TOKEN'].'"' : '"'.tenant_option('TWILIO_TOKEN').'"',
+            'TWILIO_FROM' => $request['TWILIO_FROM'] !== null ? '"'.$request['TWILIO_FROM'].'"' : '"'.tenant_option('TWILIO_FROM').'"',
         ]);
-
-        Artisan::call('config:cache');
-        Artisan::call('config:clear');
 
         return response()->json(['success' => true]);
 
@@ -88,14 +82,12 @@ class Sms_SettingsController extends Controller
         $this->authorizeForUser($request->user('api'), 'sms_settings', Setting::class);
 
         $this->setEnvironmentValue([
-            'TERMI_KEY' => $request['TERMI_KEY'] !== null ? '"'.$request['TERMI_KEY'].'"' : '"'.env('TERMI_KEY').'"',
-            'TERMI_SECRET' => $request['TERMI_SECRET'] !== null ? '"'.$request['TERMI_SECRET'].'"' : '"'.env('TERMI_SECRET').'"',
-            'TERMI_SENDER' => $request['TERMI_SENDER'] !== null ? '"'.$request['TERMI_SENDER'].'"' : '"'.env('TERMI_SENDER').'"',
+            'TERMI_KEY' => $request['TERMI_KEY'] !== null ? '"'.$request['TERMI_KEY'].'"' : '"'.tenant_option('TERMI_KEY').'"',
+            'TERMI_SECRET' => $request['TERMI_SECRET'] !== null ? '"'.$request['TERMI_SECRET'].'"' : '"'.tenant_option('TERMI_SECRET').'"',
+            'TERMI_SENDER' => $request['TERMI_SENDER'] !== null ? '"'.$request['TERMI_SENDER'].'"' : '"'.tenant_option('TERMI_SENDER').'"',
 
         ]);
 
-        Artisan::call('config:cache');
-        Artisan::call('config:clear');
 
         return response()->json(['success' => true]);
 
@@ -108,13 +100,11 @@ class Sms_SettingsController extends Controller
         $this->authorizeForUser($request->user('api'), 'sms_settings', Setting::class);
 
         $this->setEnvironmentValue([
-            'base_url' => $request['base_url'] !== null ? '"'.$request['base_url'].'"' : '"'.env('base_url').'"',
-            'api_key' => $request['api_key'] !== null ? '"'.$request['api_key'].'"' : '"'.env('api_key').'"',
-            'sender_from' => $request['sender_from'] !== null ? '"'.$request['sender_from'].'"' : '"'.env('sender_from').'"',
+            'base_url' => $request['base_url'] !== null ? '"'.$request['base_url'].'"' : '"'.tenant_option('base_url').'"',
+            'api_key' => $request['api_key'] !== null ? '"'.$request['api_key'].'"' : '"'.tenant_option('api_key').'"',
+            'sender_from' => $request['sender_from'] !== null ? '"'.$request['sender_from'].'"' : '"'.tenant_option('sender_from').'"',
         ]);
 
-        Artisan::call('config:cache');
-        Artisan::call('config:clear');
 
         return response()->json(['success' => true]);
 
@@ -149,8 +139,6 @@ class Sms_SettingsController extends Controller
             'CUSTOM_SMS_PAYLOAD' => '"'.$payloadEncoded.'"',
         ]);
 
-        Artisan::call('config:cache');
-        Artisan::call('config:clear');
 
         return response()->json(['success' => true]);
     }
@@ -208,6 +196,20 @@ class Sms_SettingsController extends Controller
 
     public function setEnvironmentValue(array $values)
     {
+        if (config('tenancy.enabled', false)) {
+            $normalized = [];
+            foreach ($values as $key => $value) {
+                $value = (string) $value;
+                if (strlen($value) >= 2 && $value[0] === '"' && $value[strlen($value) - 1] === '"') {
+                    $value = substr($value, 1, -1);
+                }
+                $normalized[$key] = $value;
+            }
+            app(TenantOptionStore::class)->putMany($normalized);
+
+            return true;
+        }
+
         $envFile = app()->environmentFilePath();
         $str = file_get_contents($envFile);
         $str .= "\r\n";

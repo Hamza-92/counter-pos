@@ -203,8 +203,7 @@ if (! config('tenancy.enabled', false) && $installed === false) {
     });
 }
 
-if (! config('tenancy.enabled', false)) {
-    Route::group(['middleware' => ['web', 'auth:web', 'Is_Active']], function () {
+Route::group(['middleware' => ['web', 'auth:web', 'Is_Active']], function () {
 
     // QuickBooks OAuth + status
     Route::get('/quickbooks/connect', [QuickBooksController::class, 'connect'])->name('quickbooks.connect');
@@ -214,8 +213,7 @@ if (! config('tenancy.enabled', false)) {
     Route::get('/google-calendar/connect', [\App\Http\Controllers\GoogleCalendarConnectController::class, 'connect'])->name('google_calendar.connect');
     Route::get('/google-calendar/callback', [\App\Http\Controllers\GoogleCalendarConnectController::class, 'callback'])->name('google_calendar.callback');
     Route::get('/google-calendar/disconnect', [\App\Http\Controllers\GoogleCalendarConnectController::class, 'disconnect'])->name('google_calendar.disconnect');
-    });
-}
+});
 
 // ------------------------------------------------------------------\\
 // Client Portal - if no portal auth, send directly to login (no Vue app load)

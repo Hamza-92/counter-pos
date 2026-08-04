@@ -24,7 +24,7 @@ class QuickBooksService
                 'user_id' => $ctx['user_id'] ?? (auth()->id() ?? null),
                 'sale_id' => $ctx['sale_id'] ?? null,
                 'realm_id' => $ctx['realm_id'] ?? null,
-                'environment' => $this->normalizeEnv($ctx['environment'] ?? (config('services.quickbooks.env', 'Development'))),
+                'environment' => $this->normalizeEnv($ctx['environment'] ?? tenant_option('QUICKBOOKS_ENV', 'Development')),
                 'operation' => $operation,
                 'level' => $level, // 'info' | 'warning' | 'error'
                 'message' => $ctx['message'] ?? null,
@@ -50,7 +50,7 @@ class QuickBooksService
 
     private function resolveTokenRow(?string $realmId, ?string $environment): ?QuickBooksToken
     {
-        $env = $this->normalizeEnv($environment ?? config('services.quickbooks.env', 'Development'));
+        $env = $this->normalizeEnv($environment ?? tenant_option('QUICKBOOKS_ENV', 'Development'));
 
         if ($realmId) {
             $row = QuickBooksToken::where('realm_id', $realmId)->where('environment', $env)->first();
@@ -76,8 +76,8 @@ class QuickBooksService
 
         $ds = DataService::Configure([
             'auth_mode' => 'oauth2',
-            'ClientID' => config('services.quickbooks.client_id'),
-            'ClientSecret' => config('services.quickbooks.client_secret'),
+            'ClientID' => tenant_option('QUICKBOOKS_CLIENT_ID'),
+            'ClientSecret' => tenant_option('QUICKBOOKS_CLIENT_SECRET'),
             'accessTokenKey' => $row->access_token,
             'refreshTokenKey' => $row->refresh_token,
             'QBORealmID' => $row->realm_id,
@@ -139,7 +139,7 @@ class QuickBooksService
 
     private function ensureIncomeAccountId(DataService $ds): array
     {
-        if ($nameCfg = trim((string) config('services.quickbooks.income_account_name'))) {
+        if ($nameCfg = trim((string) tenant_option('QUICKBOOKS_INCOME_ACCOUNT_NAME'))) {
             $nameEsc = $this->qboEscape($nameCfg);
             $hit = $ds->Query("select Id,Name from Account where Name = '$nameEsc' and Active = true");
             if (is_array($hit) && isset($hit[0]->Id)) {

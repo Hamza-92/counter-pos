@@ -15,6 +15,7 @@ use App\Models\UserWarehouse;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Intervention\Image\ImageManagerStatic as Image;
 
 class SettingsController extends Controller
@@ -955,9 +956,17 @@ class SettingsController extends Controller
 
     public function Clear_Cache(Request $request)
     {
+        if (config('tenancy.enabled', false)) {
+            Cache::store('database')->flush();
+
+            return response()->json(['success' => true]);
+        }
+
         Artisan::call('cache:clear');
         Artisan::call('view:clear');
         Artisan::call('route:clear');
+
+        return response()->json(['success' => true]);
     }
 
     // -------------- Get Environment Value Directly from .env File ---------------\\

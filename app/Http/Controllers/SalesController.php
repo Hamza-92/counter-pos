@@ -426,7 +426,7 @@ class SalesController extends BaseController
         // (at the very end of your store() method, after the transaction)
         $qboSync = 'skipped';
         try {
-            $realmGuess = $sale->quickbooks_realm_id ?: env('QUICKBOOKS_REALM_ID'); // may be null
+            $realmGuess = $sale->quickbooks_realm_id ?: tenant_option('QUICKBOOKS_REALM_ID'); // may be null
 
             if (class_exists(\App\Jobs\SyncSaleToQuickBooks::class)) {
                 \App\Jobs\SyncSaleToQuickBooks::dispatch($sale->id, $realmGuess)->afterCommit();
@@ -3153,9 +3153,9 @@ class SalesController extends BaseController
         if ($default_sms_gateway->title == 'twilio') {
             try {
 
-                $account_sid = env('TWILIO_SID');
-                $auth_token = env('TWILIO_TOKEN');
-                $twilio_number = env('TWILIO_FROM');
+                $account_sid = tenant_option('TWILIO_SID');
+                $auth_token = tenant_option('TWILIO_TOKEN');
+                $twilio_number = tenant_option('TWILIO_FROM');
 
                 $client = new Client_Twilio($account_sid, $auth_token);
                 $client->messages->create($receiverNumber, [
@@ -3174,11 +3174,11 @@ class SalesController extends BaseController
 
             $payload = [
                 'to' => $receiverNumber,
-                'from' => env('TERMI_SENDER'),
+                'from' => tenant_option('TERMI_SENDER'),
                 'sms' => $message_text,
                 'type' => 'plain',
                 'channel' => 'generic',
-                'api_key' => env('TERMI_KEY'),
+                'api_key' => tenant_option('TERMI_KEY'),
             ];
 
             try {
@@ -3199,9 +3199,9 @@ class SalesController extends BaseController
         //  //---- infobip
         elseif ($default_sms_gateway->title == 'infobip') {
 
-            $BASE_URL = env('base_url');
-            $API_KEY = env('api_key');
-            $SENDER = env('sender_from');
+            $BASE_URL = tenant_option('base_url');
+            $API_KEY = tenant_option('api_key');
+            $SENDER = tenant_option('sender_from');
 
             $configuration = (new Configuration)
                 ->setHost($BASE_URL)
@@ -3424,9 +3424,9 @@ class SalesController extends BaseController
         // Send SMS based on the gateway
         if ($default_sms_gateway->title == 'twilio') {
             try {
-                $account_sid = env('TWILIO_SID');
-                $auth_token = env('TWILIO_TOKEN');
-                $twilio_number = env('TWILIO_FROM');
+                $account_sid = tenant_option('TWILIO_SID');
+                $auth_token = tenant_option('TWILIO_TOKEN');
+                $twilio_number = tenant_option('TWILIO_FROM');
 
                 $client = new Client_Twilio($account_sid, $auth_token);
                 $client->messages->create($receiverNumber, [
@@ -3454,11 +3454,11 @@ class SalesController extends BaseController
 
             $payload = [
                 'to' => $receiverNumber,
-                'from' => env('TERMI_SENDER'),
+                'from' => tenant_option('TERMI_SENDER'),
                 'sms' => $message_text,
                 'type' => 'plain',
                 'channel' => 'generic',
-                'api_key' => env('TERMI_KEY'),
+                'api_key' => tenant_option('TERMI_KEY'),
             ];
 
             try {
@@ -3482,9 +3482,9 @@ class SalesController extends BaseController
                 return response()->json(['status' => 'error', 'message' => 'Failed to send SMS'], 500);
             }
         } elseif ($default_sms_gateway->title == 'infobip') {
-            $BASE_URL = env('base_url');
-            $API_KEY = env('api_key');
-            $SENDER = env('sender_from');
+            $BASE_URL = tenant_option('base_url');
+            $API_KEY = tenant_option('api_key');
+            $SENDER = tenant_option('sender_from');
 
             $configuration = (new Configuration)
                 ->setHost($BASE_URL)
@@ -3565,11 +3565,11 @@ class SalesController extends BaseController
             $client = new Client_termi;
             $payload = [
                 'to' => $receiverNumber,
-                'from' => env('TERMI_SENDER'),
+                'from' => tenant_option('TERMI_SENDER'),
                 'sms' => $message_text,
                 'type' => 'plain',
                 'channel' => 'generic',
-                'api_key' => env('TERMI_KEY'),
+                'api_key' => tenant_option('TERMI_KEY'),
             ];
 
             try {

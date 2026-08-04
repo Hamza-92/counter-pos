@@ -29,7 +29,7 @@ class CheckoutController extends Controller
             'currency' => ['nullable', 'string', 'max:3'],
         ]);
 
-        $stripeSecret = config('services.stripe.secret');
+        $stripeSecret = tenant_option('STRIPE_SECRET', config('services.stripe.secret'));
         if (! $stripeSecret) {
             return response()->json(['error' => 'Stripe is not configured.'], 500);
         }
@@ -78,7 +78,7 @@ class CheckoutController extends Controller
                 return response()->json(['error' => 'Stripe payment confirmation is required.'], 422);
             }
 
-            $stripeSecret = config('services.stripe.secret');
+            $stripeSecret = tenant_option('STRIPE_SECRET', config('services.stripe.secret'));
             if (! $stripeSecret) {
                 return response()->json(['error' => 'Stripe is not configured.'], 500);
             }

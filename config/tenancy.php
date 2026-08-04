@@ -31,12 +31,8 @@ return [
     'unsafe_shared_paths' => [
         'setup', 'setup/*', 'update', 'update/*',
         'api/get_version_info', 'api/one_click_update', 'api/update/*',
-        'api/clear_cache', 'api/update_status_module',
-        'api/get_backup', 'api/generate_new_backup', 'api/delete_backup/*',
+        'api/update_status_module',
+        'api/delete_backup/*',
         'api/upload_module',
-        'api/get_config_mail', 'api/update_config_mail/*', 'api/test_config_mail',
-        'api/get_sms_config*', 'api/update_*_config', 'api/update_Default_SMS',
-        'api/payment_gateway', 'api/get_payment_gateway*',
-        'quickbooks/*', 'api/quickbooks/*',
     ],
 ];

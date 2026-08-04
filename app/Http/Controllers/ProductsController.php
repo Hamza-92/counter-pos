@@ -316,6 +316,8 @@ class ProductsController extends BaseController
     {
         $this->authorizeForUser($request->user('api'), 'create', Product::class);
 
+        $this->normalizeOptionalProductInputs($request);
+
         try {
 
             // define validation rules for product
@@ -342,7 +344,9 @@ class ProductsController extends BaseController
                 'tax_method' => 'required',
                 'discount_method' => 'required',
                 'sub_category_id' => 'nullable|integer',
-                'sub_category_id' => 'nullable|integer',
+                'brand_id' => 'nullable|integer',
+                'warranty_period' => 'nullable|integer|min:0',
+                'guarantee_period' => 'nullable|integer|min:0',
                 'unit_id' => Rule::requiredIf($request->type != 'is_service'),
                 'cost' => Rule::requiredIf($request->type == 'is_single' || $request->type == 'is_combo'),
                 'price' => Rule::requiredIf($request->type != 'is_variant'),
@@ -501,7 +505,7 @@ class ProductsController extends BaseController
                 $Product->Type_barcode = $request['Type_barcode'];
                 $Product->category_id = $request['category_id'];
                 $Product->sub_category_id = $request['sub_category_id'] ?? null;
-                $Product->brand_id = $request['brand_id'];
+                $Product->brand_id = $request->input('brand_id');
                 $Product->note = $request['note'];
                 $Product->TaxNet = $request['TaxNet'] ? $request['TaxNet'] : 0;
                 $Product->tax_method = $request['tax_method'];
@@ -511,14 +515,18 @@ class ProductsController extends BaseController
                 $Product->points = $request['points'] ? $request['points'] : 0;
 
                 // —————— Warranty & Guarantee ——————
-                $Product->warranty_period = $request['warranty_period'] ?? null;
+                $Product->warranty_period = $request->input('warranty_period');
                 $Product->warranty_unit = $request['warranty_unit'] ?? null;
                 $Product->warranty_terms = $request['warranty_terms'] ?? null;
 
                 // casted boolean
-                $Product->has_guarantee = filter_var($request['has_guarantee'], FILTER_VALIDATE_BOOLEAN);
-                $Product->guarantee_period = $request['guarantee_period'] ?? null;
-                $Product->guarantee_unit = $request['guarantee_unit'] ?? null;
+                $Product->has_guarantee = $request->boolean('has_guarantee');
+                $Product->guarantee_period = $request->boolean('has_guarantee')
+                    ? $request->input('guarantee_period')
+                    : null;
+                $Product->guarantee_unit = $request->boolean('has_guarantee')
+                    ? $request->input('guarantee_unit')
+                    : null;
 
                 // -- check if type is_single
                 if ($request['type'] == 'is_single' || $request['type'] == 'is_combo') {
@@ -810,6 +818,7 @@ class ProductsController extends BaseController
     {
 
         $this->authorizeForUser($request->user('api'), 'update', Product::class);
+        $this->normalizeOptionalProductInputs($request);
         try {
 
             // define validation rules for product
@@ -835,6 +844,10 @@ class ProductsController extends BaseController
                 'tax_method' => 'required',
                 'discount_method' => 'required',
                 'type' => 'required',
+                'sub_category_id' => 'nullable|integer',
+                'brand_id' => 'nullable|integer',
+                'warranty_period' => 'nullable|integer|min:0',
+                'guarantee_period' => 'nullable|integer|min:0',
                 'unit_id' => Rule::requiredIf($request->type != 'is_service'),
                 'cost' => Rule::requiredIf($request->type == 'is_single' || $request->type == 'is_combo'),
                 'price' => Rule::requiredIf($request->type != 'is_variant'),
@@ -1000,7 +1013,7 @@ class ProductsController extends BaseController
                 $Product->sub_category_id = isset($request['sub_category_id']) && $request['sub_category_id'] !== '' && $request['sub_category_id'] !== 'null'
                     ? $request['sub_category_id']
                     : null;
-                $Product->brand_id = $request['brand_id'] == 'null' ? null : $request['brand_id'];
+                $Product->brand_id = $request->input('brand_id');
                 $Product->TaxNet = $request['TaxNet'];
                 $Product->tax_method = $request['tax_method'];
                 $Product->discount = $request['discount'];
@@ -1011,20 +1024,20 @@ class ProductsController extends BaseController
                 // ——— Warranty & Guarantee Tracking ———
 
                 // Warranty
-                $Product->warranty_period = $request['warranty_period'] !== null
-                ? (int) $request['warranty_period']
-                : null;
+                $Product->warranty_period = $request->input('warranty_period');
                 $Product->warranty_unit = $request['warranty_unit'] ?? null;
                 $Product->warranty_terms = $request['warranty_terms'] ?? null;
 
                 // Guarantee
                 // If your form posts 'has_guarantee' only when checked, you might need:
-                $Product->has_guarantee = filter_var($request['has_guarantee'], FILTER_VALIDATE_BOOLEAN);
+                $Product->has_guarantee = $request->boolean('has_guarantee');
 
-                $Product->guarantee_period = $request['guarantee_period'] !== null
-                ? (int) $request['guarantee_period']
-                : null;
-                $Product->guarantee_unit = $request['guarantee_unit'] ?? null;
+                $Product->guarantee_period = $request->boolean('has_guarantee')
+                    ? $request->input('guarantee_period')
+                    : null;
+                $Product->guarantee_unit = $request->boolean('has_guarantee')
+                    ? $request->input('guarantee_unit')
+                    : null;
 
                 // -- check if type is_single
                 if ($request['type'] == 'is_single' || $request['type'] == 'is_combo') {
@@ -4168,5 +4181,45 @@ class ProductsController extends BaseController
         if ($categoryDirty || $subDirty) {
             $product->saveQuietly();
         }
+    }
+
+    /**
+     * Multipart Vue forms historically encode an unselected nullable field as
+     * an empty string or the literal strings `null` / `undefined`. MySQL must
+     * receive a real NULL for nullable numeric columns.
+     */
+    protected function normalizeOptionalProductInputs(Request $request): void
+    {
+        $nullableNumericFields = [
+            'sub_category_id',
+            'brand_id',
+            'warranty_period',
+            'guarantee_period',
+            'weight',
+            'length',
+            'width',
+            'height',
+            'preorder_limit',
+            'shelf_life_days',
+        ];
+
+        $normalized = [];
+        foreach ($nullableNumericFields as $field) {
+            if (! $request->exists($field)) {
+                continue;
+            }
+
+            $value = $request->input($field);
+            $normalized[$field] = is_string($value)
+                && in_array(strtolower(trim($value)), ['', 'null', 'undefined'], true)
+                    ? null
+                    : $value;
+        }
+
+        if (! $request->exists('has_guarantee')) {
+            $normalized['has_guarantee'] = false;
+        }
+
+        $request->merge($normalized);
     }
 }

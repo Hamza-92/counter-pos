@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Tenancy\TenantOptionStore;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 
 class Payment_gateway_SettingsController extends Controller
 {
@@ -13,10 +13,7 @@ class Payment_gateway_SettingsController extends Controller
     public function Get_payment_gateway(Request $request)
     {
         $this->authorizeForUser($request->user('api'), 'payment_gateway', Setting::class);
-        Artisan::call('config:cache');
-        Artisan::call('config:clear');
-
-        $item['stripe_key'] = env('STRIPE_KEY');
+        $item['stripe_key'] = tenant_option('STRIPE_KEY');
         $item['stripe_secret'] = '';
         $item['deleted'] = false;
 
@@ -26,10 +23,7 @@ class Payment_gateway_SettingsController extends Controller
     public function get_payment_gateway_ws(Request $request)
     {
         $this->authorizeForUser($request->user('api'), 'view', Setting::class);
-        Artisan::call('config:cache');
-        Artisan::call('config:clear');
-
-        $item['stripe_key'] = env('STRIPE_KEY');
+        $item['stripe_key'] = tenant_option('STRIPE_KEY');
         $item['stripe_secret'] = '';
         $item['deleted'] = false;
 
@@ -43,23 +37,35 @@ class Payment_gateway_SettingsController extends Controller
         $this->authorizeForUser($request->user('api'), 'payment_gateway', Setting::class);
 
         if ($request['deleted'] == 'true') {
-            $this->setEnvironmentValue([
+            $this->storeGatewayValues([
                 'STRIPE_KEY' => '',
                 'STRIPE_SECRET' => '',
             ]);
 
         } else {
-            $this->setEnvironmentValue([
-                'STRIPE_KEY' => $request['stripe_key'] !== null ? '"'.$request['stripe_key'].'"' : '',
-                'STRIPE_SECRET' => $request['stripe_secret'] !== null ? '"'.$request['stripe_secret'].'"' : '"'.env('STRIPE_SECRET').'"',
-            ]);
+            $values = ['STRIPE_KEY' => (string) $request->input('stripe_key', '')];
+            if ($request->filled('stripe_secret')) {
+                $values['STRIPE_SECRET'] = (string) $request->input('stripe_secret');
+            }
+            $this->storeGatewayValues($values);
         }
-
-        Artisan::call('config:cache');
-        Artisan::call('config:clear');
 
         return response()->json(['success' => true]);
 
+    }
+
+    private function storeGatewayValues(array $values): void
+    {
+        if (config('tenancy.enabled', false)) {
+            app(TenantOptionStore::class)->putMany($values);
+
+            return;
+        }
+
+        $this->setEnvironmentValue(array_map(
+            static fn ($value) => $value === '' ? '' : '"'.$value.'"',
+            $values,
+        ));
     }
 
     // -------------- Set Environment Value ---------------\\

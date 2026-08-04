@@ -2,7 +2,7 @@
 
 > **Status: locally implemented and verified.** Production deployment still requires hPanel-specific database users, HTTPS, backups, and a canary customer rehearsal.
 
-## Implementation status (2026-08-03)
+## Implementation status (2026-08-04)
 
 The shared-code/database-per-domain implementation is complete for local testing. It remains opt-in in the example configuration; the supplied local installation has tenancy enabled for the `.localhost` domains listed below.
 
@@ -15,7 +15,7 @@ Implemented:
 - Earliest global tenancy middleware plus strict tenant/control route-zone middleware.
 - Control-plane schema for superadmins, tenants, domains, encrypted credentials, plans, subscriptions, append-only payments, provisioning history, audit history, sessions, cache, and jobs.
 - Explicit central Eloquent models; tenant model guard for new tenant-owned models.
-- Shared-mode blocks for installer, updater, global config mutation, global cache, payment/SMS/mail configuration, and QuickBooks paths until tenant-scoped replacements exist.
+- Shared-mode blocks for installer, updater, module mutation, and destructive shared-code/global-data operations.
 - Permanently disabled legacy `auto:Migrate` command that previously ran `migrate:fresh`.
 - Explicit `control:migrate --confirm-control` command.
 - Standalone global scheduler commands are disabled in tenancy mode and replaced by explicit per-tenant scheduled commands.
@@ -24,7 +24,10 @@ Implemented:
 - Superadmin customer, exact-domain, encrypted database credential, subscription, manual payment/reversal, plan, activation, and health views/workflows.
 - Tenant-specific database sessions, cache, queue payload/bootstrap, scheduled jobs, URL/filesystem roots, and guarded media delivery.
 - Safe, one-tenant-at-a-time provision, migrate, seed, health, backup, restore, staging-file import, and local isolation commands with database identity checks and locks.
-- Tenant-aware replacement of legacy shared upload locations and blocking of installer, updater, module upload, backup UI, global configuration mutation, and other unsafe shared-mode HTTP paths.
+- Tenant-aware replacement of legacy shared upload locations and blocking of installer, updater, module upload, backup deletion, global configuration mutation, and other unsafe shared-mode HTTP paths.
+- Tenant-scoped mail, SMS, payment-gateway, QuickBooks, Google Calendar, cache-clear, and verified-backup APIs; OAuth callbacks remain bound to the exact resolved tenant host.
+- Encrypted `tenant_options` storage for per-customer integration secrets, preventing a customer settings page from rewriting the shared `.env` or leaking credentials into another database.
+- Legacy product-form compatibility in tenant databases: nullable numeric values are normalized to SQL `NULL`, and the tenant connection retains the standalone application's non-strict MySQL behavior by default.
 - Two-real-MySQL-database local isolation verification, including independent cache writes, full migration/health checks, backup, and restore.
 - Modernized email verification and repaired attendance route, allowing the complete route table to load.
 

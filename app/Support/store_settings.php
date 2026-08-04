@@ -1,5 +1,7 @@
 <?php
 
+use App\Tenancy\TenantOptionStore;
+
 use App\Models\StoreSetting;
 use Illuminate\Support\Facades\Cache;
 
@@ -37,5 +39,16 @@ if (! function_exists('tenant_public_path')) {
         }
 
         return public_path($relative);
+    }
+}
+
+if (! function_exists('tenant_option')) {
+    /**
+     * Read a customer-specific encrypted option in shared mode, retaining the
+     * historical environment fallback only for standalone installations.
+     */
+    function tenant_option(string $key, mixed $default = null): mixed
+    {
+        return app(TenantOptionStore::class)->get($key, $default);
     }
 }

@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\QuickBooksAudit;
 use App\Models\QuickBooksToken;
+use App\Tenancy\TenantOptionStore;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use QuickBooksOnline\API\DataService\DataService;
@@ -17,14 +16,14 @@ class QuickBooksController extends Controller
 {
     private function env(): string
     {
-        $e = strtolower(trim(config('services.quickbooks.env', 'Development')));
+        $e = strtolower(trim((string) tenant_option('QUICKBOOKS_ENV', 'Development')));
 
         return in_array($e, ['development', 'dev', 'sandbox'], true) ? 'Development' : 'Production';
     }
 
     private function redirectUri(): string
     {
-        return (string) config('services.quickbooks.redirect');
+        return (string) tenant_option('QUICKBOOKS_REDIRECT_URI', url('/quickbooks/callback'));
     }
 
     /** Small audit helper (never blocks the main flow) */
@@ -59,8 +58,8 @@ class QuickBooksController extends Controller
 
         $ds = DataService::Configure([
             'auth_mode' => 'oauth2',
-            'ClientID' => config('services.quickbooks.client_id'),
-            'ClientSecret' => config('services.quickbooks.client_secret'),
+            'ClientID' => tenant_option('QUICKBOOKS_CLIENT_ID'),
+            'ClientSecret' => tenant_option('QUICKBOOKS_CLIENT_SECRET'),
             'RedirectURI' => $redirect,
             'scope' => 'com.intuit.quickbooks.accounting',
             'baseUrl' => $env, // Development | Production
@@ -162,8 +161,8 @@ class QuickBooksController extends Controller
 
         $ds = DataService::Configure([
             'auth_mode' => 'oauth2',
-            'ClientID' => config('services.quickbooks.client_id'),
-            'ClientSecret' => config('services.quickbooks.client_secret'),
+            'ClientID' => tenant_option('QUICKBOOKS_CLIENT_ID'),
+            'ClientSecret' => tenant_option('QUICKBOOKS_CLIENT_SECRET'),
             'RedirectURI' => $redirect,
             'scope' => 'com.intuit.quickbooks.accounting',
             'baseUrl' => $env,
@@ -252,7 +251,14 @@ class QuickBooksController extends Controller
     /** GET /quickbooks/settings (behind auth) — read from .env only */
     public function quickbookgetSettings()
     {
-        return response()->json(config('services.quickbooks'));
+        return response()->json([
+            'client_id' => tenant_option('QUICKBOOKS_CLIENT_ID'),
+            'client_secret' => tenant_option('QUICKBOOKS_CLIENT_SECRET'),
+            'redirect' => $this->redirectUri(),
+            'env' => $this->env(),
+            'realm_id' => tenant_option('QUICKBOOKS_REALM_ID'),
+            'income_account_name' => tenant_option('QUICKBOOKS_INCOME_ACCOUNT_NAME'),
+        ]);
     }
 
     /** POST /quickbooks/settings (behind auth) — write to .env */
@@ -267,7 +273,7 @@ class QuickBooksController extends Controller
             'income_account_name' => 'nullable|string',
         ]);
 
-        $this->writeEnv([
+        app(TenantOptionStore::class)->putMany([
             'QUICKBOOKS_CLIENT_ID' => $data['client_id'],
             'QUICKBOOKS_CLIENT_SECRET' => $data['client_secret'],
             'QUICKBOOKS_REDIRECT_URI' => $data['redirect'],
@@ -276,12 +282,8 @@ class QuickBooksController extends Controller
             'QUICKBOOKS_INCOME_ACCOUNT_NAME' => $data['income_account_name'] ?? '',
         ]);
 
-        // refresh config cache
-        Artisan::call('config:clear');
-        Artisan::call('config:cache');
-
         $this->audit('settings.save', 'info', [
-            'message' => 'Settings saved to .env',
+            'message' => 'Tenant QuickBooks settings saved',
             'request' => ['env' => $data['env'], 'redirect' => $data['redirect']],
         ]);
 
@@ -306,28 +308,6 @@ class QuickBooksController extends Controller
         ]);
     }
 
-    private function writeEnv(array $pairs): void
-    {
-        $path = base_path('.env');
-        if (! File::exists($path)) {
-            return;
-        }
-
-        $env = File::get($path);
-        foreach ($pairs as $key => $value) {
-            // quote if necessary
-            $escaped = (preg_match('/[\s#"\'=]/', (string) $value))
-                ? '"'.str_replace('"', '\"', (string) $value).'"'
-                : (string) $value;
-
-            if (preg_match("/^{$key}=.*$/m", $env)) {
-                $env = preg_replace("/^{$key}=.*$/m", "{$key}={$escaped}", $env);
-            } else {
-                $env .= PHP_EOL."{$key}={$escaped}";
-            }
-        }
-        File::put($path, $env);
-    }
 
     public function audits(Request $request)
     {

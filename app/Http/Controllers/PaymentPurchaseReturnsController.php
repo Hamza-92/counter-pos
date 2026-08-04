@@ -437,9 +437,9 @@ class PaymentPurchaseReturnsController extends BaseController
         if ($gateway->title == 'twilio') {
             try {
 
-                $account_sid = env('TWILIO_SID');
-                $auth_token = env('TWILIO_TOKEN');
-                $twilio_number = env('TWILIO_FROM');
+                $account_sid = tenant_option('TWILIO_SID');
+                $auth_token = tenant_option('TWILIO_TOKEN');
+                $twilio_number = tenant_option('TWILIO_FROM');
 
                 $client = new Client_Twilio($account_sid, $auth_token);
                 $client->messages->create($receiverNumber, [
@@ -459,11 +459,11 @@ class PaymentPurchaseReturnsController extends BaseController
 
             $payload = [
                 'to' => $receiverNumber,
-                'from' => env('TERMI_SENDER'),
+                'from' => tenant_option('TERMI_SENDER'),
                 'sms' => $message_text,
                 'type' => 'plain',
                 'channel' => 'generic',
-                'api_key' => env('TERMI_KEY'),
+                'api_key' => tenant_option('TERMI_KEY'),
             ];
 
             try {

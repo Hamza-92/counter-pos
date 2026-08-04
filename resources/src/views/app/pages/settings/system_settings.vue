@@ -2849,6 +2849,7 @@
                             <template slot="table-row" slot-scope="props">
                               <span v-if="props.column.field == 'actions'">
                                 <b-button
+                                  v-if="props.row.deletable !== false"
                                   variant="danger"
                                   size="sm"
                                   @click="DeleteBackup(props.row.date)"

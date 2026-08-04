@@ -65,7 +65,11 @@ return [
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
-            'strict' => true,
+            // CounterPOS has legacy forms that submit empty strings for
+            // nullable numeric columns. Keep production tenancy compatible
+            // with the standalone connection while controllers normalize
+            // known nullable values before persistence.
+            'strict' => (bool) env('TENANT_DB_STRICT', false),
             'engine' => 'InnoDB',
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('TENANT_MYSQL_ATTR_SSL_CA'),

@@ -185,7 +185,7 @@
             <!-- <a v-b-tooltip.hover @click="DownloadBackup(props.row.date)" title="Download">
               <lucide-icon class="text-25 text-success" name="download" />
             </a> -->
-            <a title="Delete" v-b-tooltip.hover @click="DeleteBackup(props.row.date)">
+            <a v-if="props.row.deletable !== false" title="Delete" v-b-tooltip.hover @click="DeleteBackup(props.row.date)">
               <lucide-icon class="text-25 text-danger" name="x" />
             </a>
           </span>

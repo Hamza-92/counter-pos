@@ -8,15 +8,15 @@ class CustomSmsGateway
 {
     public function send(string $toPhone, string $message): void
     {
-        $apiUrl = env('CUSTOM_SMS_API_URL');
+        $apiUrl = tenant_option('CUSTOM_SMS_API_URL');
         if (! $apiUrl) {
             throw new \RuntimeException('Custom SMS gateway is not configured');
         }
 
-        $method = strtoupper(env('CUSTOM_SMS_METHOD', 'POST'));
-        $contentType = strtolower(env('CUSTOM_SMS_CONTENT_TYPE', 'json'));
-        $sender = env('CUSTOM_SMS_SENDER', '');
-        $successKeyword = env('CUSTOM_SMS_SUCCESS_KEYWORD');
+        $method = strtoupper(tenant_option('CUSTOM_SMS_METHOD', 'POST'));
+        $contentType = strtolower(tenant_option('CUSTOM_SMS_CONTENT_TYPE', 'json'));
+        $sender = tenant_option('CUSTOM_SMS_SENDER', '');
+        $successKeyword = tenant_option('CUSTOM_SMS_SUCCESS_KEYWORD');
 
         $replacements = [
             '{phone}' => $toPhone,
@@ -25,11 +25,11 @@ class CustomSmsGateway
         ];
 
         $headers = $this->interpolate(
-            $this->decodeStoredJson(env('CUSTOM_SMS_HEADERS')),
+            $this->decodeStoredJson(tenant_option('CUSTOM_SMS_HEADERS')),
             $replacements
         );
         $payload = $this->interpolate(
-            $this->decodeStoredJson(env('CUSTOM_SMS_PAYLOAD')),
+            $this->decodeStoredJson(tenant_option('CUSTOM_SMS_PAYLOAD')),
             $replacements
         );
 

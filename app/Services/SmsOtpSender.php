@@ -28,9 +28,9 @@ class SmsOtpSender
         }
 
         if ($gateway->title === 'twilio') {
-            $sid = env('TWILIO_SID');
-            $token = env('TWILIO_TOKEN');
-            $from = env('TWILIO_FROM');
+            $sid = tenant_option('TWILIO_SID');
+            $token = tenant_option('TWILIO_TOKEN');
+            $from = tenant_option('TWILIO_FROM');
             if (! $sid || ! $token || ! $from) {
                 throw new \RuntimeException('Twilio credentials are missing');
             }
@@ -40,9 +40,9 @@ class SmsOtpSender
         }
 
         if ($gateway->title === 'infobip') {
-            $BASE_URL = env('base_url');
-            $API_KEY = env('api_key');
-            $SENDER = env('sender_from');
+            $BASE_URL = tenant_option('base_url');
+            $API_KEY = tenant_option('api_key');
+            $SENDER = tenant_option('sender_from');
             if (! $BASE_URL || ! $API_KEY || ! $SENDER) {
                 throw new \RuntimeException('Infobip credentials are missing');
             }
@@ -70,11 +70,11 @@ class SmsOtpSender
             $url = 'https://api.ng.termii.com/api/sms/send';
             $payload = [
                 'to' => $toPhone,
-                'from' => env('TERMI_SENDER'),
+                'from' => tenant_option('TERMI_SENDER'),
                 'sms' => $message,
                 'type' => 'plain',
                 'channel' => 'generic',
-                'api_key' => env('TERMI_KEY'),
+                'api_key' => tenant_option('TERMI_KEY'),
             ];
             if (! $payload['from'] || ! $payload['api_key']) {
                 throw new \RuntimeException('Termii credentials are missing');
