@@ -111,7 +111,7 @@ class ProductGalleryService
             return;
         }
 
-        $dir = public_path('/images/products');
+        $dir = tenant_public_path('/images/products');
         foreach ($source->images as $img) {
             $oldName = $img->image_path;
             if ($oldName === '' || $oldName === 'no-image.png') {
@@ -169,7 +169,7 @@ class ProductGalleryService
             $files = $files ? [$files] : [];
         }
 
-        $path = public_path('/images/products');
+        $path = tenant_public_path('/images/products');
         $sort = $startSort;
 
         foreach ($files as $file) {
@@ -341,7 +341,7 @@ class ProductGalleryService
             return;
         }
 
-        $full = public_path('/images/products/'.$filename);
+        $full = tenant_public_path('/images/products/'.$filename);
         if (file_exists($full)) {
             @unlink($full);
         }

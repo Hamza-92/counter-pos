@@ -15,6 +15,41 @@ use Illuminate\Support\Facades\Auth;
 
 class AttendancesController extends Controller
 {
+    public function daily_attendance(Request $request)
+    {
+        $this->authorizeForUser($request->user('api'), 'view', Attendance::class);
+        $date = $request->input('date', now()->toDateString());
+
+        $attendances = Attendance::query()
+            ->with(['employee:id,username', 'company:id,name'])
+            ->whereNull('deleted_at')
+            ->whereDate('date', $date)
+            ->orderBy('employee_id')
+            ->get();
+
+        return response()->json(['date' => $date, 'attendances' => $attendances]);
+    }
+
+    public function attendance_by_employee(Request $request, $id)
+    {
+        $this->authorizeForUser($request->user('api'), 'view', Attendance::class);
+        $request->validate([
+            'from' => ['nullable', 'date'],
+            'to' => ['nullable', 'date', 'after_or_equal:from'],
+        ]);
+
+        $attendances = Attendance::query()
+            ->with(['employee:id,username', 'company:id,name'])
+            ->where('employee_id', $id)
+            ->whereNull('deleted_at')
+            ->when($request->filled('from'), fn ($query) => $query->whereDate('date', '>=', $request->input('from')))
+            ->when($request->filled('to'), fn ($query) => $query->whereDate('date', '<=', $request->input('to')))
+            ->orderByDesc('date')
+            ->paginate(min(100, max(1, (int) $request->input('limit', 30))));
+
+        return response()->json($attendances);
+    }
+
     // ----------- GET ALL  Attendance --------------\\
 
     public function index(Request $request)

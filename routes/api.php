@@ -369,7 +369,7 @@ Route::middleware(['auth:api', 'Is_Active', 'request.safety', 'token.timeout'])-
     // --------------------------------------------------------------------\\
     Route::resource('attendances', 'hrm\AttendancesController');
     Route::get('daily_attendance', "hrm\AttendancesController@daily_attendance")->name('daily_attendance');
-    Route::post('attendance_by_employee/{id}', 'hrm\EmployeeSessionController@attendance_by_employee')->name('attendance_by_employee.post');
+    Route::post('attendance_by_employee/{id}', 'hrm\AttendancesController@attendance_by_employee')->name('attendance_by_employee.post');
     Route::post('attendances/delete/by_selection', "hrm\AttendancesController@delete_by_selection");
 
     // ------------------------------- Request leave  -----------------------\\
@@ -915,10 +915,12 @@ Route::middleware(['auth:api', 'Is_Active', 'request.safety', 'token.timeout'])-
 
     // ------------------------------- Update Settings ------------------------\\
 
-    Route::get('get_version_info', 'UpdateController@get_version_info');
-    Route::post('one_click_update', 'AutoUpdateController@oneClickUpdate');
-    Route::get('update/preflight', 'AutoUpdateController@preflight');
-    Route::get('update/progress', 'AutoUpdateController@progress');
+    if (! config('tenancy.enabled', false)) {
+        Route::get('get_version_info', 'UpdateController@get_version_info');
+        Route::post('one_click_update', 'AutoUpdateController@oneClickUpdate');
+        Route::get('update/preflight', 'AutoUpdateController@preflight');
+        Route::get('update/progress', 'AutoUpdateController@progress');
+    }
 
     // ------------------------------- Backup --------------------------\\
     // ------------------------------------------------------------------\\

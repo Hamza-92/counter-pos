@@ -41,7 +41,7 @@ class LanguageController extends Controller
             $filename = rand(11111111, 99999999).$image->getClientOriginalName();
 
             $image_resize = Image::make($image->getRealPath());
-            $image_resize->save(public_path('/flags/'.$filename));
+            $image_resize->save(tenant_public_path('/flags/'.$filename));
 
         } else {
             $filename = 'no-image.png';
@@ -70,7 +70,7 @@ class LanguageController extends Controller
         if ($request->hasFile('flag')) {
             // Delete old flag if not default
             if ($language->flag && $language->flag !== 'no-image.png') {
-                $oldPath = public_path('/flags/'.$language->flag);
+                $oldPath = tenant_public_path('/flags/'.$language->flag);
                 if (file_exists($oldPath)) {
                     @unlink($oldPath);
                 }
@@ -79,11 +79,11 @@ class LanguageController extends Controller
             $image = $request->file('flag');
             $extension = strtolower($image->getClientOriginalExtension());
             $filename = rand(11111111, 99999999).'.'.$extension;
-            $destination = public_path('/flags/'.$filename);
+            $destination = tenant_public_path('/flags/'.$filename);
 
             if ($extension === 'svg') {
                 // Just move the SVG without resizing
-                $image->move(public_path('/flags'), $filename);
+                $image->move(tenant_public_path('/flags'), $filename);
             } else {
                 // Resize for raster formats
                 $image_resize = \Image::make($image->getRealPath());

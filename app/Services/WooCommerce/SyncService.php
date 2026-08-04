@@ -2713,7 +2713,7 @@ class SyncService
                 }
             }
 
-            $dir = public_path('images/products');
+            $dir = tenant_public_path('images/products');
             if (!is_dir($dir)) {
                 @mkdir($dir, 0755, true);
             }
@@ -5015,7 +5015,7 @@ class SyncService
                 return null;
             }
 
-            $public = public_path('images/products/'.$imageName);
+            $public = tenant_public_path('images/products/'.$imageName);
             if (!is_file($public)) {
                 return null;
             }
@@ -5054,7 +5054,7 @@ class SyncService
                 return null;
             }
 
-            $abs = public_path('images/products/'.$imageName);
+            $abs = tenant_public_path('images/products/'.$imageName);
             if (!is_file($abs)) {
                 return null;
             }
@@ -5587,7 +5587,7 @@ class SyncService
                 return null;
             }
 
-            $abs = public_path('images/brands/'.$imageName);
+            $abs = tenant_public_path('images/brands/'.$imageName);
             if (!is_file($abs)) {
                 return null;
             }
@@ -5654,7 +5654,7 @@ class SyncService
                     $ext = 'webp';
                 }
             }
-            $dir = public_path('images/brands');
+            $dir = tenant_public_path('images/brands');
             if (!is_dir($dir)) {
                 return null;
             }

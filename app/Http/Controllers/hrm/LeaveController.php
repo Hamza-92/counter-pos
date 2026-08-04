@@ -99,7 +99,7 @@ class LeaveController extends Controller
 
             $image = $request->file('attachment');
             $filename = time().'.'.$image->extension();
-            $image->move(public_path('/images/leaves'), $filename);
+            $image->move(tenant_public_path('/images/leaves'), $filename);
 
         } else {
             $filename = 'no_image.png';
@@ -186,8 +186,8 @@ class LeaveController extends Controller
 
                 $image = $request->file('attachment');
                 $filename = time().'.'.$image->extension();
-                $image->move(public_path('/images/leaves'), $filename);
-                $path = public_path().'/images/leaves';
+                $image->move(tenant_public_path('/images/leaves'), $filename);
+                $path = tenant_public_path().'/images/leaves';
                 $LeavePhoto = $path.'/'.$CurrentAttachement;
                 if (file_exists($LeavePhoto)) {
                     if ($leave->attachment != 'no_image.png') {
@@ -263,7 +263,7 @@ class LeaveController extends Controller
 
         $attachment = $leave->attachment;
 
-        $path = public_path().'/images/leaves';
+        $path = tenant_public_path().'/images/leaves';
         $LeavePhoto = $path.'/'.$attachment;
         if (file_exists($LeavePhoto)) {
             if ($leave->attachment != 'no_image.png') {
@@ -290,7 +290,7 @@ class LeaveController extends Controller
 
             $attachment = $leave->attachment;
 
-            $path = public_path().'/images/leaves';
+            $path = tenant_public_path().'/images/leaves';
             $LeavePhoto = $path.'/'.$attachment;
             if (file_exists($LeavePhoto)) {
                 if ($leave->attachment != 'no_image.png') {

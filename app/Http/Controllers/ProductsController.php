@@ -616,7 +616,7 @@ class ProductsController extends BaseController
                     $image_resize->resize(800, 800, function ($constraint) {
                         $constraint->aspectRatio();
                         $constraint->upsize();
-                    })->save(public_path('/images/products/'.$filename));
+                    })->save(tenant_public_path('/images/products/'.$filename));
 
                 } else {
                     $filename = 'no-image.png';
@@ -1341,7 +1341,7 @@ class ProductsController extends BaseController
                 if ($currentImage && $request->hasFile('image')) {
 
                     $image = $request->file('image');
-                    $path = public_path('/images/products');
+                    $path = tenant_public_path('/images/products');
                     $filename = rand(11111111, 99999999).'_'.$image->getClientOriginalName();
 
                     // Resize to one standard size (800x800)
@@ -1360,7 +1360,7 @@ class ProductsController extends BaseController
                 } elseif (! $currentImage && $request->hasFile('image')) {
 
                     $image = $request->file('image');
-                    $path = public_path('/images/products');
+                    $path = tenant_public_path('/images/products');
                     $filename = rand(11111111, 99999999).'_'.$image->getClientOriginalName();
 
                     $image_resize = Image::make($image->getRealPath());
@@ -1435,7 +1435,7 @@ class ProductsController extends BaseController
 
             ProductGalleryService::deleteAllForProduct($Product);
 
-            $pathIMG = public_path().'/images/products/'.$Product->image;
+            $pathIMG = tenant_public_path().'/images/products/'.$Product->image;
             if (file_exists($pathIMG)) {
                 if ($Product->image != 'no-image.png') {
                     @unlink($pathIMG);
@@ -1481,7 +1481,7 @@ class ProductsController extends BaseController
 
                 ProductGalleryService::deleteAllForProduct($Product);
 
-                $pathIMG = public_path().'/images/products/'.$Product->image;
+                $pathIMG = tenant_public_path().'/images/products/'.$Product->image;
                 if (file_exists($pathIMG)) {
                     if ($Product->image != 'no-image.png') {
                         @unlink($pathIMG);
@@ -3519,7 +3519,7 @@ class ProductsController extends BaseController
         $stockExport = new StockExport($stock);
 
         $excelFileName = 'stock_export_'.now()->format('YmdHis').'.xlsx';
-        $excelFolderPath = public_path().'/images/count_stock/';
+        $excelFolderPath = tenant_public_path().'/images/count_stock/';
         $excelFilePath = $excelFolderPath.$excelFileName;
 
         // Check if the directory exists, if not, create it
@@ -3891,10 +3891,10 @@ class ProductsController extends BaseController
             $newImage = 'no-image.png';
             $oldImage = $original->image;
             if (! empty($oldImage) && $oldImage !== 'no-image.png') {
-                $srcPath = public_path('/images/products/'.$oldImage);
+                $srcPath = tenant_public_path('/images/products/'.$oldImage);
                 if (file_exists($srcPath)) {
                     $newImage = rand(11111111, 99999999).'_'.$oldImage;
-                    $dstPath = public_path('/images/products/'.$newImage);
+                    $dstPath = tenant_public_path('/images/products/'.$newImage);
                     @copy($srcPath, $dstPath);
                 }
             }

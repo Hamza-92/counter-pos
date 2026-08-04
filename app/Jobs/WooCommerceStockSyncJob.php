@@ -190,7 +190,7 @@ class WooCommerceStockSyncJob implements ShouldQueue
                                     try {
                                         $imgName = (string) ($product->image ?? '');
                                         if ($imgName !== '' && strtolower($imgName) !== 'no-image.png') {
-                                            $public = public_path('images/products/'.$imgName);
+                                            $public = tenant_public_path('images/products/'.$imgName);
                                             if (is_file($public)) {
                                                 $payloadVar['image'] = ['src' => asset('images/products/'.$imgName)];
                                             }
@@ -236,7 +236,7 @@ class WooCommerceStockSyncJob implements ShouldQueue
                                 try {
                                     $imgName = (string) ($product->image ?? '');
                                     if ($imgName !== '' && strtolower($imgName) !== 'no-image.png') {
-                                        $public = public_path('images/products/'.$imgName);
+                                        $public = tenant_public_path('images/products/'.$imgName);
                                         if (is_file($public)) {
                                             $payload['images'] = [['src' => asset('images/products/'.$imgName)]];
                                         }
@@ -263,7 +263,7 @@ class WooCommerceStockSyncJob implements ShouldQueue
                                 try {
                                     $imgName = (string) ($product->image ?? '');
                                     if ($imgName !== '' && strtolower($imgName) !== 'no-image.png') {
-                                        $public = public_path('images/products/'.$imgName);
+                                        $public = tenant_public_path('images/products/'.$imgName);
                                         if (is_file($public)) {
                                             $payload['images'] = [['src' => asset('images/products/'.$imgName)]];
                                         }
@@ -442,7 +442,7 @@ class WooCommerceStockSyncJob implements ShouldQueue
             if ($imgName === '' || strtolower($imgName) === 'no-image.png') {
                 return null;
             }
-            $abs = public_path('images/products/'.$imgName);
+            $abs = tenant_public_path('images/products/'.$imgName);
             if (! is_file($abs)) {
                 return null;
             }

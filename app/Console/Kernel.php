@@ -27,6 +27,16 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
+        if (config('tenancy.enabled', false)) {
+            $schedule->command('queue:work database --once --queue=default --sleep=1 --tries=1 --timeout='.((int) env('QUEUE_WORKER_TIMEOUT', 1200)))
+                ->everyMinute()->withoutOverlapping()->evenInMaintenanceMode();
+            $schedule->command('tenant:scheduled assets')->daily()->withoutOverlapping();
+            $schedule->command('tenant:scheduled invoices')->dailyAt('00:10')->withoutOverlapping();
+            $schedule->command('tenant:scheduled reminders')->dailyAt('09:00')->withoutOverlapping();
+
+            return;
+        }
+
         $schedule->command('database:backup');
 
         $schedule->command('assets:check-validation-due')->daily();

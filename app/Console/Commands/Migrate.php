@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 
 class Migrate extends Command
 {
@@ -38,8 +37,8 @@ class Migrate extends Command
      */
     public function handle()
     {
-        \Artisan::call('migrate:fresh --force');
-        Artisan::call('migrate', ['--force' => true, '--path' => 'vendor/laravel/passport/database/migrations']);
-        \Artisan::call('passport:install');
+        $this->error('This destructive legacy command is permanently disabled.');
+
+        return self::FAILURE;
     }
 }

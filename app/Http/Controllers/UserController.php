@@ -162,7 +162,7 @@ class UserController extends BaseController
 
                 $image_resize = Image::make($image->getRealPath());
                 $image_resize->resize(128, 128);
-                $image_resize->save(public_path('/images/avatar/'.$filename));
+                $image_resize->save(tenant_public_path('/images/avatar/'.$filename));
 
             } else {
                 $filename = 'no_avatar.png';
@@ -266,12 +266,12 @@ class UserController extends BaseController
             if ($request->avatar != $currentAvatar) {
 
                 $image = $request->file('avatar');
-                $path = public_path().'/images/avatar';
+                $path = tenant_public_path().'/images/avatar';
                 $filename = rand(11111111, 99999999).$image->getClientOriginalName();
 
                 $image_resize = Image::make($image->getRealPath());
                 $image_resize->resize(128, 128);
-                $image_resize->save(public_path('/images/avatar/'.$filename));
+                $image_resize->save(tenant_public_path('/images/avatar/'.$filename));
 
                 $userPhoto = $path.'/'.$currentAvatar;
                 if (file_exists($userPhoto)) {
@@ -346,12 +346,12 @@ class UserController extends BaseController
         if ($request->avatar != $currentAvatar) {
 
             $image = $request->file('avatar');
-            $path = public_path().'/images/avatar';
+            $path = tenant_public_path().'/images/avatar';
             $filename = rand(11111111, 99999999).$image->getClientOriginalName();
 
             $image_resize = Image::make($image->getRealPath());
             $image_resize->resize(128, 128);
-            $image_resize->save(public_path('/images/avatar/'.$filename));
+            $image_resize->save(tenant_public_path('/images/avatar/'.$filename));
 
             $userPhoto = $path.'/'.$currentAvatar;
 

@@ -26,6 +26,10 @@ class Kernel extends HttpKernel
     ];
 
     protected $middleware = [
+        \App\Http\Middleware\AssignRequestId::class,
+        // Must resolve the host and database before sessions/auth/models.
+        \App\Http\Middleware\ResolveTenantOrControlPlane::class,
+        \App\Http\Middleware\BlockUnsafeSharedOperations::class,
         // \App\Http\Middleware\TrustProxies::class,
         \App\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
@@ -97,6 +101,9 @@ class Kernel extends HttpKernel
         'pdf.locale' => \App\Http\Middleware\SetPdfLocale::class,
         // Client portal: separate auth from admin/store
         'portal.auth' => \App\Http\Middleware\EnsurePortalAuth::class,
+        'tenant.host' => \App\Http\Middleware\RequireTenantHost::class,
+        'control.host' => \App\Http\Middleware\RequireControlPlaneHost::class,
+        'control.secure' => \App\Http\Middleware\ControlSecurity::class,
 
     ];
 }

@@ -40,6 +40,7 @@ return [
     'guards' => [
         'web' => ['driver' => 'session', 'provider' => 'users'],
         'api' => ['driver' => 'passport', 'provider' => 'users', 'hash' => false],
+        'control' => ['driver' => 'session', 'provider' => 'super_admins'],
 
         // storefront customers
         'store' => ['driver' => 'session', 'provider' => 'ecommerce_clients'],
@@ -48,26 +49,7 @@ return [
         'portal' => ['driver' => 'session', 'provider' => 'portal_clients'],
     ],
 
-    'providers' => [
-        'users' => ['driver' => 'eloquent', 'model' => App\Models\User::class],
-
-        // add (or verify) this block
-        'ecommerce_clients' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\EcommerceClient::class,
-        ],
-    ],
-
     // optional but recommended if you’ll use password resets for store users:
-    'passwords' => [
-        'ecommerce_clients' => [
-            'provider' => 'ecommerce_clients',
-            'table' => 'password_reset_tokens', // 'password_resets' on older Laravel
-            'expire' => 60,
-            'throttle' => 60,
-        ],
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | User Providers
@@ -99,6 +81,11 @@ return [
         'portal_clients' => [
             'driver' => 'eloquent',
             'model' => App\Models\PortalClient::class,
+        ],
+
+        'super_admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\ControlPlane\SuperAdmin::class,
         ],
 
         // 'users' => [
