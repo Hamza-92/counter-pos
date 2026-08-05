@@ -16,8 +16,24 @@ class TenantHealth extends Command
     {
         try {
             $result = $runner->run((string) $this->option('tenant'), 'health', function ($tenant, $database) {
-                $required = ['users', 'settings', 'sessions', 'cache', 'jobs', 'migrations'];
+                $required = ['users', 'settings', 'sessions', 'cache', 'jobs', 'migrations', 'tenant_options'];
                 $missing = array_values(array_filter($required, static fn ($table) => ! Schema::connection('tenant')->hasTable($table)));
+                $requiredColumns = [
+                    'settings' => ['timezone'],
+                    'products' => ['warranty_period', 'has_guarantee', 'guarantee_period'],
+                ];
+                foreach ($requiredColumns as $table => $columns) {
+                    if (! Schema::connection('tenant')->hasTable($table)) {
+                        $missing[] = $table;
+                        continue;
+                    }
+                    foreach ($columns as $column) {
+                        if (! Schema::connection('tenant')->hasColumn($table, $column)) {
+                            $missing[] = $table.'.'.$column;
+                        }
+                    }
+                }
+                $missing = array_values(array_unique($missing));
                 $tables = DB::connection('tenant')->select('SHOW TABLES');
                 $schemaVersion = Schema::connection('tenant')->hasTable('migrations')
                     ? DB::connection('tenant')->table('migrations')->count()

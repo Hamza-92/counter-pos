@@ -29,6 +29,7 @@ Implemented:
 - Encrypted `tenant_options` storage for per-customer integration secrets, preventing a customer settings page from rewriting the shared `.env` or leaking credentials into another database.
 - Legacy product-form compatibility in tenant databases: nullable numeric values are normalized to SQL `NULL`, and the tenant connection retains the standalone application's non-strict MySQL behavior by default.
 - Automatic verified MySQL backup fallback for hPanel/shared hosts that disable `proc_open`; the pure-PHP driver uses a consistent database snapshot and produces standard SQL importable by the application, MySQL, or phpMyAdmin.
+- Tenant-local timezone persistence and column-level health checks for critical settings/product warranty fields, preventing an incomplete customer schema from being reported as healthy.
 - Two-real-MySQL-database local isolation verification, including independent cache writes, full migration/health checks, backup, and restore.
 - Modernized email verification and repaired attendance route, allowing the complete route table to load.
 
