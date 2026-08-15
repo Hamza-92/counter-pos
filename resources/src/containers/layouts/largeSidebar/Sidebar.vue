@@ -27,7 +27,8 @@
 
           <!-- Store (parent) -->
          <li
-            v-show="currentUserPermissions && (
+             v-if="showOnlineStore"
+             v-show="currentUserPermissions && (
                       currentUserPermissions.includes('Store_settings_view') ||
                       currentUserPermissions.includes('Orders_view') ||
                       currentUserPermissions.includes('Collections_view') ||
@@ -559,8 +560,9 @@
 
 
         <!-- Store (children) -->
-       <ul
-        class="childNav d-none"
+        <ul
+         v-if="showOnlineStore"
+         class="childNav d-none"
         data-parent="Store"
         :class="{ 'd-block': selectedParentMenu == 'Store' }"
       >
@@ -2277,6 +2279,9 @@ export default {
 
   data() {
     return {
+       // Online ecommerce store navigation is intentionally hidden for POS tenants.
+       // Routes and APIs remain available for a future re-enable without data changes.
+       showOnlineStore: false,
       isDisplay: true,
       isMenuOver: false,
       isStyle: true,

@@ -43,6 +43,7 @@
 
           <!-- Store -->
           <li
+            v-if="showOnlineStore"
             v-show="currentUserPermissions && (
               currentUserPermissions.includes('Store_settings_view') ||
               currentUserPermissions.includes('Orders_view') ||
@@ -59,7 +60,7 @@
               <span class="nav-text" v-if="!isCollapsed">{{ $t('Store') }}</span>
               <lucide-icon class="submenu-arrow" name="chevron-down" v-if="!isCollapsed" />
             </a>
-            <ul class="submenu" v-if="openMenus.includes('Store') && !isCollapsed">
+            <ul class="submenu" v-if="showOnlineStore && openMenus.includes('Store') && !isCollapsed">
               <li class="submenu-item">
                 <a href="/online_store" target="_blank" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="store" />
@@ -1557,6 +1558,9 @@ export default {
   
   data() {
     return {
+      // Online ecommerce store navigation is intentionally hidden for POS tenants.
+      // Routes and APIs remain available for a future re-enable without data changes.
+      showOnlineStore: false,
       isMobile,
       isTablet,
       windowWidth: typeof window !== 'undefined' ? window.innerWidth : 1200,
