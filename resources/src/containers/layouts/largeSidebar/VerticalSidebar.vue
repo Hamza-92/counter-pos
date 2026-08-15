@@ -774,7 +774,7 @@
 
           <!-- Subscription Product -->
           <li
-            v-if="currentUserPermissions && currentUserPermissions.includes('subscription_product')"
+            v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('subscription_product')"
             :class="{ active: isActiveRoute('subscription_product') }"
             class="nav-item"
           >
@@ -786,7 +786,7 @@
 
           <!-- Service & Maintenance -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('service_jobs')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('service_jobs')"
             :class="{ active: isActiveRoute('service'), 'has-submenu': true, open: openMenus.includes('service') }"
             class="nav-item"
           >
@@ -795,7 +795,7 @@
               <span class="nav-text" v-if="!isCollapsed">{{ $t('Service_Maintenance') }}</span>
               <lucide-icon class="submenu-arrow" name="chevron-down" v-if="!isCollapsed" />
             </a>
-            <ul class="submenu" v-if="openMenus.includes('service') && !isCollapsed">
+            <ul class="submenu" v-if="showOptionalModules && openMenus.includes('service') && !isCollapsed">
               <li class="submenu-item">
                 <router-link to="/app/service/jobs" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="files" />
@@ -888,7 +888,7 @@
 
           <!-- Projects -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('projects')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('projects')"
             :class="{ active: isActiveRoute('projects') }"
             class="nav-item"
           >
@@ -900,7 +900,7 @@
 
           <!-- Contracts -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('contracts')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('contracts')"
             :class="{ active: isActiveRoute('contracts') }"
             class="nav-item"
           >
@@ -912,7 +912,7 @@
 
           <!-- Tasks -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('tasks')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('tasks')"
             :class="{ active: isActiveRoute('tasks') }"
             class="nav-item"
           >
@@ -924,7 +924,7 @@
 
           <!-- Bookings (with submenu: Booking List, Google Calendar) -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('bookings')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('bookings')"
             :class="{ active: isActiveRoute('bookings'), 'has-submenu': true, open: openMenus.includes('bookings') }"
             class="nav-item"
           >
@@ -933,7 +933,7 @@
               <span class="nav-text" v-if="!isCollapsed">{{ $t('Bookings') }}</span>
               <lucide-icon class="submenu-arrow" name="chevron-down" v-if="!isCollapsed" />
             </a>
-            <ul class="submenu" v-if="openMenus.includes('bookings') && !isCollapsed">
+            <ul class="submenu" v-if="showOptionalModules && openMenus.includes('bookings') && !isCollapsed">
               <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('bookings')">
                 <router-link to="/app/bookings/list" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="files" />
@@ -996,7 +996,7 @@
 
            <!-- woocommerce_settings -->
            <li
-           v-if="currentUserPermissions && currentUserPermissions.includes('woocommerce_settings')"
+            v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('woocommerce_settings')"
             :class="{ active: isActiveRoute('woocommerce_settings') }"
             class="nav-item"
           >
@@ -1008,7 +1008,7 @@
 
           <!-- Knowledge Base -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('knowledge_base_view')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('knowledge_base_view')"
             :class="{ active: isActiveRoute('knowledge_base') }"
             class="nav-item"
           >
@@ -1191,7 +1191,7 @@
 
           <!-- AI Reports -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('AI_Reports')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('AI_Reports')"
             :class="{ active: isActiveRoute('ai_reports') }"
             class="nav-item"
           >
@@ -1516,19 +1516,19 @@
                 </router-link>
               </li>
 
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('service_jobs_report')">
+              <li class="submenu-item" v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('service_jobs_report')">
                 <router-link :to="{ name: 'service_jobs_report' }" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="wrench" />
                   <span>{{ $t('Service_Jobs_Report') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('checklist_completion_report')">
+              <li class="submenu-item" v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('checklist_completion_report')">
                 <router-link :to="{ name: 'checklist_completion_report' }" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="check" />
                   <span>{{ $t('Checklist_Completion_Report') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('customer_maintenance_history_report')">
+              <li class="submenu-item" v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('customer_maintenance_history_report')">
                 <router-link :to="{ name: 'customer_maintenance_history_report' }" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="calendar-days" />
                   <span>{{ $t('Customer_Maintenance_History_Report') }}</span>
@@ -1561,6 +1561,8 @@ export default {
       // Online ecommerce store navigation is intentionally hidden for POS tenants.
       // Routes and APIs remain available for a future re-enable without data changes.
       showOnlineStore: false,
+      // Optional modules are hidden from POS navigation, but their routes and data remain intact.
+      showOptionalModules: false,
       isMobile,
       isTablet,
       windowWidth: typeof window !== 'undefined' ? window.innerWidth : 1200,

@@ -291,7 +291,7 @@
           
 
             <li
-            v-if="currentUserPermissions && currentUserPermissions.includes('subscription_product')"
+            v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('subscription_product')"
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'subscription_product' }"
             class="nav-item"
@@ -306,7 +306,7 @@
 
 
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('service_jobs')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('service_jobs')"
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'service' }"
             class="nav-item"
@@ -336,7 +336,7 @@
           </li>
 
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('projects')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('projects')"
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'projects' }"
             class="nav-item"
@@ -349,7 +349,7 @@
           </li>
 
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('contracts')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('contracts')"
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'contracts' }"
             class="nav-item"
@@ -362,7 +362,7 @@
           </li>
 
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('tasks')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('tasks')"
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'tasks' }"
             class="nav-item"
@@ -376,7 +376,7 @@
 
           <!-- Bookings (with submenu: Booking List, Google Calendar) -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('bookings')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('bookings')"
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'bookings' }"
             class="nav-item"
@@ -408,7 +408,7 @@
 
           <!-- woocommerce_settings -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('woocommerce_settings')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('woocommerce_settings')"
             :class="{ active: selectedParentMenu == 'woocommerce_settings' }"
             class="nav-item"
             data-item="woocommerce_settings"
@@ -421,7 +421,7 @@
 
           <!-- Knowledge Base -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('knowledge_base_view')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('knowledge_base_view')"
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'knowledge-base' }"
             class="nav-item"
@@ -468,7 +468,7 @@
 
           <!-- AI Reports -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('AI_Reports')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('AI_Reports')"
             :class="{ active: selectedParentMenu == 'ai_reports' }"
             class="nav-item"
             data-item="ai_reports"
@@ -1034,6 +1034,7 @@
         </ul>
 
         <ul
+          v-if="showOptionalModules"
           class="childNav d-none"
           data-parent="service"
           :class="{ 'd-block': selectedParentMenu == 'service' }"
@@ -1190,6 +1191,7 @@
         </ul>
 
         <ul
+          v-if="showOptionalModules"
           class="childNav d-none"
           data-parent="bookings"
           :class="{ 'd-block': selectedParentMenu == 'bookings' }"
@@ -2222,7 +2224,7 @@
 
           <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('service_jobs_report')"
+            v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('service_jobs_report')"
           >
             <router-link tag="a" class :to="{ name: 'service_jobs_report' }">
               <lucide-icon class="nav-icon" name="wrench" />
@@ -2232,7 +2234,7 @@
 
           <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('checklist_completion_report')"
+            v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('checklist_completion_report')"
           >
             <router-link tag="a" class :to="{ name: 'checklist_completion_report' }">
               <lucide-icon class="nav-icon" name="check" />
@@ -2242,7 +2244,7 @@
 
           <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('customer_maintenance_history_report')"
+            v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('customer_maintenance_history_report')"
           >
             <router-link tag="a" class :to="{ name: 'customer_maintenance_history_report' }">
               <lucide-icon class="nav-icon" name="calendar-days" />
@@ -2282,7 +2284,9 @@ export default {
        // Online ecommerce store navigation is intentionally hidden for POS tenants.
        // Routes and APIs remain available for a future re-enable without data changes.
        showOnlineStore: false,
-      isDisplay: true,
+       // Optional modules are hidden from POS navigation, but their routes and data remain intact.
+       showOptionalModules: false,
+       isDisplay: true,
       isMenuOver: false,
       isStyle: true,
       selectedParentMenu: "",

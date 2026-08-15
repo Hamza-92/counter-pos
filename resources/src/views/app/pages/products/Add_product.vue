@@ -1464,6 +1464,8 @@
                     </b-form-checkbox>
                   </b-form-group>
 
+                  <!-- Ecommerce-only product controls are hidden; values remain in the model/API. -->
+                  <div v-if="false">
                   <b-form-group>
                     <b-form-checkbox
                       v-model="product.hide_from_online_store"
@@ -1510,6 +1512,7 @@
                       />
                     </b-form-group>
                   </template>
+                  </div>
 
                 </div>
               </b-card>
