@@ -951,7 +951,7 @@
 
           <!-- Commissions -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('commissions_view')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('commissions_view')"
             :class="{ active: isActiveRoute('commissions'), 'has-submenu': true, open: openMenus.includes('commissions') }"
             class="nav-item"
           >
@@ -960,32 +960,32 @@
               <span class="nav-text" v-if="!isCollapsed">{{ $t('Commissions') }}</span>
               <lucide-icon class="submenu-arrow" name="chevron-down" v-if="!isCollapsed" />
             </a>
-            <ul class="submenu" v-if="openMenus.includes('commissions') && !isCollapsed">
-              <li class="submenu-item">
+            <ul class="submenu" v-if="showOptionalModules && openMenus.includes('commissions') && !isCollapsed">
+              <li class="submenu-item" v-if="showOptionalModules">
                 <router-link to="/app/commissions/programs" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="files" />
                   <span>{{ $t('Commission_Programs') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item">
+              <li class="submenu-item" v-if="showOptionalModules">
                 <router-link to="/app/commissions/agents" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="users" />
                   <span>{{ $t('Sales_Agents') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item">
+              <li class="submenu-item" v-if="showOptionalModules">
                 <router-link to="/app/commissions/rules" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="settings" />
                   <span>{{ $t('Commission_Rules') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item">
+              <li class="submenu-item" v-if="showOptionalModules">
                 <router-link to="/app/commissions/receipts" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="receipt" />
                   <span>{{ $t('Commission_Receipts') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item">
+              <li class="submenu-item" v-if="showOptionalModules">
                 <router-link to="/app/commissions/report" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="trending-up" />
                   <span>{{ $t('Commission_Report') }}</span>
@@ -1059,7 +1059,7 @@
 
              
              
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('quickbooks_settings')">
+              <li class="submenu-item" v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('quickbooks_settings')">
                 <router-link to="/app/settings/quickbooks_sync" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="banknote" />
                   <span>{{ $t('Quickbooks_Sync') }}</span>
@@ -1083,25 +1083,25 @@
                   <span>{{ $t('Payment_Methods') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('sms_settings')">
+              <li class="submenu-item" v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('sms_settings')">
                 <router-link to="/app/settings/sms_settings" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="message-square" />
                   <span>{{ $t('sms_settings') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('notification_template')">
+              <li class="submenu-item" v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('notification_template')">
                 <router-link to="/app/settings/sms_templates" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="message-square" />
                   <span>{{ $t('sms_templates') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('mail_settings')">
+              <li class="submenu-item" v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('mail_settings')">
                 <router-link to="/app/settings/mail_settings" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="mail" />
                   <span>{{ $t('mail_settings') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('notification_template')">
+              <li class="submenu-item" v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('notification_template')">
                 <router-link to="/app/settings/email_templates" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="mail" />
                   <span>{{ $t('email_templates') }}</span>
@@ -1127,13 +1127,13 @@
                   <span>{{ $t('module_settings') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('update_settings')">
+              <li class="submenu-item" v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('update_settings')">
                 <router-link to="/app/settings/update_settings" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="arrow-up-circle" />
                   <span>{{ $t('update_settings') }}</span>
                 </router-link>
               </li>
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('payment_gateway')">
+              <li class="submenu-item" v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('payment_gateway')">
                 <router-link to="/app/settings/payment_gateway" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="banknote" />
                   <span>{{ $t('Payment_Gateway') }}</span>
@@ -1171,14 +1171,14 @@
                 </router-link>
               </li>
 
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('webhooks_view')">
+              <li class="submenu-item" v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('webhooks_view')">
                 <router-link to="/app/settings/webhooks" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="cloud" />
                   <span>{{ $t('Webhooks') }}</span>
                 </router-link>
               </li>
 
-              <li class="submenu-item" v-if="currentUserPermissions && currentUserPermissions.includes('login_device_management')">
+              <li class="submenu-item" v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('login_device_management')">
                 <router-link to="/app/settings/login_devices" class="submenu-link">
                   <lucide-icon class="submenu-icon" name="lock" />
                   <span>{{$t('Login_Device_Management')}}</span>
@@ -1563,6 +1563,8 @@ export default {
       showOnlineStore: false,
       // Optional modules are hidden from POS navigation, but their routes and data remain intact.
       showOptionalModules: false,
+      // Non-essential settings are hidden from POS navigation, but routes and configuration remain intact.
+      showHiddenSettings: false,
       isMobile,
       isTablet,
       windowWidth: typeof window !== 'undefined' ? window.innerWidth : 1200,

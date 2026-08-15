@@ -392,7 +392,7 @@
 
           <!-- Commissions -->
           <li
-            v-show="currentUserPermissions && currentUserPermissions.includes('commissions_view')"
+            v-show="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('commissions_view')"
             @mouseenter="toggleSubMenu"
             :class="{ active: selectedParentMenu == 'commissions' }"
             class="nav-item"
@@ -1217,35 +1217,36 @@
         </ul>
 
         <ul
+          v-if="showOptionalModules"
           class="childNav d-none"
           data-parent="commissions"
           :class="{ 'd-block': selectedParentMenu == 'commissions' }"
         >
-          <li class="nav-item" v-if="currentUserPermissions && currentUserPermissions.includes('commissions_view')">
+          <li class="nav-item" v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('commissions_view')">
             <router-link tag="a" class to="/app/commissions/programs">
               <lucide-icon class="nav-icon" name="files" />
               <span class="item-name">{{ $t('Commission_Programs') }}</span>
             </router-link>
           </li>
-          <li class="nav-item" v-if="currentUserPermissions && currentUserPermissions.includes('commissions_view')">
+          <li class="nav-item" v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('commissions_view')">
             <router-link tag="a" class to="/app/commissions/agents">
               <lucide-icon class="nav-icon" name="users" />
               <span class="item-name">{{ $t('Sales_Agents') }}</span>
             </router-link>
           </li>
-          <li class="nav-item" v-if="currentUserPermissions && currentUserPermissions.includes('commissions_view')">
+          <li class="nav-item" v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('commissions_view')">
             <router-link tag="a" class to="/app/commissions/rules">
               <lucide-icon class="nav-icon" name="settings" />
               <span class="item-name">{{ $t('Commission_Rules') }}</span>
             </router-link>
           </li>
-          <li class="nav-item" v-if="currentUserPermissions && currentUserPermissions.includes('commissions_view')">
+          <li class="nav-item" v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('commissions_view')">
             <router-link tag="a" class to="/app/commissions/receipts">
               <lucide-icon class="nav-icon" name="receipt" />
               <span class="item-name">{{ $t('Commission_Receipts') }}</span>
             </router-link>
           </li>
-          <li class="nav-item" v-if="currentUserPermissions && currentUserPermissions.includes('commissions_view')">
+          <li class="nav-item" v-if="showOptionalModules && currentUserPermissions && currentUserPermissions.includes('commissions_view')">
             <router-link tag="a" class to="/app/commissions/report">
               <lucide-icon class="nav-icon" name="trending-up" />
               <span class="item-name">{{ $t('Commission_Report') }}</span>
@@ -1535,7 +1536,7 @@
 
           <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('quickbooks_settings')"
+            v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('quickbooks_settings')"
           >
             <router-link tag="a" class to="/app/settings/quickbooks_sync">
               <lucide-icon class="nav-icon" name="banknote" />
@@ -1575,7 +1576,7 @@
 
           <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('sms_settings')"
+            v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('sms_settings')"
           >
             <router-link tag="a" class to="/app/settings/sms_settings">
               <lucide-icon class="nav-icon" name="message-square" />
@@ -1585,7 +1586,7 @@
 
            <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('notification_template')"
+            v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('notification_template')"
           >
             <router-link tag="a" class to="/app/settings/sms_templates">
               <lucide-icon class="nav-icon" name="message-square" />
@@ -1595,7 +1596,7 @@
 
            <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('mail_settings')"
+            v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('mail_settings')"
           >
             <router-link tag="a" class to="/app/settings/mail_settings">
               <lucide-icon class="nav-icon" name="mail" />
@@ -1605,7 +1606,7 @@
 
            <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('notification_template')"
+            v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('notification_template')"
           >
             <router-link tag="a" class to="/app/settings/email_templates">
               <lucide-icon class="nav-icon" name="mail" />
@@ -1647,7 +1648,7 @@
 
             <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('update_settings')"
+            v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('update_settings')"
           >
             <router-link tag="a" class to="/app/settings/update_settings">
               <lucide-icon class="nav-icon" name="arrow-up-circle" />
@@ -1657,7 +1658,7 @@
 
            <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('payment_gateway')"
+            v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('payment_gateway')"
           >
             <router-link tag="a" class to="/app/settings/payment_gateway">
               <lucide-icon class="nav-icon" name="banknote" />
@@ -1718,7 +1719,7 @@
 
           <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('webhooks_view')"
+            v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('webhooks_view')"
           >
             <router-link tag="a" class to="/app/settings/webhooks">
               <lucide-icon class="nav-icon" name="cloud" />
@@ -1728,7 +1729,7 @@
 
           <li
             class="nav-item"
-            v-if="currentUserPermissions && currentUserPermissions.includes('login_device_management')"
+            v-if="showHiddenSettings && currentUserPermissions && currentUserPermissions.includes('login_device_management')"
           >
             <router-link tag="a" class to="/app/settings/login_devices">
               <lucide-icon class="nav-icon" name="lock" />
@@ -2286,6 +2287,8 @@ export default {
        showOnlineStore: false,
        // Optional modules are hidden from POS navigation, but their routes and data remain intact.
        showOptionalModules: false,
+       // Non-essential settings are hidden from POS navigation, but routes and configuration remain intact.
+       showHiddenSettings: false,
        isDisplay: true,
       isMenuOver: false,
       isStyle: true,
