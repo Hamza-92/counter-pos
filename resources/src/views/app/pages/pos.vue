@@ -2909,6 +2909,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import ModernPaymentModal from "../components/ModernPaymentModal.vue";
 import CustomFieldsForm from "../../../components/CustomFieldsForm.vue";
 import posKeyboardShortcutsMixin, { POS_SHORTCUTS } from "../../../mixins/posKeyboardShortcuts";
+import posBarcodeScannerMixin from "../../../mixins/posBarcodeScanner";
 
 export default {
   components: {
@@ -2917,7 +2918,7 @@ export default {
     ModernPaymentModal,
     CustomFieldsForm,
   },
-  mixins: [posKeyboardShortcutsMixin],
+  mixins: [posKeyboardShortcutsMixin, posBarcodeScannerMixin],
   metaInfo: {
     title: "POS"
   },
@@ -5267,7 +5268,8 @@ export default {
     },
 
     // ==================== SEARCH METHODS ====================
-    search(){
+    search(options = null){
+      const immediate = !!(options && options.immediate === true);
       if (this.timer) {
             clearTimeout(this.timer);
             this.timer = null;
@@ -5276,7 +5278,7 @@ export default {
         return this.product_filter= [];
       }
       if (this.sale.warehouse_id != "" &&  this.sale.warehouse_id != null) {
-        this.timer = setTimeout(() => {
+        const performSearch = () => {
 
           let barcode = this.search_input.trim();
           let weight = null;
@@ -5351,7 +5353,12 @@ export default {
               );
             });
           }
-        }, 800);
+        };
+        if (immediate) {
+          performSearch();
+        } else {
+          this.timer = setTimeout(performSearch, 800);
+        }
       } else {
         this.makeToast(
           "warning",
