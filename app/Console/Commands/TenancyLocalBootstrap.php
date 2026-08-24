@@ -56,7 +56,7 @@ class TenancyLocalBootstrap extends Command
             'driver' => 'mysql', 'database' => $controlName, 'strict' => true,
         ]));
         Config::set('tenancy.database.allowed_hosts', ['127.0.0.1', 'localhost']);
-        Config::set('tenancy.database.name_prefix', 'counterpos');
+        Config::set('tenancy.database.name_prefix', 'counter');
         DB::purge('control');
 
         $exit = Artisan::call('migrate', [
@@ -73,8 +73,8 @@ class TenancyLocalBootstrap extends Command
             'features' => ['Local isolation testing'],
         ]);
 
-        $tenantA = $this->tenant('Local Existing Business', 'local-a', 'shop-a.counterpos.localhost', $tenantAName, $mysql, $plan);
-        $tenantB = $this->tenant('Local New Business', 'local-b', 'shop-b.counterpos.localhost', $tenantBName, $mysql, $plan);
+        $tenantA = $this->tenant('Local Existing Business', 'local-a', 'shop-a.127.0.0.1.nip.io', $tenantAName, $mysql, $plan);
+        $tenantB = $this->tenant('Local New Business', 'local-b', 'shop-b.127.0.0.1.nip.io', $tenantBName, $mysql, $plan);
 
         $manager->initializeForTenant($tenantA->id, true);
         try {
@@ -123,13 +123,13 @@ class TenancyLocalBootstrap extends Command
 
         $this->newLine();
         $this->warn('Local credentials (save now; rerunning rotates them):');
-        $this->line('Control URL: http://admin.counterpos.localhost:8000');
+        $this->line('Control URL: http://admin.127.0.0.1.nip.io:8000');
         $this->line('Control email: admin@counterpos.local');
         $this->line('Control password: '.$adminPassword);
         $this->line('TOTP secret: '.$secret);
         $this->line('Recovery code: '.$recovery[0]);
-        $this->line('Tenant A URL: http://shop-a.counterpos.localhost:8000 (existing application data)');
-        $this->line('Tenant B URL: http://shop-b.counterpos.localhost:8000');
+        $this->line('Tenant A URL: http://shop-a.127.0.0.1.nip.io:8000 (existing application data)');
+        $this->line('Tenant B URL: http://shop-b.127.0.0.1.nip.io:8000');
         $this->line('Tenant B email: owner@local.test');
         $this->line('Tenant B password: '.$tenantPassword);
 
