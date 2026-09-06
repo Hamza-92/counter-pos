@@ -50,6 +50,20 @@ class ClientController extends BaseController
 
         // Multiple Filter
         $Filtred = $helpers->filter($clients, $columns, $param, $request)
+            // Location is one UI filter spanning the customer's address fields.
+            ->when($request->filled('location'), function ($query) use ($request) {
+                $location = $request->string('location')->trim()->value();
+
+                return $query->where(function ($query) use ($location) {
+                    $like = '%'.$location.'%';
+
+                    $query->where('adresse', 'LIKE', $like)
+                        ->orWhere('city', 'LIKE', $like)
+                        ->orWhere('state', 'LIKE', $like)
+                        ->orWhere('country', 'LIKE', $like)
+                        ->orWhere('zip', 'LIKE', $like);
+                });
+            })
         // Search With Multiple Param
             ->where(function ($query) use ($request) {
                 return $query->when($request->filled('search'), function ($query) use ($request) {
@@ -130,6 +144,10 @@ class ClientController extends BaseController
             $item['state'] = $client->state;
             $item['zip'] = $client->zip;
             $item['adresse'] = $client->adresse;
+            $item['location'] = collect([$client->city, $client->adresse])
+                ->filter(fn ($value) => trim((string) $value) !== '')
+                ->unique()
+                ->implode(' — ');
             $item['is_royalty_eligible'] = $client->is_royalty_eligible;
             $item['points'] = $client->points;
             $item['opening_balance'] = $client->opening_balance ?? 0;

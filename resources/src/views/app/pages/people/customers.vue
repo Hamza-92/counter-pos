@@ -216,6 +216,17 @@
             </b-form-group>
           </b-col>
 
+          <!-- Address / city filter -->
+          <b-col md="12">
+            <b-form-group :label="$t('Location')">
+              <b-form-input
+                label="Location"
+                :placeholder="$t('Adress') + ' / ' + $t('City')"
+                v-model="Filter_Location"
+              ></b-form-input>
+            </b-form-group>
+          </b-col>
+
           <b-col md="6" sm="12">
             <b-button @click="Get_Clients(serverParams.page)" variant="primary m-1" size="sm" block>
               <lucide-icon name="filter" />
@@ -1091,6 +1102,7 @@ export default {
       Filter_Code: "",
       Filter_Phone: "",
       Filter_Email: "",
+      Filter_Location: "",
       clients: [],
       accounts: [],
       editmode: false,
@@ -1229,6 +1241,13 @@ export default {
           field: "email",
           tdClass: "text-left",
           thClass: "text-left"
+        },
+        {
+          label: this.$t("Location"),
+          field: "location",
+          tdClass: "text-left",
+          thClass: "text-left",
+          sortable: false
         },
         {
           label: this.$t("Points"),
@@ -1605,6 +1624,7 @@ export default {
       this.Filter_Code = "";
       this.Filter_Phone = "";
       this.Filter_Email = "";
+      this.Filter_Location = "";
       this.Get_Clients(this.serverParams.page);
     },
 
@@ -1718,6 +1738,8 @@ export default {
             this.Filter_Phone +
             "&email=" +
             this.Filter_Email +
+            "&location=" +
+            encodeURIComponent(this.Filter_Location) +
             "&SortField=" +
             this.serverParams.sort.field +
             "&SortType=" +
