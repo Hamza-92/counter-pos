@@ -637,7 +637,14 @@
 
 
         <!-- Products grid -->
-        <div class="pos-shell-products-scroll" :style="{ overflowY: 'auto', overflowX: 'hidden', padding: '0px 6px', minHeight: 0, height: '100%', position: 'relative', opacity: productsLoading ? 0.6 : 1 }">
+        <div
+          class="pos-shell-products-scroll"
+          :style="{ overflowY: 'auto', overflowX: 'hidden', padding: '0px 6px', minHeight: 0, height: '100%', position: 'relative', opacity: productsLoading ? 0.6 : 1, touchAction: 'pan-y' }"
+          @pointerdown="onProductSwipeStart"
+          @pointerup="onProductSwipeEnd"
+          @pointercancel="resetProductSwipe"
+          @click.capture="suppressProductClickAfterSwipe"
+        >
           <!-- Empty state -->
           <div v-if="paginated_Products.length === 0" style="padding: 48px 16px; text-align: center; color: #8d8da0;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 40px; height: 40px; opacity: 0.3; margin: 0 auto 8px;">
@@ -3070,6 +3077,14 @@ export default {
       product_perPage: 10,
       product_totalRows: 0,
       productsLoading: false,
+      productSwipe: {
+        active: false,
+        pointerId: null,
+        startX: 0,
+        startY: 0,
+        startedAt: 0,
+      },
+      productSwipeSuppressClickUntil: 0,
       paginated_Brands: "",
       brand_currentPage: 1,
       brand_perPage: 3,
@@ -4033,6 +4048,60 @@ export default {
     onProductPageItemClick(item) {
       if (typeof item === 'number' && item >= 1 && item <= this.product_lastPage && item !== this.product_currentPage) {
         this.Product_onPageChanged(item);
+      }
+    },
+    onProductSwipeStart(event) {
+      const isTouchPointer = event && (event.pointerType === 'touch' || event.pointerType === 'pen');
+      if (!isTouchPointer || this.productsLoading || this.product_lastPage <= 1) {
+        this.resetProductSwipe();
+        return;
+      }
+      if (this.productSwipe.active) return;
+
+      this.productSwipe.active = true;
+      this.productSwipe.pointerId = event.pointerId;
+      this.productSwipe.startX = event.clientX;
+      this.productSwipe.startY = event.clientY;
+      this.productSwipe.startedAt = Date.now();
+    },
+    onProductSwipeEnd(event) {
+      if (!this.productSwipe.active || !event || event.pointerId !== this.productSwipe.pointerId) return;
+
+      const deltaX = event.clientX - this.productSwipe.startX;
+      const deltaY = event.clientY - this.productSwipe.startY;
+      const duration = Date.now() - this.productSwipe.startedAt;
+      this.resetProductSwipe();
+
+      // Require a deliberate, mostly-horizontal gesture. This preserves the
+      // product area's native vertical scrolling and ordinary product taps.
+      if (duration > 700 || Math.abs(deltaX) < 50 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.2) return;
+
+      const targetPage = deltaX < 0
+        ? this.product_currentPage + 1
+        : this.product_currentPage - 1;
+
+      // Touch browsers may emit a click after pointerup. Block that click so
+      // swiping on a product card never adds it, including at page boundaries.
+      this.productSwipeSuppressClickUntil = Date.now() + 400;
+
+      if (targetPage < 1 || targetPage > this.product_lastPage) return;
+
+      this.Product_onPageChanged(targetPage);
+    },
+    resetProductSwipe() {
+      this.productSwipe.active = false;
+      this.productSwipe.pointerId = null;
+      this.productSwipe.startX = 0;
+      this.productSwipe.startY = 0;
+      this.productSwipe.startedAt = 0;
+    },
+    suppressProductClickAfterSwipe(event) {
+      if (Date.now() >= this.productSwipeSuppressClickUntil) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      if (typeof event.stopImmediatePropagation === 'function') {
+        event.stopImmediatePropagation();
       }
     },
     paginate_products(pageSize, pageNumber) {
