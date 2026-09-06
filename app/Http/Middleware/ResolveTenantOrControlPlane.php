@@ -76,7 +76,10 @@ class ResolveTenantOrControlPlane
                 Config::set('cache.prefix', 'tenant_'.$tenant->tenantId.'_cache');
                 Config::set('queue.connections.database.connection', 'control');
                 Config::set('queue.failed.database', 'control');
-                $tenantUrl = $request->getScheme().'://'.$tenant->primaryHost;
+                $port = $request->getPort();
+                $defaultPort = $request->isSecure() ? 443 : 80;
+                $tenantUrl = $request->getScheme().'://'.$tenant->primaryHost
+                    .($port !== $defaultPort ? ':'.$port : '');
                 Config::set('filesystems.disks.public.root', storage_path('app/public/tenants/'.$tenant->tenantId));
                 Config::set('filesystems.disks.public.url', $tenantUrl.'/storage/tenants/'.$tenant->tenantId);
                 Config::set('filesystems.disks.local.root', storage_path('app/tenants/'.$tenant->tenantId.'/private'));

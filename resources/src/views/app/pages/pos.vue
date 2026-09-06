@@ -418,7 +418,38 @@
                     </svg>
                   </button>
                 </div>
-                <div style="font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: #1f1f2c;">{{ formatPriceWithCurrentCurrency(item.subtotal, 2) }}</div>
+                <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 3px; min-height: 26px;">
+                  <template v-if="editingLineTotalId === item.detail_id">
+                    <input
+                      ref="lineTotalInput"
+                      v-model.trim="editingLineTotalValue"
+                      :data-line-total-id="String(item.detail_id)"
+                      type="text"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      @keydown.enter.prevent="$event.target.blur()"
+                      @keydown.esc.prevent="cancelLineTotalEdit"
+                      @blur="commitLineTotalEdit(item)"
+                      style="width: 92px; height: 26px; border: 1px solid #6f53d9; border-radius: 5px; padding: 0 6px; text-align: right; outline: none; font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: #1f1f2c;"
+                    />
+                  </template>
+                  <template v-else>
+                    <span style="font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: #1f1f2c;">{{ formatPriceWithCurrentCurrency(item.subtotal, 2) }}</span>
+                    <button
+                      v-if="canEditLineTotal(item)"
+                      type="button"
+                      @mousedown.prevent
+                      @click="startLineTotalEdit(item)"
+                      title="Enter a line total to calculate quantity"
+                      aria-label="Edit line total and calculate quantity"
+                      style="background: transparent; border: 0; padding: 3px; border-radius: 4px; cursor: pointer; color: #6f53d9; display: inline-flex; align-items: center; justify-content: center;"
+                    >
+                      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;">
+                        <path d="M14 3l3 3-9 9H5v-3z"/>
+                      </svg>
+                    </button>
+                  </template>
+                </div>
               </div>
 
               <!-- Batches panel (full-width, only for tracked items) -->
@@ -2998,6 +3029,8 @@ export default {
       products_pos: [],
       details: [],
       detail: {},
+      editingLineTotalId: null,
+      editingLineTotalValue: "",
       categories: [],
       brands: [],
       accounts: [],
@@ -4965,6 +4998,113 @@ export default {
       this.$forceUpdate();
     },
 
+    // The amount-to-quantity shortcut is intentionally limited to ordinary
+    // stock lines. Batch, serial/IMEI and service lines have extra quantity
+    // semantics that cannot safely be changed by this lightweight calculator.
+    canEditLineTotal(detail) {
+      return !!detail
+        && !detail.is_batch_tracked
+        && !detail.is_imei
+        && detail.product_type !== 'is_service';
+    },
+
+    startLineTotalEdit(detail) {
+      if (!this.canEditLineTotal(detail)) return;
+
+      this.editingLineTotalId = detail.detail_id;
+      this.editingLineTotalValue = Number(detail.subtotal || 0).toFixed(2);
+
+      this.$nextTick(() => {
+        const inputs = this.$refs.lineTotalInput;
+        const list = Array.isArray(inputs) ? inputs : [inputs];
+        const input = list.find(el => el && String(el.dataset.lineTotalId) === String(detail.detail_id));
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      });
+    },
+
+    cancelLineTotalEdit() {
+      this.editingLineTotalId = null;
+      this.editingLineTotalValue = "";
+    },
+
+    parseLineTotal(value) {
+      let normalized = String(value == null ? '' : value).trim().replace(/\s/g, '');
+      if (normalized.includes(',') && normalized.includes('.')) {
+        normalized = normalized.replace(/,/g, '');
+      } else if ((normalized.match(/,/g) || []).length > 1) {
+        normalized = normalized.replace(/,/g, '');
+      } else if (normalized.includes(',')) {
+        const decimalPlaces = normalized.length - normalized.lastIndexOf(',') - 1;
+        normalized = decimalPlaces === 3
+          ? normalized.replace(',', '')
+          : normalized.replace(',', '.');
+      }
+      return Number(normalized);
+    },
+
+    roundQuantityUp(quantity, precision = 3) {
+      const factor = Math.pow(10, precision);
+      const epsilon = Number.EPSILON * Math.max(1, Math.abs(quantity)) * 4;
+      return Math.ceil((quantity - epsilon) * factor) / factor;
+    },
+
+    commitLineTotalEdit(detail) {
+      // Escape removes the editor before its blur event is handled.
+      if (!detail || this.editingLineTotalId !== detail.detail_id) return;
+
+      const requestedTotal = this.parseLineTotal(this.editingLineTotalValue);
+      const unitTotal = Number(detail.Total_price);
+
+      if (!Number.isFinite(requestedTotal) || requestedTotal <= 0) {
+        this.makeToast('warning', 'Enter a valid amount greater than zero.', this.$t('Warning'));
+        this.cancelLineTotalEdit();
+        return;
+      }
+
+      if (!Number.isFinite(unitTotal) || unitTotal <= 0) {
+        this.makeToast('warning', 'Quantity cannot be calculated because the unit price is zero.', this.$t('Warning'));
+        this.cancelLineTotalEdit();
+        return;
+      }
+
+      // Currency input is stored/displayed to two decimals; quantity matches
+      // the sale_details DECIMAL(12,3) precision used by the current backend.
+      const normalizedTotal = Number(requestedTotal.toFixed(2));
+      const quantity = this.roundQuantityUp(normalizedTotal / unitTotal, 3);
+
+      if (!Number.isFinite(quantity) || quantity <= 0 || quantity > 999999999.999) {
+        this.makeToast('warning', 'The calculated quantity is outside the allowed range.', this.$t('Warning'));
+        this.cancelLineTotalEdit();
+        return;
+      }
+
+      const currentStock = Number(detail.current);
+      if (!this.isOversellingAllowed
+          && Number.isFinite(currentStock)
+          && quantity > currentStock) {
+        this.makeToast('warning', this.$t('LowStock'), this.$t('Warning'));
+        this.cancelLineTotalEdit();
+        return;
+      }
+
+      detail.quantity = quantity;
+      this.cancelLineTotalEdit();
+      this.CalculTotal();
+      this.$forceUpdate();
+
+      const actualTotal = Number(detail.subtotal || 0);
+      if (Math.abs(actualTotal - normalizedTotal) >= 0.005) {
+        this.makeToast(
+          'info',
+          `Quantity was rounded up to ${quantity.toFixed(3)}; the actual line total is ${this.formatPriceWithCurrentCurrency(actualTotal, 2)}.`,
+          'Quantity rounded'
+        );
+      }
+    },
+
     Verified_Qty(detail, id) {
       for (var i = 0; i < this.details.length; i++) {
         if (this.details[i].detail_id === id) {
@@ -4991,6 +5131,9 @@ export default {
     },
 
     delete_Product_Detail(id) {
+      if (this.editingLineTotalId === id) {
+        this.cancelLineTotalEdit();
+      }
       for (var i = 0; i < this.details.length; i++) {
         if (id === this.details[i].detail_id) {
           this.details.splice(i, 1);
@@ -5193,6 +5336,7 @@ export default {
       // so the cleared filter matches what is shown.
       const hadFilter = !!(this.category_id || this.brand_id);
 
+      this.cancelLineTotalEdit();
       this.details = [];
       this.product = {};
       this.draft_sale_id = '';
