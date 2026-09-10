@@ -1558,9 +1558,8 @@ export default {
   
   data() {
     return {
-      // Online ecommerce store navigation is intentionally hidden for POS tenants.
-      // Routes and APIs remain available for a future re-enable without data changes.
-      showOnlineStore: false,
+      // Show online store navigation; individual entries remain permission-gated.
+      showOnlineStore: true,
       // Optional modules are hidden from POS navigation, but their routes and data remain intact.
       showOptionalModules: false,
       // Non-essential settings are hidden from POS navigation, but routes and configuration remain intact.
