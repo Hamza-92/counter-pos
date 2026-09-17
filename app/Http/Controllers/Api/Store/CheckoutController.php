@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\product_warehouse;
 use App\Models\ProductVariant;
+use App\Models\Setting;
 use App\Models\Warehouse;
+use App\Support\OnlineStorePrice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,9 +27,17 @@ class CheckoutController extends Controller
         }
 
         $data = $req->validate([
-            'amount' => ['required', 'numeric', 'min:0.50'],
-            'currency' => ['nullable', 'string', 'max:3'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.product_id' => ['required', 'integer'],
+            'items.*.product_variant_id' => ['nullable', 'integer'],
+            'items.*.qty' => ['required', 'numeric', 'min:1'],
         ]);
+
+        $priced = $this->priceItems($data['items']);
+        $amount = round(collect($priced)->sum('line_total'), 2);
+        if ($amount < 0.50) {
+            return response()->json(['error' => 'Order total is below the minimum card amount.'], 422);
+        }
 
         $stripeSecret = tenant_option('STRIPE_SECRET', config('services.stripe.secret'));
         if (! $stripeSecret) {
@@ -36,14 +46,15 @@ class CheckoutController extends Controller
 
         \Stripe\Stripe::setApiKey($stripeSecret);
 
-        $currency = strtolower($data['currency'] ?? 'usd');
-        $amountInCents = (int) round($data['amount'] * 100);
+        $currency = $this->storeCurrencyCode();
+        $amountInCents = (int) round($amount * 100);
 
         $intent = \Stripe\PaymentIntent::create([
             'amount' => $amountInCents,
             'currency' => $currency,
             'metadata' => [
                 'client_id' => $user->client_id ?? $user->id,
+                'calculated_total' => number_format($amount, 2, '.', ''),
             ],
         ]);
 
@@ -71,29 +82,6 @@ class CheckoutController extends Controller
 
         $paymentMethod = $data['payment_method'];
 
-        // For credit-card orders, verify the Stripe PaymentIntent succeeded
-        if ($paymentMethod === 'credit_card') {
-            $piId = $data['stripe_payment_intent_id'] ?? null;
-            if (! $piId) {
-                return response()->json(['error' => 'Stripe payment confirmation is required.'], 422);
-            }
-
-            $stripeSecret = tenant_option('STRIPE_SECRET', config('services.stripe.secret'));
-            if (! $stripeSecret) {
-                return response()->json(['error' => 'Stripe is not configured.'], 500);
-            }
-
-            \Stripe\Stripe::setApiKey($stripeSecret);
-            try {
-                $intent = \Stripe\PaymentIntent::retrieve($piId);
-                if ($intent->status !== 'succeeded') {
-                    return response()->json(['error' => 'Payment has not been completed.'], 422);
-                }
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Could not verify payment.'], 422);
-            }
-        }
-
         // Resolve warehouse
         $warehouseId = (int) ($data['warehouse_id'] ?? 0);
         if (! $warehouseId) {
@@ -112,7 +100,10 @@ class CheckoutController extends Controller
         // Preload products and verify existence
         $ids = collect($data['items'])->pluck('product_id')->unique()->values();
         $products = Product::whereIn('id', $ids)
-            ->get(['id', 'price', 'TaxNet', 'discount', 'discount_method', 'tax_method',
+            ->whereNull('deleted_at')
+            ->where('is_active', 1)
+            ->where('hide_from_online_store', 0)
+            ->get(['id', 'name', 'price', 'online_store_price', 'TaxNet', 'discount', 'discount_method', 'tax_method',
                    'is_preorder', 'preorder_available_date', 'preorder_limit', 'preorder_note'])
             ->keyBy('id');
 
@@ -129,7 +120,10 @@ class CheckoutController extends Controller
         $variantIds = collect($data['items'])->pluck('product_variant_id')->filter()->unique()->values();
         $variants = $variantIds->isEmpty()
             ? collect()
-            : ProductVariant::whereIn('id', $variantIds)->get(['id', 'product_id', 'price'])->keyBy('id');
+            : ProductVariant::whereIn('id', $variantIds)
+                ->whereNull('deleted_at')
+                ->get(['id', 'product_id', 'price', 'online_store_price'])
+                ->keyBy('id');
 
         // Preload stock levels for preorder detection
         $stockRows = product_warehouse::where('warehouse_id', $warehouseId)
@@ -152,15 +146,16 @@ class CheckoutController extends Controller
             $qty  = max(1, (float) $i['qty']);
 
             $product = $products->get($pid);
-            $price   = (float) $product->price;
+            $variant = null;
             if ($pvid) {
                 $variant = $variants->get($pvid);
-                if ($variant && (int) $variant->product_id === $pid) {
-                    $price = (float) $variant->price;
+                if (! $variant || (int) $variant->product_id !== $pid) {
+                    return response()->json(['error' => 'The selected product variant is unavailable.'], 422);
                 }
             }
-            $price = round(max(0, $price), 2);
-            $line  = round($qty * $price, 2);
+            $calculation = OnlineStorePrice::calculate($product, $variant);
+            $price = $calculation['base'];
+            $line = round($qty * $calculation['final'], 2);
 
             // Determine if this line is a pre-order
             $stockKey = $pvid ? "{$pid}:{$pvid}" : "{$pid}:p";
@@ -189,6 +184,7 @@ class CheckoutController extends Controller
                 'product_variant_id' => $pvid,
                 'qty'                => $qty,
                 'price'              => $price,
+                'line_total'         => $line,
                 'TaxNet'             => (float) ($product->TaxNet ?? 0),
                 'discount'           => (float) ($product->discount ?? 0),
                 'discount_method'    => (string) ($product->discount_method ?? '1'),
@@ -203,6 +199,32 @@ class CheckoutController extends Controller
 
         $grand    = round(max(0, $subtotal), 2);
         $clientId = $user->client_id ?? null;
+
+        // Verify the card charge against the same server-calculated amount used by the order.
+        if ($paymentMethod === 'credit_card') {
+            $piId = $data['stripe_payment_intent_id'] ?? null;
+            if (! $piId) {
+                return response()->json(['error' => 'Stripe payment confirmation is required.'], 422);
+            }
+
+            $stripeSecret = tenant_option('STRIPE_SECRET', config('services.stripe.secret'));
+            if (! $stripeSecret) {
+                return response()->json(['error' => 'Stripe is not configured.'], 500);
+            }
+
+            \Stripe\Stripe::setApiKey($stripeSecret);
+            try {
+                $intent = \Stripe\PaymentIntent::retrieve($piId);
+                $expectedAmount = (int) round($grand * 100);
+                if ($intent->status !== 'succeeded'
+                    || (int) $intent->amount_received !== $expectedAmount
+                    || strtolower((string) $intent->currency) !== $this->storeCurrencyCode()) {
+                    return response()->json(['error' => 'The completed payment does not match the current order total.'], 422);
+                }
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Could not verify payment.'], 422);
+            }
+        }
 
         $todayDate = now()->toDateString();
         $nowTime   = now()->format('H:i:s');
@@ -242,5 +264,62 @@ class CheckoutController extends Controller
             'payment_method' => $order->payment_method,
             'payment_status' => $order->payment_status,
         ], 201);
+    }
+
+    /**
+     * Resolve online prices without trusting any browser-supplied amount.
+     *
+     * @return array<int, array{product_id:int,product_variant_id:?int,qty:float,line_total:float}>
+     */
+    private function priceItems(array $items): array
+    {
+        $productIds = collect($items)->pluck('product_id')->map(fn ($id) => (int) $id)->unique();
+        $products = Product::whereIn('id', $productIds)
+            ->whereNull('deleted_at')
+            ->where('is_active', 1)
+            ->where('hide_from_online_store', 0)
+            ->get(['id', 'price', 'online_store_price', 'TaxNet', 'discount', 'discount_method', 'tax_method'])
+            ->keyBy('id');
+
+        if ($products->count() !== $productIds->count()) {
+            abort(422, 'One or more products are unavailable from the online store.');
+        }
+
+        $variantIds = collect($items)->pluck('product_variant_id')->filter()->map(fn ($id) => (int) $id)->unique();
+        $variants = $variantIds->isEmpty()
+            ? collect()
+            : ProductVariant::whereIn('id', $variantIds)
+                ->whereNull('deleted_at')
+                ->get(['id', 'product_id', 'price', 'online_store_price'])
+                ->keyBy('id');
+
+        return collect($items)->map(function ($item) use ($products, $variants) {
+            $productId = (int) $item['product_id'];
+            $variantId = ! empty($item['product_variant_id']) ? (int) $item['product_variant_id'] : null;
+            $quantity = max(1, (float) $item['qty']);
+            $product = $products->get($productId);
+            $variant = $variantId ? $variants->get($variantId) : null;
+
+            if ($variantId && (! $variant || (int) $variant->product_id !== $productId)) {
+                abort(422, 'The selected product variant is unavailable.');
+            }
+
+            $calculation = OnlineStorePrice::calculate($product, $variant);
+
+            return [
+                'product_id' => $productId,
+                'product_variant_id' => $variantId,
+                'qty' => $quantity,
+                'line_total' => round($quantity * $calculation['final'], 2),
+            ];
+        })->values()->all();
+    }
+
+    private function storeCurrencyCode(): string
+    {
+        $setting = Setting::with('Currency')->first();
+        $code = strtolower((string) optional($setting?->Currency)->code);
+
+        return preg_match('/^[a-z]{3}$/', $code) ? $code : 'usd';
     }
 }

@@ -418,37 +418,42 @@
                     </svg>
                   </button>
                 </div>
-                <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 3px; min-height: 26px;">
-                  <template v-if="editingLineTotalId === item.detail_id">
-                    <input
-                      ref="lineTotalInput"
-                      v-model.trim="editingLineTotalValue"
-                      :data-line-total-id="String(item.detail_id)"
-                      type="text"
-                      inputmode="decimal"
-                      autocomplete="off"
-                      @keydown.enter.prevent="$event.target.blur()"
-                      @keydown.esc.prevent="cancelLineTotalEdit"
-                      @blur="commitLineTotalEdit(item)"
-                      style="width: 92px; height: 26px; border: 1px solid #6f53d9; border-radius: 5px; padding: 0 6px; text-align: right; outline: none; font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: #1f1f2c;"
-                    />
-                  </template>
-                  <template v-else>
-                    <span style="font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: #1f1f2c;">{{ formatPriceWithCurrentCurrency(item.subtotal, 2) }}</span>
-                    <button
-                      v-if="canEditLineTotal(item)"
-                      type="button"
-                      @mousedown.prevent
-                      @click="startLineTotalEdit(item)"
-                      title="Enter a line total to calculate quantity"
-                      aria-label="Edit line total and calculate quantity"
-                      style="background: transparent; border: 0; padding: 3px; border-radius: 4px; cursor: pointer; color: #6f53d9; display: inline-flex; align-items: center; justify-content: center;"
-                    >
-                      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;">
-                        <path d="M14 3l3 3-9 9H5v-3z"/>
-                      </svg>
-                    </button>
-                  </template>
+                <div class="pos-shell-line-total-group" style="display: flex; flex-direction: column; align-items: flex-end; gap: 1px;">
+                  <div style="display: inline-flex; align-items: center; justify-content: flex-end; gap: 3px; min-height: 26px;">
+                    <template v-if="editingLineTotalId === item.detail_id">
+                      <input
+                        ref="lineTotalInput"
+                        v-model.trim="editingLineTotalValue"
+                        :data-line-total-id="String(item.detail_id)"
+                        type="text"
+                        inputmode="decimal"
+                        autocomplete="off"
+                        @keydown.enter.prevent="$event.target.blur()"
+                        @keydown.esc.prevent="cancelLineTotalEdit"
+                        @blur="commitLineTotalEdit(item)"
+                        style="width: 92px; height: 26px; border: 1px solid #6f53d9; border-radius: 5px; padding: 0 6px; text-align: right; outline: none; font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: #1f1f2c;"
+                      />
+                    </template>
+                    <template v-else>
+                      <span style="font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', monospace; color: #1f1f2c;">{{ formatPriceWithCurrentCurrency(item.subtotal, 2) }}</span>
+                      <button
+                        v-if="canEditLineTotal(item)"
+                        type="button"
+                        @mousedown.prevent
+                        @click="startLineTotalEdit(item)"
+                        title="Enter a line total to calculate quantity"
+                        aria-label="Edit line total and calculate quantity"
+                        style="background: transparent; border: 0; padding: 3px; border-radius: 4px; cursor: pointer; color: #6f53d9; display: inline-flex; align-items: center; justify-content: center;"
+                      >
+                        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width: 12px; height: 12px;">
+                          <path d="M14 3l3 3-9 9H5v-3z"/>
+                        </svg>
+                      </button>
+                    </template>
+                  </div>
+                  <div v-if="hasLineDiscount(item)" class="pos-shell-line-discount" style="font-size: 10px; color: #54546a; line-height: 1.2; font-family: 'JetBrains Mono', monospace; white-space: nowrap;">
+                    {{ $t('Discount') }}: {{ formatPriceWithCurrentCurrency(lineDiscountAmount(item), 2) }}
+                  </div>
                 </div>
               </div>
 
@@ -690,8 +695,8 @@
                     {{ (product.name || 'P').split(/[ ·]/).filter(Boolean).slice(0,2).map(w => w[0]).join('') }}
                   </span>
                 </div>
-                <!-- Discount % badge (top-left) -->
-                <div v-if="product.discount" style="position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,0.9); border-radius: 6px; padding: 2px 6px; color: #d64545; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;">-{{ product.discount }}%</div>
+                <!-- Product discount badge (top-left) -->
+                <div v-if="product.discount" style="position: absolute; top: 6px; left: 6px; background: rgba(255,255,255,0.9); border-radius: 6px; padding: 2px 6px; color: #d64545; font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;">-{{ lineDiscountMethod(product) === '1' ? formatNumber(product.discount, 2) + '%' : formatPriceWithCurrentCurrency(product.discount, 2) }}</div>
               </div>
 
               <!-- Name (single 13px line) -->
@@ -987,7 +992,9 @@
                       <br v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null">
                       <span v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null ">{{$t('IMEI_SN')}} : {{detail_invoice.imei_number}}</span>
                       <br>
-                      <span>{{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}} x {{ formatPriceDisplay(detail_invoice.total/detail_invoice.quantity,2) }}</span>
+                      <span>{{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}} x {{ formatPriceDisplay(receiptUnitPrice(detail_invoice),2) }}</span>
+                      <br v-if="hasLineDiscount(detail_invoice)">
+                      <span v-if="hasLineDiscount(detail_invoice)" style="color:inherit;">{{ $t('Discount') }}: {{ formatPriceDisplay(lineDiscountAmount(detail_invoice), 2) }}</span>
                     </td>
                     <td style="text-align:right;vertical-align:bottom">
                       {{ formatPriceDisplay(detail_invoice.total,2) }}
@@ -1161,12 +1168,14 @@
                       {{detail_invoice.name}}
                       <br v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null">
                       <small v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null ">{{$t('IMEI_SN')}} : {{detail_invoice.imei_number}}</small>
+                      <br v-if="hasLineDiscount(detail_invoice)">
+                      <span v-if="hasLineDiscount(detail_invoice)" style="color:inherit;">{{ $t('Discount') }}: {{ formatPriceDisplay(lineDiscountAmount(detail_invoice), 2) }}</span>
                     </td>
                     <td style="text-align:center">
                       {{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}}
                     </td>
                     <td style="text-align:right">
-                      {{formatNumber(detail_invoice.total/detail_invoice.quantity,2)}}
+                      {{formatNumber(receiptUnitPrice(detail_invoice),2)}}
                     </td>
                     <td style="text-align:right">
                       {{formatNumber(detail_invoice.total,2)}}
@@ -1330,7 +1339,9 @@
                       <br v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null">
                       <span v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null ">{{$t('IMEI_SN')}} : {{detail_invoice.imei_number}}</span>
                       <br>
-                      <small>{{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}} x {{ formatPriceDisplay(detail_invoice.total/detail_invoice.quantity,2) }}</small>
+                      <small>{{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}} x {{ formatPriceDisplay(receiptUnitPrice(detail_invoice),2) }}</small>
+                      <br v-if="hasLineDiscount(detail_invoice)">
+                      <span v-if="hasLineDiscount(detail_invoice)" style="color:inherit;">{{ $t('Discount') }}: {{ formatPriceDisplay(lineDiscountAmount(detail_invoice), 2) }}</span>
                     </td>
                     <td style="text-align:right;vertical-align:bottom">
                       {{ formatPriceWithSymbol(invoice_pos.symbol, detail_invoice.total, 2) }}
@@ -1519,9 +1530,11 @@
                       <small v-if="Number(detail_invoice.tax_percent || detail_invoice.tax_rate || 0) > 0">VAT @ {{ formatNumber(Number(detail_invoice.tax_percent || detail_invoice.tax_rate || 0),2) }}% ({{ formatPriceDisplay(detail_invoice.total * Number(detail_invoice.tax_percent || detail_invoice.tax_rate || 0) / 100, 2) }})</small>
                       <br v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null">
                       <span v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null ">IMEI/SN الرقم التسلسلي : {{detail_invoice.imei_number}}</span>
+                      <br v-if="hasLineDiscount(detail_invoice)">
+                      <span v-if="hasLineDiscount(detail_invoice)" style="color:inherit;">Discount / الخصم: {{ formatPriceDisplay(lineDiscountAmount(detail_invoice), 2) }}</span>
                     </td>
                     <td style="text-align:center">{{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}}</td>
-                    <td style="text-align:center">{{ formatPriceDisplay(detail_invoice.total/detail_invoice.quantity,2) }}</td>
+                    <td style="text-align:center">{{ formatPriceDisplay(receiptUnitPrice(detail_invoice),2) }}</td>
                     <td style="text-align:right">{{ formatPriceDisplay(detail_invoice.total,2) }}</td>
                   </tr>
                 </tbody>
@@ -2948,6 +2961,12 @@ import ModernPaymentModal from "../components/ModernPaymentModal.vue";
 import CustomFieldsForm from "../../../components/CustomFieldsForm.vue";
 import posKeyboardShortcutsMixin, { POS_SHORTCUTS } from "../../../mixins/posKeyboardShortcuts";
 import posBarcodeScannerMixin from "../../../mixins/posBarcodeScanner";
+import {
+  hasLineDiscount,
+  lineDiscountAmount,
+  lineDiscountMethod,
+  lineDiscountUnitAmount
+} from "../../../utils/lineDiscount";
 
 export default {
   components: {
@@ -3702,6 +3721,19 @@ export default {
     } catch (e) {}
   },
   methods: {
+    hasLineDiscount,
+    lineDiscountAmount,
+    lineDiscountMethod,
+    lineDiscountUnitAmount,
+
+    receiptUnitPrice(line) {
+      const originalPrice = Number(line && (line.price != null ? line.price : line.Unit_price));
+      if (Number.isFinite(originalPrice)) return originalPrice;
+
+      const quantity = Number(line && line.quantity);
+      const total = Number(line && line.total);
+      return Number.isFinite(total) && Number.isFinite(quantity) && quantity > 0 ? total / quantity : 0;
+    },
     goToMobileTab(tab) {
       if (tab === 'home') {
         if (this.$route && this.$route.path !== '/') {
@@ -3800,6 +3832,11 @@ export default {
               total: (d.total != null ? d.total : (d.Net_price || 0)),
               unit_price: (d.Net_price != null ? d.Net_price : (d.Unit_price != null ? d.Unit_price : (d.price != null ? d.price : 0))),
               line_total: (d.total != null ? d.total : ((d.Net_price || 0) * (d.quantity || 0))),
+              price: d.Unit_price != null ? d.Unit_price : (d.price != null ? d.price : 0),
+              discount: d.discount || 0,
+              discount_method: d.discount_Method != null ? d.discount_Method : d.discount_method,
+              discount_unit_amount: lineDiscountUnitAmount(d),
+              discount_line_amount: lineDiscountAmount(d),
           }))
         };
         this._cd_emit(payload);
@@ -4717,7 +4754,7 @@ export default {
           // Discount & tax
           discount: p.discount != null ? p.discount : 0,
           DiscountNet: p.DiscountNet != null ? p.DiscountNet : 0,
-          discount_method: p.discount_Method != null ? p.discount_Method : '2',
+          discount_method: p.discount_method != null ? p.discount_method : (p.discount_Method != null ? p.discount_Method : '1'),
           tax_price: p.tax_price != null ? p.tax_price : 0,
           tax_method: p.tax_method != null ? p.tax_method : 1,
           tax_percent: p.tax_percent != null ? p.tax_percent : 0,
@@ -8065,6 +8102,7 @@ export default {
             client_name: clientName,
             warehouse_name: warehouseName,
             discount: payload.discount || 0,
+            discount_Method: payload.discount_Method || '2',
             taxe: payload.TaxNet || 0,
             tax_rate: payload.tax_rate || 0,
             shipping: payload.shipping || 0,
@@ -8082,6 +8120,11 @@ export default {
             quantity: d.quantity,
             unit_sale: d.unitSale || d.unit_sale || '',
             total: d.subtotal != null ? d.subtotal : (d.total != null ? d.total : (d.Net_price || 0) * (d.quantity || 0)),
+            price: d.Unit_price != null ? d.Unit_price : (d.price != null ? d.price : 0),
+            discount: d.discount || 0,
+            discount_method: d.discount_Method != null ? d.discount_Method : d.discount_method,
+            discount_unit_amount: lineDiscountUnitAmount(d),
+            discount_line_amount: lineDiscountAmount(d),
             is_imei: d.is_imei,
             imei_number: d.imei_number
           })) : [];
@@ -16371,6 +16414,13 @@ $transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     align-items: flex-end !important;
     justify-content: space-between !important;
     gap: 4px !important;
+  }
+  /* Keep the compact mobile cart row unchanged; line discount is desktop-only. */
+  .pos-codecanyon .pos-shell-line-discount {
+    display: none !important;
+  }
+  .pos-codecanyon .pos-shell-line-total-group {
+    display: contents !important;
   }
 
   /* --- Totals/charges block tighter --- */

@@ -210,7 +210,13 @@
                 </td>
                 <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #1f2937;">{{$detail['price']}}</td>
                 <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #1f2937;">{{$detail['quantity']}} {{$detail['unitSale']}}</td>
-                <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #10b981;">{{$detail['DiscountNet']}}</td>
+                <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #1f2937;">
+                    @if((float)($detail['discount_line_amount'] ?? 0) > 0)
+                        {{number_format((float)$detail['discount_line_amount'], 2)}}
+                    @else
+                        —
+                    @endif
+                </td>
                 <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #1f2937;">{{$detail['taxe']}}</td>
                 <td style="padding: 5px; text-align: right; font-size: 9pt; font-weight: bold; color: #ef4444;">{{$detail['total']}}</td>
             </tr>

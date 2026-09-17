@@ -95,7 +95,7 @@ class OnlineOrdersApiController extends Controller
             ->findOrFail($id);
 
         $subtotal = (float) $order->items->sum(function ($i) {
-            return (float) $i->price * (float) $i->qty;
+            return (float) $i->line_total;
         });
 
         return response()->json([
@@ -318,11 +318,12 @@ class OnlineOrdersApiController extends Controller
                         'price' => $unitPrice,
                         'TaxNet' => $taxNet,
                         'tax_method' => $taxMethod,
+                        'price_type' => 'online_store',
                         'discount' => $discount,
                         'discount_method' => $discountMethod,
                         'product_id' => (int) $it->product_id,
                         'product_variant_id' => $it->product_variant_id ?: null,
-                        'total' => round($unitPrice * $qty, 2),
+                        'total' => round((float) $it->line_total, 2),
                     ]);
 
                     // Pre-order items: no stock to decrement

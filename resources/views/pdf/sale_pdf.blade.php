@@ -228,7 +228,13 @@
                 </td>
                 <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #1f2937;">{{formatPrice((float)$detail['price'], 2, $priceFormat)}}</td>
                 <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #1f2937;">{{$detail['quantity']}} {{$detail['unitSale']}}</td>
-                <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #ef4444;">{{formatPrice((float)$detail['DiscountNet'], 2, $priceFormat)}}</td>
+                <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #1f2937;">
+                    @if((float)($detail['discount_line_amount'] ?? 0) > 0)
+                        {{formatPrice((float)$detail['discount_line_amount'], 2, $priceFormat)}}
+                    @else
+                        —
+                    @endif
+                </td>
                 <td style="padding: 5px; text-align: right; font-size: 8.5pt; color: #1f2937;">{{formatPrice((float)$detail['taxe'], 2, $priceFormat)}}</td>
                 <td style="padding: 5px; text-align: right; font-size: 9pt; font-weight: bold; color: #1a56db;">{{formatPrice((float)$detail['total'], 2, $priceFormat)}}</td>
             </tr>

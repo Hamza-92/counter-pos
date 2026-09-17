@@ -44,6 +44,7 @@
               <div class="item-info">
                 <h3 class="item-name">{{ row.name }}</h3>
                 <span class="item-qty">{{ $t('Quantity') }}: <strong>{{ row.quantity }}</strong></span>
+                <span v-if="hasLineDiscount(row)" class="item-discount">{{ $t('Discount') }}: {{ currency }} {{ format(lineDiscountAmount(row)) }}</span>
               </div>
             </div>
             <div class="item-price">
@@ -103,6 +104,11 @@
 
 <script>
 
+import {
+  hasLineDiscount,
+  lineDiscountAmount
+} from "../../../../utils/lineDiscount";
+
 export default {
   name: 'CustomerDisplay',
   data() {
@@ -133,6 +139,8 @@ export default {
     },
   },
   methods: {
+    hasLineDiscount,
+    lineDiscountAmount,
     format(n) {
       const num = Number(n || 0);
       const locale = (this.$i18n && this.$i18n.locale) || (navigator.language || 'en-US');
@@ -153,7 +161,12 @@ export default {
         return {
           name: it.name || it.product_name || '',
           quantity: qty,
-          subtotal: Number(isFinite(subtotal) ? subtotal : 0)
+          subtotal: Number(isFinite(subtotal) ? subtotal : 0),
+          price: Number(it.price != null ? it.price : unit),
+          discount: Number(it.discount || 0),
+          discount_method: it.discount_method != null ? it.discount_method : it.discount_Method,
+          discount_unit_amount: Number(it.discount_unit_amount || 0),
+          discount_line_amount: Number(it.discount_line_amount || 0)
         };
       });
       this.discount = Number(cart.discount || cart.sale && cart.sale.discount || 0);
@@ -472,6 +485,18 @@ export default {
   font-weight: 600;
   opacity: 1;
   font-size: 14px;
+}
+
+.item-discount {
+  display: block;
+  margin-top: 3px;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.light .item-discount {
+  color: inherit;
 }
 
 .item-price {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Models\Sale;
+use App\Support\SaleLineDiscount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -76,10 +77,8 @@ class PortalInvoicesController extends Controller
             ->firstOrFail();
 
         $details = $sale->details->map(function ($d) {
-            // Per-line discount amount (mirrors SalesController logic)
-            $discountNet = ((string) $d->discount_method === '2')
-                ? (float) $d->discount
-                : ((float) $d->price * (float) $d->discount / 100);
+            $lineDiscount = SaleLineDiscount::forDetail($d);
+            $discountNet = $lineDiscount['discount_unit_amount'];
 
             // Per-line tax: TaxNet is a percentage rate applied to the discounted price
             $taxPrice = (float) $d->TaxNet * (((float) $d->price - $discountNet) / 100);
@@ -100,9 +99,13 @@ class PortalInvoicesController extends Controller
                 'price' => (float) $d->price,
                 'total' => (float) $d->total,
                 'DiscountNet' => round($discountNet, 2),
+                'discount' => $lineDiscount['discount_value'],
+                'discount_value' => $lineDiscount['discount_value'],
+                'discount_unit_amount' => $lineDiscount['discount_unit_amount'],
+                'discount_line_amount' => $lineDiscount['discount_line_amount'],
                 'taxe' => round($taxe, 2),
                 'tax_method' => (string) $d->tax_method,
-                'discount_method' => (string) $d->discount_method,
+                'discount_method' => $lineDiscount['discount_method'],
             ];
         });
 

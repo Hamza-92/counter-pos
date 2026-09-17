@@ -68,7 +68,10 @@
                 <td>{{ line.product_name }}</td>
                 <td class="pc-num">{{ line.quantity }}</td>
                 <td class="pc-num">{{ formatMoney(line.price) }}</td>
-                <td class="pc-num">{{ formatMoney(line.DiscountNet) }}</td>
+                <td class="pc-num">
+                  <template v-if="hasLineDiscount(line)">{{ formatMoney(lineDiscountAmount(line)) }}</template>
+                  <span v-else>—</span>
+                </td>
                 <td class="pc-num">{{ formatMoney(line.taxe) }}</td>
                 <td class="pc-num pc-total-cell">{{ formatMoney(line.total) }}</td>
               </tr>
@@ -86,8 +89,8 @@
             <div class="pc-item-sub">
               <span>{{ line.quantity }} × {{ formatMoney(line.price) }}</span>
             </div>
-            <div class="pc-item-sub pc-item-sub-extras" v-if="Number(line.DiscountNet) > 0 || Number(line.taxe) > 0">
-              <span v-if="Number(line.DiscountNet) > 0" class="pc-item-discount">Discount {{ formatMoney(line.DiscountNet) }}</span>
+            <div class="pc-item-sub pc-item-sub-extras" v-if="hasLineDiscount(line) || Number(line.taxe) > 0">
+              <span v-if="hasLineDiscount(line)" class="pc-item-discount">Discount {{ formatMoney(lineDiscountAmount(line)) }}</span>
               <span v-if="Number(line.taxe) > 0">Tax {{ formatMoney(line.taxe) }}</span>
             </div>
           </li>
@@ -146,6 +149,11 @@
 </template>
 
 <script>
+import {
+  hasLineDiscount,
+  lineDiscountAmount
+} from "../../utils/lineDiscount";
+
 export default {
   data() {
     return { invoice: null, loading: true };
@@ -154,6 +162,8 @@ export default {
     this.fetch();
   },
   methods: {
+    hasLineDiscount,
+    lineDiscountAmount,
     async fetch() {
       try {
         const { data } = await axios.get(`/portal/invoices/${this.$route.params.id}`);
@@ -406,7 +416,7 @@ export default {
   gap: 0.6rem;
   margin-top: 0.25rem;
 }
-.pc-item-sub-extras .pc-item-discount { color: var(--pc-danger); }
+.pc-item-sub-extras .pc-item-discount { color: inherit; }
 
 .pc-show-mobile { display: none; }
 .pc-hide-mobile { display: block; }

@@ -9,7 +9,7 @@ class Product extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = [
-        'code', 'Type_barcode', 'name', 'cost', 'price', 'unit_id', 'unit_sale_id', 'unit_purchase_id',
+        'code', 'Type_barcode', 'name', 'cost', 'price', 'online_store_price', 'unit_id', 'unit_sale_id', 'unit_purchase_id',
         'stock_alert', 'weight', 'length', 'width', 'height', 'category_id', 'sub_category_id', 'is_variant', 'is_imei',
         'tax_method', 'image', 'brand_id', 'is_active', 'note', 'type',
         'warranty_period', 'warranty_unit', 'warranty_terms', 'wholesale_price', 'min_price',
@@ -35,6 +35,7 @@ class Product extends Model
         'is_active' => 'integer',
         'cost' => 'double',
         'price' => 'double',
+        'online_store_price' => 'double',
         'stock_alert' => 'double',
         'weight' => 'double',
         'length' => 'double',

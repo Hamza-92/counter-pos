@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Models\UserWarehouse;
 use App\Models\Warehouse;
 use App\Services\BatchService;
+use App\Support\SaleLineDiscount;
 use App\utils\helpers;
 use ArPHP\I18N\Arabic;
 use Carbon\Carbon;
@@ -920,11 +921,13 @@ class SalesReturnController extends BaseController
             $data['price'] = $detail->price;
             $data['unit_sale'] = $unit ? $unit->ShortName : '';
 
-            if ($detail->discount_method == '2') {
-                $data['DiscountNet'] = $detail->discount;
-            } else {
-                $data['DiscountNet'] = $detail->price * $detail->discount / 100;
-            }
+            $lineDiscount = SaleLineDiscount::forDetail($detail);
+            $data['DiscountNet'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_method'] = $lineDiscount['discount_method'];
+            $data['discount_Method'] = $lineDiscount['discount_method'];
+            $data['discount_value'] = $lineDiscount['discount_value'];
+            $data['discount_unit_amount'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_line_amount'] = $lineDiscount['discount_line_amount'];
 
             $tax_price = $detail->TaxNet * (($detail->price - $data['DiscountNet']) / 100);
             $data['Unit_price'] = $detail->price;
@@ -1162,11 +1165,13 @@ class SalesReturnController extends BaseController
             $data['unitSale'] = $unit ? $unit->ShortName : '';
             $data['price'] = number_format($detail->price, 2, '.', '');
 
-            if ($detail->discount_method == '2') {
-                $data['DiscountNet'] = number_format($detail->discount, 2, '.', '');
-            } else {
-                $data['DiscountNet'] = number_format($detail->price * $detail->discount / 100, 2, '.', '');
-            }
+            $lineDiscount = SaleLineDiscount::forDetail($detail);
+            $data['DiscountNet'] = number_format($lineDiscount['discount_unit_amount'], 2, '.', '');
+            $data['discount_method'] = $lineDiscount['discount_method'];
+            $data['discount_Method'] = $lineDiscount['discount_method'];
+            $data['discount_value'] = $lineDiscount['discount_value'];
+            $data['discount_unit_amount'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_line_amount'] = $lineDiscount['discount_line_amount'];
 
             $tax_price = $detail->TaxNet * (($detail->price - $data['DiscountNet']) / 100);
             $data['Unit_price'] = number_format($detail->price, 2, '.', '');

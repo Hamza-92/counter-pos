@@ -735,8 +735,10 @@
                     <span>
                       {{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}}
                       x
-                      {{ formatPriceDisplay(detail_invoice.total/detail_invoice.quantity,2) }}
+                      {{ formatPriceDisplay(receiptUnitPrice(detail_invoice),2) }}
                     </span>
+                    <br v-if="hasLineDiscount(detail_invoice)">
+                    <span v-if="hasLineDiscount(detail_invoice)" style="color:inherit;">{{ $t('Discount') }}: {{ formatPriceDisplay(lineDiscountAmount(detail_invoice), 2) }}</span>
                   </td>
                   <td style="text-align:right;vertical-align:bottom">
                     {{ formatPriceDisplay(detail_invoice.total,2) }}
@@ -946,12 +948,14 @@
                     >
                       {{$t('IMEI_SN')}} : {{detail_invoice.imei_number}}
                     </small>
+                    <br v-if="hasLineDiscount(detail_invoice)">
+                    <span v-if="hasLineDiscount(detail_invoice)" style="color:inherit;">{{ $t('Discount') }}: {{ formatPriceDisplay(lineDiscountAmount(detail_invoice), 2) }}</span>
                   </td>
                   <td style="text-align:center">
                     {{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}}
                   </td>
                   <td style="text-align:right">
-                    {{formatNumber(detail_invoice.total/detail_invoice.quantity,2)}}
+                    {{formatNumber(receiptUnitPrice(detail_invoice),2)}}
                   </td>
                   <td style="text-align:right">
                     {{formatNumber(detail_invoice.total,2)}}
@@ -1153,8 +1157,10 @@
                     <small>
                       {{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}}
                       x
-                      {{ formatPriceDisplay(detail_invoice.total/detail_invoice.quantity,2) }}
+                      {{ formatPriceDisplay(receiptUnitPrice(detail_invoice),2) }}
                     </small>
+                    <br v-if="hasLineDiscount(detail_invoice)">
+                    <span v-if="hasLineDiscount(detail_invoice)" style="color:inherit;">{{ $t('Discount') }}: {{ formatPriceDisplay(lineDiscountAmount(detail_invoice), 2) }}</span>
                   </td>
                   <td style="text-align:right;vertical-align:bottom">
                     {{ formatPriceWithSymbol(invoice_pos.symbol, detail_invoice.total, 2) }}
@@ -1357,9 +1363,11 @@
                     <small v-if="Number(detail_invoice.tax_percent || detail_invoice.tax_rate || 0) > 0">VAT @ {{ formatNumber(Number(detail_invoice.tax_percent || detail_invoice.tax_rate || 0),2) }}% ({{ formatPriceDisplay(detail_invoice.total * Number(detail_invoice.tax_percent || detail_invoice.tax_rate || 0) / 100, 2) }})</small>
                     <br v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null">
                     <span v-show="detail_invoice.is_imei && detail_invoice.imei_number !==null ">IMEI/SN الرقم التسلسلي : {{detail_invoice.imei_number}}</span>
+                    <br v-if="hasLineDiscount(detail_invoice)">
+                    <span v-if="hasLineDiscount(detail_invoice)" style="color:inherit;">Discount / الخصم: {{ formatPriceDisplay(lineDiscountAmount(detail_invoice), 2) }}</span>
                   </td>
                   <td style="text-align:center">{{formatNumber(detail_invoice.quantity,2)}} {{detail_invoice.unit_sale}}</td>
-                  <td style="text-align:center">{{ formatPriceDisplay(detail_invoice.total/detail_invoice.quantity,2) }}</td>
+                  <td style="text-align:center">{{ formatPriceDisplay(receiptUnitPrice(detail_invoice),2) }}</td>
                   <td style="text-align:right">{{ formatPriceDisplay(detail_invoice.total,2) }}</td>
                 </tr>
               </tbody>
@@ -1598,6 +1606,10 @@ import {
   formatPriceDisplay as formatPriceDisplayHelper,
   getPriceFormatSetting
 } from "../../../../utils/priceFormat";
+import {
+  hasLineDiscount,
+  lineDiscountAmount
+} from "../../../../utils/lineDiscount";
 export default {
   components: {
     vueEasyPrint,
@@ -1900,6 +1912,17 @@ export default {
     }
   },
   methods: {
+    hasLineDiscount,
+    lineDiscountAmount,
+
+    receiptUnitPrice(line) {
+      const originalPrice = Number(line && (line.price != null ? line.price : line.Unit_price));
+      if (Number.isFinite(originalPrice)) return originalPrice;
+
+      const quantity = Number(line && line.quantity);
+      const total = Number(line && line.total);
+      return Number.isFinite(total) && Number.isFinite(quantity) && quantity > 0 ? total / quantity : 0;
+    },
 
   
     //------------------------------ Print -------------------------\\

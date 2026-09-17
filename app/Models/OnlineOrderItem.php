@@ -57,7 +57,9 @@ class OnlineOrderItem extends Model
         parent::boot();
 
         static::saving(function (OnlineOrderItem $item) {
-            if ($item->isDirty('qty') || $item->isDirty('price') || empty($item->line_total)) {
+            // Checkout may supply a discount/tax-adjusted total. Only derive the
+            // legacy price × quantity total when no explicit total was supplied.
+            if (! $item->isDirty('line_total') && ($item->isDirty('qty') || $item->isDirty('price'))) {
                 $item->line_total = (float) $item->qty * (float) $item->price;
             }
         });

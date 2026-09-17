@@ -350,6 +350,7 @@ class ProductsController extends BaseController
                 'unit_id' => Rule::requiredIf($request->type != 'is_service'),
                 'cost' => Rule::requiredIf($request->type == 'is_single' || $request->type == 'is_combo'),
                 'price' => Rule::requiredIf($request->type != 'is_variant'),
+                'online_store_price' => 'nullable|numeric|min:0',
             ];
 
             // if type is not is_variant, add validation for variants array
@@ -383,6 +384,12 @@ class ProductsController extends BaseController
                                     return;
                                 } elseif (! array_key_exists('price', $variant) || empty($variant['price'])) {
                                     $fail('Variant price cannot be empty.');
+
+                                    return;
+                                } elseif (array_key_exists('online_store_price', $variant)
+                                    && $variant['online_store_price'] !== ''
+                                    && (! is_numeric($variant['online_store_price']) || (float) $variant['online_store_price'] < 0)) {
+                                    $fail('Variant online store price must be a non-negative number.');
 
                                     return;
                                 }
@@ -511,6 +518,9 @@ class ProductsController extends BaseController
                 $Product->tax_method = $request['tax_method'];
                 $Product->discount = $request['discount'] ? $request['discount'] : 0;
                 $Product->discount_method = $request['discount_method'];
+                $Product->online_store_price = $request->filled('online_store_price')
+                    ? (float) $request->input('online_store_price')
+                    : null;
 
                 $Product->points = $request['points'] ? $request['points'] : 0;
 
@@ -662,6 +672,9 @@ class ProductsController extends BaseController
                             'name' => $variant->text,
                             'cost' => $variant->cost,
                             'price' => $variant->price,
+                            'online_store_price' => isset($variant->online_store_price) && $variant->online_store_price !== ''
+                                ? $variant->online_store_price
+                                : null,
                             'code' => $variant->code,
                         ];
                         if ($hasWholesaleColumn) {
@@ -851,6 +864,7 @@ class ProductsController extends BaseController
                 'unit_id' => Rule::requiredIf($request->type != 'is_service'),
                 'cost' => Rule::requiredIf($request->type == 'is_single' || $request->type == 'is_combo'),
                 'price' => Rule::requiredIf($request->type != 'is_variant'),
+                'online_store_price' => 'nullable|numeric|min:0',
             ];
 
             // if type is not is_variant, add validation for variants array
@@ -883,6 +897,12 @@ class ProductsController extends BaseController
                                     return;
                                 } elseif (! array_key_exists('price', $variant) || empty($variant['price'])) {
                                     $fail('Variant price cannot be empty.');
+
+                                    return;
+                                } elseif (array_key_exists('online_store_price', $variant)
+                                    && $variant['online_store_price'] !== ''
+                                    && (! is_numeric($variant['online_store_price']) || (float) $variant['online_store_price'] < 0)) {
+                                    $fail('Variant online store price must be a non-negative number.');
 
                                     return;
                                 }
@@ -1018,6 +1038,9 @@ class ProductsController extends BaseController
                 $Product->tax_method = $request['tax_method'];
                 $Product->discount = $request['discount'];
                 $Product->discount_method = $request['discount_method'];
+                $Product->online_store_price = $request->filled('online_store_price')
+                    ? (float) $request->input('online_store_price')
+                    : null;
                 $Product->note = $request['note'];
                 $Product->points = $request['points'];
 
@@ -1183,6 +1206,9 @@ class ProductsController extends BaseController
                                 $ProductVariantDT->product_id = $variant['product_id'];
                                 $ProductVariantDT->name = $variant['text'];
                                 $ProductVariantDT->price = $variant['price'];
+                                $ProductVariantDT->online_store_price = isset($variant['online_store_price']) && $variant['online_store_price'] !== ''
+                                    ? $variant['online_store_price']
+                                    : null;
                                 $ProductVariantDT->cost = $variant['cost'];
                                 $ProductVariantDT->code = $variant['code'];
                                 if (Schema::hasColumn('product_variants', 'wholesale')) {
@@ -1200,6 +1226,9 @@ class ProductsController extends BaseController
                                 $ProductVariantUP['code'] = $variant['code'];
                                 $ProductVariantUP['name'] = $variant['text'];
                                 $ProductVariantUP['price'] = $variant['price'];
+                                $ProductVariantUP['online_store_price'] = isset($variant['online_store_price']) && $variant['online_store_price'] !== ''
+                                    ? $variant['online_store_price']
+                                    : null;
                                 $ProductVariantUP['cost'] = $variant['cost'];
                                 if (Schema::hasColumn('product_variants', 'wholesale')) {
                                     $ProductVariantUP['wholesale'] = isset($variant['wholesale']) && $variant['wholesale'] !== ''
@@ -1220,6 +1249,9 @@ class ProductsController extends BaseController
                                 $ProductVariantDT->code = $variant['code'];
                                 $ProductVariantDT->name = $variant['text'];
                                 $ProductVariantDT->price = $variant['price'];
+                                $ProductVariantDT->online_store_price = isset($variant['online_store_price']) && $variant['online_store_price'] !== ''
+                                    ? $variant['online_store_price']
+                                    : null;
                                 $ProductVariantDT->cost = $variant['cost'];
                                 if (Schema::hasColumn('product_variants', 'wholesale')) {
                                     $ProductVariantDT->wholesale = isset($variant['wholesale']) && $variant['wholesale'] !== ''
@@ -1236,6 +1268,9 @@ class ProductsController extends BaseController
                                 $ProductVariantUP['code'] = $variant['code'];
                                 $ProductVariantUP['name'] = $variant['text'];
                                 $ProductVariantUP['price'] = $variant['price'];
+                                $ProductVariantUP['online_store_price'] = isset($variant['online_store_price']) && $variant['online_store_price'] !== ''
+                                    ? $variant['online_store_price']
+                                    : null;
                                 $ProductVariantUP['cost'] = $variant['cost'];
                                 $ProductVariantUP['qty'] = 0.00;
                                 if (Schema::hasColumn('product_variants', 'wholesale')) {
@@ -1551,6 +1586,7 @@ class ProductsController extends BaseController
         $item['subcategories'] = $Product->apiSubcategoriesList();
         $item['brand'] = $Product['brand'] ? $Product['brand']->name : 'N/D';
         $item['price'] = $Product->price;
+        $item['online_store_price'] = $Product->online_store_price;
         $item['wholesale_price'] = $Product->wholesale_price;
         $item['min_price'] = $Product->min_price;
         $item['cost'] = $Product->cost;
@@ -2391,6 +2427,7 @@ class ProductsController extends BaseController
         $item['discount_method'] = $Product->discount_method;
         $item['discount'] = $Product->discount;
         $item['price'] = $Product->price;
+        $item['online_store_price'] = $Product->online_store_price;
         $item['wholesale_price'] = $Product->wholesale_price;
         $item['min_price'] = $Product->min_price;
         $item['cost'] = $Product->cost;
@@ -2418,6 +2455,7 @@ class ProductsController extends BaseController
                 $variant_item['text'] = $variant->name;
                 $variant_item['code'] = $variant->code;
                 $variant_item['price'] = $variant->price;
+                $variant_item['online_store_price'] = $variant->online_store_price;
                 $variant_item['cost'] = $variant->cost;
                 $variant_item['wholesale'] = $variant->wholesale ?? 0;
                 $variant_item['min_price'] = $variant->min_price ?? 0;
@@ -3955,6 +3993,7 @@ class ProductsController extends BaseController
                     $newVariant->name = $variant->name;
                     $newVariant->cost = $variant->cost;
                     $newVariant->price = $variant->price;
+                    $newVariant->online_store_price = $variant->online_store_price;
                     $baseName = trim((string) $variant->name);
                     if ($baseName === '') {
                         $baseName = 'VAR';

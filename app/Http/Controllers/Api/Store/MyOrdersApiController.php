@@ -82,7 +82,7 @@ class MyOrdersApiController extends Controller
 
         // Safely compute subtotal
         $subtotal = (float) $order->items->reduce(function ($a, $i) {
-            return $a + ((float) $i->price * (float) $i->qty);
+            return $a + (float) $i->line_total;
         }, 0.0);
 
         // Normalize date/time to strings (works whether date is Carbon or string)

@@ -182,7 +182,10 @@
                 </td>
                 <td class="invoice-product-price-cell">{{ formatPriceDisplay(detail.price, 2) }}</td>
                 <td class="invoice-product-price-cell">{{formatNumber(detail.quantity,2)}} {{detail.unit_sale}}</td>
-                <td class="invoice-product-discount-cell">{{ formatPriceDisplay(detail.DiscountNet, 2) }}</td>
+                <td class="invoice-product-discount-cell">
+                  <template v-if="hasLineDiscount(detail)">{{ formatPriceDisplay(lineDiscountAmount(detail), 2) }}</template>
+                  <span v-else>—</span>
+                </td>
                 <td class="invoice-product-price-cell">{{ formatPriceDisplay(detail.taxe, 2) }}</td>
                 <td class="invoice-product-total-cell">{{ formatPriceDisplay(detail.total, 2) }}</td>
               </tr>
@@ -231,7 +234,10 @@
                   </div>
                   <div class="invoice-product-card-detail-item">
                     <span class="invoice-product-card-detail-label">Disc:</span>
-                    <span class="invoice-product-card-detail-value discount">{{ formatPriceDisplay(detail.DiscountNet, 2) }}</span>
+                    <span class="invoice-product-card-detail-value discount">
+                      <template v-if="hasLineDiscount(detail)">{{ formatPriceDisplay(lineDiscountAmount(detail), 2) }}</template>
+                      <template v-else>—</template>
+                    </span>
                   </div>
                   <div class="invoice-product-card-detail-item">
                     <span class="invoice-product-card-detail-label">Tax:</span>
@@ -316,6 +322,10 @@ import {
   getPriceFormatSetting
 } from "../../../../utils/priceFormat";
 import Util from "../../../../utils/index";
+import {
+  hasLineDiscount,
+  lineDiscountAmount
+} from "../../../../utils/lineDiscount";
 
 export default {
   computed: {
@@ -381,6 +391,8 @@ export default {
   },
 
   methods: {
+    hasLineDiscount,
+    lineDiscountAmount,
    
 
     //----------------------------------- Invoice Sale PDF  -------------------------\\
@@ -1261,7 +1273,7 @@ export default {
   }
 
   .invoice-product-card-detail-value.discount {
-    color: #ef4444;
+    color: inherit;
   }
 
   /* Summary - Full width on mobile */
@@ -1778,7 +1790,7 @@ export default {
   padding: 5px;
   text-align: right;
   font-size: 8.5pt;
-  color: #ef4444;
+  color: #1f2937;
 }
 
 .invoice-product-total-cell {
@@ -2240,7 +2252,7 @@ export default {
   padding: 5px;
   text-align: right;
   font-size: 8.5pt;
-  color: #ef4444;
+  color: #1f2937;
 }
 
 .invoice-product-total-cell {

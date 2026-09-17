@@ -28,6 +28,7 @@ use App\Models\User;
 use App\Models\UserWarehouse;
 use App\Models\Warehouse;
 use App\Support\ZatcaQr;
+use App\Support\SaleLineDiscount;
 use App\utils\helpers;
 use ArPHP\I18N\Arabic;
 use Carbon\Carbon;
@@ -1332,11 +1333,13 @@ class SalesController extends BaseController
             $data['price'] = $detail->price;
             $data['unit_sale'] = $unit ? $unit->ShortName : '';
 
-            if ($detail->discount_method == '2') {
-                $data['DiscountNet'] = $detail->discount;
-            } else {
-                $data['DiscountNet'] = $detail->price * $detail->discount / 100;
-            }
+            $lineDiscount = SaleLineDiscount::forDetail($detail);
+            $data['DiscountNet'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_method'] = $lineDiscount['discount_method'];
+            $data['discount_Method'] = $lineDiscount['discount_method'];
+            $data['discount_value'] = $lineDiscount['discount_value'];
+            $data['discount_unit_amount'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_line_amount'] = $lineDiscount['discount_line_amount'];
 
             $tax_price = $detail->TaxNet * (($detail->price - $data['DiscountNet']) / 100);
             $data['Unit_price'] = $detail->price;
@@ -1427,6 +1430,15 @@ class SalesController extends BaseController
             $data['quantity'] = number_format($detail->quantity, 2, '.', '');
             $data['total'] = number_format($detail->total, 2, '.', '');
             $data['unit_sale'] = $unit ? $unit->ShortName : '';
+            $data['price'] = number_format($detail->price, 2, '.', '');
+
+            $lineDiscount = SaleLineDiscount::forDetail($detail);
+            $data['discount'] = $lineDiscount['discount_value'];
+            $data['discount_method'] = $lineDiscount['discount_method'];
+            $data['discount_Method'] = $lineDiscount['discount_method'];
+            $data['DiscountNet'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_unit_amount'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_line_amount'] = $lineDiscount['discount_line_amount'];
 
             $data['is_imei'] = $detail['product']['is_imei'];
             $data['imei_number'] = $detail->imei_number;
@@ -1562,6 +1574,10 @@ class SalesController extends BaseController
             $total = number_format((float) $detail->total, 2, '.', '');
             $out .= mb_substr($name, 0, $width) . $LF;
             $out .= $pad('  ' . $qty . ' x', $symbol . ' ' . $total);
+            $lineDiscount = SaleLineDiscount::forDetail($detail);
+            if ($lineDiscount['discount_line_amount'] > 0) {
+                $out .= $pad('  Discount', $symbol . ' ' . number_format($lineDiscount['discount_line_amount'], 2, '.', ''));
+            }
         }
 
         $out .= $line;
@@ -2274,11 +2290,13 @@ class SalesController extends BaseController
             $data['unitSale'] = $unit ? $unit->ShortName : '';
             $data['price'] = number_format($detail->price, 2, '.', '');
 
-            if ($detail->discount_method == '2') {
-                $data['DiscountNet'] = number_format($detail->discount, 2, '.', '');
-            } else {
-                $data['DiscountNet'] = number_format($detail->price * $detail->discount / 100, 2, '.', '');
-            }
+            $lineDiscount = SaleLineDiscount::forDetail($detail);
+            $data['DiscountNet'] = number_format($lineDiscount['discount_unit_amount'], 2, '.', '');
+            $data['discount_method'] = $lineDiscount['discount_method'];
+            $data['discount_Method'] = $lineDiscount['discount_method'];
+            $data['discount_value'] = $lineDiscount['discount_value'];
+            $data['discount_unit_amount'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_line_amount'] = $lineDiscount['discount_line_amount'];
 
             $tax_price = $detail->TaxNet * (($detail->price - $data['DiscountNet']) / 100);
             $data['Unit_price'] = number_format($detail->price, 2, '.', '');
@@ -2388,11 +2406,13 @@ class SalesController extends BaseController
             $data['unitSale'] = $unit ? $unit->ShortName : '';
             $data['price'] = number_format($detail->price, 2, '.', '');
 
-            if ($detail->discount_method == '2') {
-                $data['DiscountNet'] = number_format($detail->discount, 2, '.', '');
-            } else {
-                $data['DiscountNet'] = number_format($detail->price * $detail->discount / 100, 2, '.', '');
-            }
+            $lineDiscount = SaleLineDiscount::forDetail($detail);
+            $data['DiscountNet'] = number_format($lineDiscount['discount_unit_amount'], 2, '.', '');
+            $data['discount_method'] = $lineDiscount['discount_method'];
+            $data['discount_Method'] = $lineDiscount['discount_method'];
+            $data['discount_value'] = $lineDiscount['discount_value'];
+            $data['discount_unit_amount'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_line_amount'] = $lineDiscount['discount_line_amount'];
 
             $tax_price = $detail->TaxNet * (($detail->price - $data['DiscountNet']) / 100);
             $data['Unit_price'] = number_format($detail->price, 2, '.', '');
@@ -3768,11 +3788,17 @@ class SalesController extends BaseController
                 $name = $detail->product->name;
             }
 
+            $lineDiscount = SaleLineDiscount::forDetail($detail);
             $details[] = [
                 'name' => $name,
                 'quantity' => $detail->quantity,
                 'total' => $detail->total,
                 'unit_sale' => $unit ? $unit->ShortName : '',
+                'price' => $detail->price,
+                'discount' => $lineDiscount['discount_value'],
+                'discount_method' => $lineDiscount['discount_method'],
+                'discount_unit_amount' => $lineDiscount['discount_unit_amount'],
+                'discount_line_amount' => $lineDiscount['discount_line_amount'],
             ];
         }
 

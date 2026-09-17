@@ -112,7 +112,10 @@
                         <td>{{currentUser.currency}} {{formatNumber(detail.Net_price,3)}}</td>
                         <td>{{formatNumber(detail.quantity,2)}} {{detail.unit_sale}}</td>
                         <td>{{currentUser.currency}} {{formatNumber(detail.price,2)}}</td>
-                        <td>{{currentUser.currency}} {{formatNumber(detail.DiscountNet,2)}}</td>
+                        <td>
+                          <template v-if="hasLineDiscount(detail)">{{currentUser.currency}} {{ formatNumber(lineDiscountAmount(detail), 2) }}</template>
+                          <span v-else>—</span>
+                        </td>
                         <td>{{currentUser.currency}} {{formatNumber(detail.taxe,2)}}</td>
                         <td>{{currentUser.currency}} {{detail.total.toFixed(2)}}</td>
                       </tr>
@@ -241,6 +244,10 @@ import {
   formatPriceDisplay as formatPriceDisplayHelper,
   getPriceFormatSetting
 } from "../../../../utils/priceFormat";
+import {
+  hasLineDiscount,
+  lineDiscountAmount
+} from "../../../../utils/lineDiscount";
 
 export default {
   computed: mapGetters(["currentUserPermissions", "currentUser"]),
@@ -261,6 +268,8 @@ export default {
   },
 
   methods: {
+    hasLineDiscount,
+    lineDiscountAmount,
     //-----------------------------------  Sale Return PDF -------------------------\\
     Return_PDF() {
       // Start the progress bar.

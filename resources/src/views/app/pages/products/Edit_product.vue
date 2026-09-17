@@ -681,6 +681,7 @@
                         <th>{{ $t('Name') }}</th>
                         <th>{{ $t('Cost') }}</th>
                         <th>{{ $t('Retail Price') }}</th>
+                        <th>Online Store Price</th>
                         <th>{{ $t('Wholesale_Price') }}</th>
                         <th>{{ $t('Min_Selling_Price') }}</th>
                         <th class="text-center" style="width: 50px;"></th>
@@ -692,6 +693,7 @@
                         <td><b-form-input v-model="variant.text" type="text" size="sm"></b-form-input></td>
                         <td><b-form-input v-model="variant.cost" type="text" size="sm"></b-form-input></td>
                         <td><b-form-input v-model="variant.price" type="text" size="sm"></b-form-input></td>
+                        <td><b-form-input v-model="variant.online_store_price" type="number" min="0" step="0.01" size="sm" placeholder="Use retail"></b-form-input></td>
                         <td><b-form-input v-model="variant.wholesale" type="text" size="sm"></b-form-input></td>
                         <td><b-form-input v-model="variant.min_price" type="text" size="sm"></b-form-input></td>
                         <td class="text-center">
@@ -764,6 +766,31 @@
                         ></b-form-input>
 
                         <b-form-invalid-feedback id="ProductPrice-feedback">{{ validationContext.errors[0] }}</b-form-invalid-feedback>
+                      </b-form-group>
+                    </validation-provider>
+                  </b-col>
+
+                  <!-- Optional online-store base price; blank inherits Retail Price. -->
+                  <b-col
+                    md="6"
+                    class="mb-2"
+                    v-if="product.type == 'is_single' || product.type == 'is_service' || product.type == 'is_combo'"
+                  >
+                    <validation-provider
+                      name="Online Store Price"
+                      :rules="{ regex: /^\d*\.?\d*$/ }"
+                      v-slot="validationContext"
+                    >
+                      <b-form-group label="Online Store Price">
+                        <b-form-input
+                          :state="getValidationState(validationContext)"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder="Leave blank to use Retail Price"
+                          v-model="product.online_store_price"
+                        ></b-form-input>
+                        <b-form-invalid-feedback>{{ validationContext.errors[0] }}</b-form-invalid-feedback>
                       </b-form-group>
                     </validation-provider>
                   </b-col>
@@ -1185,8 +1212,7 @@
                     </b-form-checkbox>
                   </b-form-group>
 
-                  <!-- Ecommerce-only product controls are hidden; values remain in the model/API. -->
-                  <div v-if="false">
+                  <!-- Ecommerce-only product controls. -->
                   <b-form-group>
                     <b-form-checkbox
                       v-model="product.hide_from_online_store"
@@ -1233,8 +1259,6 @@
                       />
                     </b-form-group>
                   </template>
-                  </div>
-
                 </div>
               </b-card>
             </div>
@@ -1503,6 +1527,7 @@ export default {
         Type_barcode: "",
         cost: "",
         price: "",
+        online_store_price: "",
         brand_id: "",
         category_id: "",
         sub_category_id: "",

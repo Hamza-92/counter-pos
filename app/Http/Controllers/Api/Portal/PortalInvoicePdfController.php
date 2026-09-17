@@ -8,6 +8,7 @@ use App\Models\ProductVariant;
 use App\Models\Sale;
 use App\Models\Setting;
 use App\Models\Unit;
+use App\Support\SaleLineDiscount;
 use App\utils\helpers;
 use ArPHP\I18N\Arabic;
 use Illuminate\Http\Request;
@@ -84,11 +85,13 @@ class PortalInvoicePdfController extends Controller
             $data['unitSale'] = $unit ? $unit->ShortName : '';
             $data['price'] = number_format($detail->price, 2, '.', '');
 
-            if (($detail->discount_method ?? '2') == '2') {
-                $data['DiscountNet'] = number_format($detail->discount ?? 0, 2, '.', '');
-            } else {
-                $data['DiscountNet'] = number_format(($detail->price * ($detail->discount ?? 0) / 100), 2, '.', '');
-            }
+            $lineDiscount = SaleLineDiscount::forDetail($detail);
+            $data['DiscountNet'] = number_format($lineDiscount['discount_unit_amount'], 2, '.', '');
+            $data['discount_method'] = $lineDiscount['discount_method'];
+            $data['discount_Method'] = $lineDiscount['discount_method'];
+            $data['discount_value'] = $lineDiscount['discount_value'];
+            $data['discount_unit_amount'] = $lineDiscount['discount_unit_amount'];
+            $data['discount_line_amount'] = $lineDiscount['discount_line_amount'];
 
             $tax_price = ($detail->TaxNet ?? 0) * (($detail->price - ($data['DiscountNet'] ?? 0)) / 100);
             $data['Unit_price'] = number_format($detail->price, 2, '.', '');

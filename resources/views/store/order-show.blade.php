@@ -182,7 +182,7 @@
             <td class="px-4 py-3">${escapeHtml(it.name||('#'+it.product_id))}</td>
             <td class="text-center px-4 py-3">${Number(it.qty||0)}</td>
             <td class="text-end px-4 py-3">${money(it.price)}</td>
-            <td class="text-end px-4 py-3 font-semibold">${money((it.price||0)*(it.qty||0))}</td>
+            <td class="text-end px-4 py-3 font-semibold">${money(it.line_total)}</td>
           `;
           el.items.appendChild(tr);
         });

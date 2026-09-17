@@ -7,6 +7,7 @@ use App\Models\Collection;
 use App\Models\Product;
 use App\Models\StoreBanner;
 use App\Models\StoreSetting;
+use App\Support\OnlineStorePrice;
 use Illuminate\Support\Facades\Schema;
 use DB;
 use Illuminate\Http\Request;
@@ -61,35 +62,17 @@ class StoreFrontController extends Controller
 
         // ===== Shared price SQL (mirrors shop()) =====
         $minVariantSub = DB::table('product_variants')
-            ->select('product_id', DB::raw('MIN(price) AS min_variant_price'))
+            ->whereNull('deleted_at')
+            ->select('product_id', DB::raw('MIN(COALESCE(online_store_price, price)) AS min_variant_store_price'))
             ->groupBy('product_id');
 
-        // Base: if a product has variants, use MIN(variant.price); else use products.price
-        $baseExpr = 'COALESCE(pvmin.min_variant_price, products.price)';
-
-        // discount_method: '1' => percent, '2' => fixed
-        $discValExpr = 'IFNULL(products.discount, 0)';
-        $afterDiscountExpr = "GREATEST(0,
-            CASE
-                WHEN products.discount_method = '1' THEN $baseExpr - ($baseExpr * ($discValExpr/100))
-                WHEN products.discount_method = '2' THEN $baseExpr - LEAST($discValExpr, $baseExpr)
-                ELSE $baseExpr
-            END
-        )";
-
-        // tax_method: '2' => Inclusive (leave as-is), otherwise treat as Exclusive and add tax
-        $taxRateExpr = 'COALESCE(products.TaxNet, 0)';
-        $finalExpr = "ROUND(
-            CASE
-                WHEN products.tax_method = '2' THEN $afterDiscountExpr
-                ELSE $afterDiscountExpr * (1 + ($taxRateExpr/100))
-            END, 2
-        )";
+        $priceExpressions = OnlineStorePrice::sqlExpressions();
+        $baseExpr = $priceExpressions['base'];
+        $afterDiscountExpr = $priceExpressions['afterDiscount'];
+        $finalExpr = $priceExpressions['final'];
 
         // 3) Build blocks
         $blocks = [];
-        $defaultTaxRate = (float) ($s->default_tax_rate ?? 0);
-
         foreach ($lineup as $i => $item) {
             if (! is_array($item) || empty($item['type'])) {
                 continue;
@@ -141,7 +124,7 @@ class StoreFrontController extends Controller
                     ->where('products.is_active', 1)
                     ->where('products.hide_from_online_store', 0)
                     ->with([
-                        'variants:id,product_id,name,price,image',
+                        'variants:id,product_id,name,price,online_store_price,image',
                         'images:id,product_id,image_path,is_main,sort_order',
                     ]) // QuickView / gallery + variant picker
                     ->join('collection_product', 'collection_product.product_id', '=', 'products.id')
@@ -166,26 +149,9 @@ class StoreFrontController extends Controller
                     $p->display_price = (float) ($p->final_display_price ?? 0);
 
                     // Variant display prices computed with same rules as SQL
-                    $taxRate = is_numeric($p->TaxNet) ? (float) $p->TaxNet : $defaultTaxRate;
-                    $discVal = is_numeric($p->discount) ? (float) $p->discount : 0.0;
-                    $isPercent = (string) $p->discount_method === '1';
-                    $isInclusive = (string) $p->tax_method === '2';
-
                     if ($p->relationLoaded('variants') && $p->variants) {
                         foreach ($p->variants as $v) {
-                            $price = (float) ($v->price ?? 0);
-                            // discount
-                            if ($discVal > 0) {
-                                $price = $isPercent ? ($price - ($price * $discVal / 100)) : ($price - min($discVal, $price));
-                                if ($price < 0) {
-                                    $price = 0;
-                                }
-                            }
-                            // tax
-                            if (! $isInclusive && $taxRate > 0) {
-                                $price = $price * (1 + $taxRate / 100);
-                            }
-                            $v->display_price = round($price, 2);
+                            $v->display_price = OnlineStorePrice::calculate($p, $v)['final'];
                         }
                     }
                 }
@@ -255,30 +221,15 @@ class StoreFrontController extends Controller
 
         // 1) Subquery: MIN(variant.price) per product
         $minVariantSub = DB::table('product_variants')
-            ->select('product_id', DB::raw('MIN(price) AS min_variant_price'))
+            ->whereNull('deleted_at')
+            ->select('product_id', DB::raw('MIN(COALESCE(online_store_price, price)) AS min_variant_store_price'))
             ->groupBy('product_id');
 
         // 2) SQL price pipeline (MySQL-compatible)
-        $baseExpr = 'COALESCE(pvmin.min_variant_price, products.price)';
-
-        // discount_method: '1'=percent, '2'=fixed (varchar)
-        $discValExpr = 'IFNULL(products.discount, 0)';
-        $afterDiscountExpr = "GREATEST(0,
-            CASE
-                WHEN products.discount_method = '1' THEN $baseExpr - ($baseExpr * ($discValExpr/100))
-                WHEN products.discount_method = '2' THEN $baseExpr - LEAST($discValExpr, $baseExpr)
-                ELSE $baseExpr
-            END
-        )";
-
-        // tax_method: '1'=Exclusive, '2'=Inclusive (varchar);  TaxNet
-        $taxRateExpr = 'COALESCE(products.TaxNet, 0)';
-        $finalExpr = "ROUND(
-            CASE
-                WHEN products.tax_method = '2' THEN $afterDiscountExpr
-                ELSE $afterDiscountExpr * (1 + ($taxRateExpr/100))
-            END, 2
-        )";
+        $priceExpressions = OnlineStorePrice::sqlExpressions();
+        $baseExpr = $priceExpressions['base'];
+        $afterDiscountExpr = $priceExpressions['afterDiscount'];
+        $finalExpr = $priceExpressions['final'];
 
         $productsQuery = Product::query()
             ->where('deleted_at', '=', null)
@@ -286,7 +237,7 @@ class StoreFrontController extends Controller
             ->where('hide_from_online_store', 0)
             // Note: product_variants table doesn't have a `qty` column; stock comes from product_warehouse.qte
             ->with([
-                'variants:id,product_id,name,price,image',
+                'variants:id,product_id,name,price,online_store_price,image',
                 'images:id,product_id,image_path,is_main,sort_order',
             ]) // Quick View / gallery + picker
             ->leftJoinSub($minVariantSub, 'pvmin', function ($join) {
@@ -379,6 +330,11 @@ class StoreFrontController extends Controller
         // Attach display_price for the Blade (use SQL-computed final_display_price)
         foreach ($products as $p) {
             $p->display_price = (float) ($p->final_display_price ?? 0);
+            if ($p->relationLoaded('variants') && $p->variants) {
+                foreach ($p->variants as $v) {
+                    $v->display_price = OnlineStorePrice::calculate($p, $v)['final'];
+                }
+            }
         }
         $this->attachStockToProducts($products, $s->default_warehouse_id);
 
@@ -551,13 +507,13 @@ class StoreFrontController extends Controller
                     ->orWhere('note', 'like', "%{$q}%");
             })
             ->take(8)
-            ->get(['id', 'name', 'code', 'image', 'price', 'tax_method', 'TaxNet', 'discount', 'discount_method']);
+            ->get(['id', 'name', 'code', 'image', 'price', 'online_store_price', 'tax_method', 'TaxNet', 'discount', 'discount_method']);
 
         foreach ($products as $p) {
             $p->loadMissing(['images' => fn ($q) => $q->orderBy('sort_order')->orderBy('id')]);
             $fn = $p->primaryProductImageFilename();
             $p->image_url = $fn ? asset('images/products/'.$fn) : asset('images/products/no-image.png');
-            $p->display_price = $p->computeFinalPrice()['final'];
+            $p->display_price = OnlineStorePrice::calculate($p)['final'];
             $p->url = route('store.shop', ['q' => $p->name]); 
         }
 

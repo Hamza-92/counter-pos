@@ -163,9 +163,16 @@
             <tbody>
                 @foreach($details as $d)
                 <tr>
-                    <td>{{ $d['name'] }}</td>
+                    <td>
+                        {{ $d['name'] }}
+                        @if((float)($d['discount_line_amount'] ?? 0) > 0)
+                            <div style="font-size:inherit;color:inherit;margin-top:2px;">
+                                Discount / الخصم: {{ number_format((float)$d['discount_line_amount'], 2) }}
+                            </div>
+                        @endif
+                    </td>
                     <td>{{ number_format($d['quantity'], 2) }} {{ $d['unit_sale'] }}</td>
-                    <td>{{ number_format($d['total'] / max($d['quantity'], 1), 2) }}</td>
+                    <td>{{ number_format((float)($d['price'] ?? ($d['total'] / max($d['quantity'], 1))), 2) }}</td>
                     <td>{{ number_format($d['total'], 2) }}</td>
                 </tr>
                 @endforeach

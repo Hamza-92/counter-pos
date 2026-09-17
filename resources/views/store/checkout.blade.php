@@ -469,8 +469,6 @@
       return;
     }
 
-    var subtotal = cart.items.reduce(function(a,i){ return a + (Number(i.price)||0)*(Number(i.qty)||0); }, 0);
-
     fetch(PAYMENT_INTENT_URL, {
       method: 'POST',
       headers: {
@@ -479,8 +477,13 @@
         'X-CSRF-TOKEN': CSRF
       },
       body: JSON.stringify({
-        amount: subtotal,
-        currency: (cart.currency || CURRENCY || 'usd').toLowerCase().replace(/[^a-z]/g, '') || 'usd'
+        items: items.map(function(i){
+          return {
+            product_id: i.product_id,
+            product_variant_id: i.product_variant_id,
+            qty: i.qty
+          };
+        })
       })
     })
     .then(function(res){
