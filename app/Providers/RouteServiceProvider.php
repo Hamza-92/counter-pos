@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\EnsureCrmApiIdempotency;
+use App\Http\Middleware\VerifyCrmApiSignature;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +48,8 @@ class RouteServiceProvider extends ServiceProvider
         // Register the exact control domain first. The tenant routes are
         // intentionally domainless because customers bring their own hosts;
         // registering them first would shadow matching control-plane paths.
+        $this->mapControlApiRoutes();
+
         $this->mapControlRoutes();
 
         $this->mapApiRoutes();
@@ -53,6 +57,24 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapWebRoutes();
 
         $this->mapPortalRoutes();
+    }
+
+    protected function mapControlApiRoutes()
+    {
+        if (! config('tenancy.enabled', false)) {
+            return;
+        }
+
+        Route::domain(config('tenancy.control_host'))
+            ->prefix('api/control/v1')
+            ->middleware([
+                'api',
+                'control.host',
+                VerifyCrmApiSignature::class,
+                EnsureCrmApiIdempotency::class,
+                'throttle:60,1',
+            ])
+            ->group(base_path('routes/control-api.php'));
     }
 
     protected function mapControlRoutes()

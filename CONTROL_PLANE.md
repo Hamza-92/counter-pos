@@ -39,3 +39,41 @@ Apply the linkage migration to the control database with:
 ```bash
 php artisan control:migrate --confirm-control
 ```
+
+## CRM control API
+
+The server-to-server API is available only on the exact control-plane host under `/api/control/v1`. It does not use a browser session and is not registered on tenant domains.
+
+Configure a shared key and a high-entropy secret:
+
+```dotenv
+CRM_API_KEY=crm-production
+CRM_API_SECRET=replace-with-a-random-secret
+CRM_API_CLOCK_SKEW_SECONDS=300
+```
+
+Every request must include `X-CRM-Key`, `X-CRM-Timestamp`, `X-CRM-Nonce`, and `X-CRM-Signature`. The signature is a lowercase SHA-256 HMAC of this canonical string:
+
+```text
+{unix timestamp}\n{nonce}\n{uppercase method}\n{path with query}\n{sha256 request body}
+```
+
+The API rejects expired timestamps, reused nonces, invalid signatures, and requests made through tenant hosts. Every mutating request also requires a UUID `Idempotency-Key`. Repeating the same request with the same key returns the stored response; reusing the key for different request data is rejected.
+
+The available endpoints are:
+
+- `GET /api/control/v1/health`
+- `POST /api/control/v1/tenants`
+- `GET /api/control/v1/tenants/by-crm-instance/{id}`
+- `PUT /api/control/v1/tenants/{tenant}/domain`
+- `PUT /api/control/v1/tenants/{tenant}/database`
+- `POST /api/control/v1/tenants/{tenant}/database/test`
+- `POST /api/control/v1/tenants/{tenant}/migrations`
+- `PUT /api/control/v1/tenants/{tenant}/status`
+- `GET /api/control/v1/operations/{run}`
+
+Tenant and operation responses intentionally exclude database host, name, username, passwords, and migration credentials. Database credentials are encrypted in the control database before storage.
+
+## Hosting automation boundary
+
+Hostinger connects only to the CRM. Its API token must remain in the CRM server environment and must never be configured in CounterPOS. The CRM creates the domain and database through Hostinger, then sends only the resulting domain and database connection details to the signed CounterPOS control API. CounterPOS verifies the database, runs tenant migrations, and changes tenant status.

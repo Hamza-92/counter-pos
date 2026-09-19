@@ -12,6 +12,12 @@ return [
     'resolution_cache_seconds' => (int) env('TENANT_RESOLUTION_CACHE_SECONDS', 30),
     'resolution_cache_store' => (string) env('TENANT_RESOLUTION_CACHE_STORE', 'file'),
     'control_auth_timeout_seconds' => (int) env('CONTROL_AUTH_TIMEOUT_SECONDS', 1800),
+
+    'crm_api' => [
+        'key' => (string) env('CRM_API_KEY', ''),
+        'secret' => (string) env('CRM_API_SECRET', ''),
+        'clock_skew_seconds' => (int) env('CRM_API_CLOCK_SKEW_SECONDS', 300),
+    ],
     // `auto` uses mysqldump when proc_open exists and the streaming PHP
     // implementation on restricted shared hosting such as hPanel.
     'backup_driver' => (string) env('TENANT_BACKUP_DRIVER', 'auto'),

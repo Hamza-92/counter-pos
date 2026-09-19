@@ -12,11 +12,9 @@ use Throwable;
 
 final class TenantOperationRunner
 {
-    public function __construct(private readonly TenantDatabaseManager $database)
-    {
-    }
+    public function __construct(private readonly TenantDatabaseManager $database) {}
 
-    public function run(string $tenantId, string $action, callable $operation, bool $migrationCredentials = false): mixed
+    public function run(string $tenantId, string $action, callable $operation, bool $migrationCredentials = false, string $source = 'control_panel', ?string $externalReference = null): mixed
     {
         if (! Str::isUuid($tenantId)) {
             throw new \InvalidArgumentException('Tenant must be supplied as a UUID.');
@@ -26,12 +24,14 @@ final class TenantOperationRunner
         $lock = Cache::store('control_database')->lock('tenant-operation:'.$tenantId, 1800);
 
         try {
-            return $lock->block(5, function () use ($tenant, $action, $operation, $migrationCredentials) {
+            return $lock->block(5, function () use ($tenant, $action, $operation, $migrationCredentials, $source, $externalReference) {
                 $run = ProvisioningRun::query()->create([
                     'tenant_id' => $tenant->id,
                     'action' => $action,
+                    'source' => $source,
                     'status' => 'running',
-                    'idempotency_key' => (string) Str::uuid(),
+                    'idempotency_key' => $externalReference ?? (string) Str::uuid(),
+                    'external_reference' => $externalReference,
                     'started_at' => now(),
                 ]);
 

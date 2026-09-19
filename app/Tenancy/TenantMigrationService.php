@@ -15,10 +15,9 @@ class TenantMigrationService
         private readonly TenantOperationRunner $runner,
         private readonly MySqlBackupService $backups,
         private readonly Migrator $migrator,
-    ) {
-    }
+    ) {}
 
-    public function run(string $tenantId, OutputInterface $output): array
+    public function run(string $tenantId, OutputInterface $output, string $source = 'control_panel', ?string $externalReference = null): array
     {
         return $this->runner->run($tenantId, 'migrate', function (Tenant $tenant, TenantDatabase $database) use ($output) {
             return $this->migrator->usingConnection('tenant', function () use ($tenant, $database, $output) {
@@ -50,7 +49,7 @@ class TenantMigrationService
 
                 return ['status' => 'migrated', 'applied' => count($pending), 'backup_id' => $backup->id, 'schema_version' => $version];
             });
-        }, true);
+        }, true, $source, $externalReference);
     }
 
     public function pendingMigrations(): array
