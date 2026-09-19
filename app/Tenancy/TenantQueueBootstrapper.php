@@ -20,7 +20,7 @@ final class TenantQueueBootstrapper
 
     public function initialize(string $tenantId): void
     {
-        $tenant = Tenant::query()->with(['primaryDomain', 'subscriptions'])->find($tenantId);
+        $tenant = Tenant::query()->with('primaryDomain')->find($tenantId);
         if (! $tenant || ! $tenant->primaryDomain) {
             throw new TenantDatabaseException('Queued tenant context is invalid.');
         }

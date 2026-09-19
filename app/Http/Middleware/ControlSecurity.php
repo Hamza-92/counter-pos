@@ -14,8 +14,8 @@ class ControlSecurity
             return redirect()->route('control.login');
         }
 
-        $verifiedAt = (int) $request->session()->get('control_2fa_verified_at', 0);
-        if ($verifiedAt < time() - (int) config('tenancy.control_auth_timeout_seconds', 1800)) {
+        $authenticatedAt = (int) $request->session()->get('control_authenticated_at', 0);
+        if ($authenticatedAt < time() - (int) config('tenancy.control_auth_timeout_seconds', 1800)) {
             auth('control')->logout();
             $request->session()->invalidate();
 

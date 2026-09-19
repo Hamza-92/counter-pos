@@ -30,7 +30,7 @@ final class TenantResolver
         }
 
         $domain = Domain::query()
-            ->with(['tenant.subscriptions', 'tenant.primaryDomain'])
+            ->with(['tenant.primaryDomain'])
             ->find($domainId);
 
         if ($domain === null || $domain->tenant === null) {

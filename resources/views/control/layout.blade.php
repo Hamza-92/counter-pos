@@ -16,7 +16,6 @@
         <nav>
             <a href="{{ route('control.dashboard') }}">Overview</a>
             <a href="{{ route('control.tenants.index') }}">Customers</a>
-            <a href="{{ route('control.plans.index') }}">Plans</a>
         </nav>
     </aside>
     <main class="content">

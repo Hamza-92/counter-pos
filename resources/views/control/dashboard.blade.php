@@ -5,8 +5,8 @@
 <div class="grid">
     <div class="card"><div class="muted">Customers</div><div class="metric">{{ $tenantCount }}</div></div>
     <div class="card"><div class="muted">Active</div><div class="metric">{{ $activeCount }}</div></div>
-    <div class="card"><div class="muted">Suspended</div><div class="metric">{{ $suspendedCount }}</div></div>
-    <div class="card"><div class="muted">Expiring in 30 days</div><div class="metric">{{ $expiringCount }}</div></div>
+    <div class="card"><div class="muted">Verified domains</div><div class="metric">{{ $verifiedDomainCount }}</div></div>
+    <div class="card"><div class="muted">Configured databases</div><div class="metric">{{ $databaseCount }}</div></div>
 </div>
 <div class="card"><div class="row between"><h2 class="section-title">Recent customers</h2><a class="btn" href="{{ route('control.tenants.create') }}">Register customer</a></div>
 <table><thead><tr><th>Customer</th><th>Domain</th><th>Status</th><th>Schema</th></tr></thead><tbody>

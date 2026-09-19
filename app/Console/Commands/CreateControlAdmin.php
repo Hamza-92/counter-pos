@@ -3,17 +3,18 @@
 namespace App\Console\Commands;
 
 use App\Models\ControlPlane\SuperAdmin;
-use App\Services\ControlPlane\TotpService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class CreateControlAdmin extends Command
 {
-    protected $signature = 'control:admin-create {--name=} {--email=}';
+    protected $signature = 'control:admin-create {--name=} {--username=} {--email=}';
 
     protected $description = 'Create or securely rotate a control-plane superadmin';
 
-    public function handle(TotpService $totp): int
+    public function handle(): int
     {
         if (config('database.connections.control.driver') !== 'mysql') {
             $this->error('The control admin command requires a configured MySQL control database.');
@@ -22,12 +23,18 @@ class CreateControlAdmin extends Command
         }
 
         $name = trim((string) ($this->option('name') ?: $this->ask('Name')));
+        $username = strtolower(trim((string) ($this->option('username') ?: $this->ask('Username'))));
         $email = strtolower(trim((string) ($this->option('email') ?: $this->ask('Email'))));
         $password = (string) $this->secret('Password (minimum 12 characters)');
         $confirmation = (string) $this->secret('Confirm password');
 
-        if ($name === '' || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->error('A valid name and email are required.');
+        $validation = Validator::make(compact('name', 'username', 'email'), [
+            'name' => ['required', 'string', 'max:191'],
+            'username' => ['required', 'string', 'max:100', 'regex:/^[a-z0-9_.-]+$/', Rule::unique('control.super_admins', 'username')->ignore($email, 'email')],
+            'email' => ['required', 'email', 'max:191'],
+        ]);
+        if ($validation->fails()) {
+            $this->error($validation->errors()->first());
 
             return self::FAILURE;
         }
@@ -38,27 +45,17 @@ class CreateControlAdmin extends Command
             return self::FAILURE;
         }
 
-        $secret = $totp->generateSecret();
-        $recoveryCodes = $totp->generateRecoveryCodes();
-
         $admin = SuperAdmin::query()->firstOrNew(['email' => $email]);
         $admin->fill([
             'name' => $name,
+            'username' => $username,
             'password' => Hash::make($password),
             'is_active' => true,
         ]);
-        $admin->totp_secret = $secret;
-        $admin->recovery_code_hashes = array_map(static fn (string $code) => Hash::make($code), $recoveryCodes);
         $admin->save();
 
         $this->newLine();
-        $this->warn('Store these values securely now. They will not be shown again.');
-        $this->line('TOTP secret: '.$secret);
-        $this->line('Authenticator URI: '.$totp->provisioningUri($secret, $email));
-        $this->line('Recovery codes:');
-        foreach ($recoveryCodes as $code) {
-            $this->line('  '.$code);
-        }
+        $this->info('Superadmin created or updated: '.$username);
 
         return self::SUCCESS;
     }

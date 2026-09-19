@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\ControlPlane\Tenant;
-use App\Tenancy\TenantAccessEvaluator;
 use App\Tenancy\TenantOperationRunner;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -13,7 +12,7 @@ class TenantScheduled extends Command
     protected $signature = 'tenant:scheduled {task : assets, invoices, or reminders}';
     protected $description = 'Run one allowlisted scheduled task in isolation for each eligible tenant';
 
-    public function handle(TenantOperationRunner $runner, TenantAccessEvaluator $access): int
+    public function handle(TenantOperationRunner $runner): int
     {
         $commands = [
             'assets' => 'assets:check-validation-due',
@@ -28,11 +27,7 @@ class TenantScheduled extends Command
         }
 
         $failed = 0;
-        Tenant::query()->with('subscriptions')->where('status', 'active')->each(function (Tenant $tenant) use ($runner, $access, $commands, $task, &$failed) {
-            if (! $access->evaluate($tenant)->allowed) {
-                return;
-            }
-
+        Tenant::query()->where('status', 'active')->each(function (Tenant $tenant) use ($runner, $commands, $task, &$failed) {
             try {
                 $runner->run($tenant->id, 'scheduled:'.$task, function () use ($commands, $task) {
                     $exit = Artisan::call($commands[$task]);

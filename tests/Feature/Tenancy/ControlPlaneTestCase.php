@@ -19,7 +19,6 @@ abstract class ControlPlaneTestCase extends TestCase
             'database.connections.control.foreign_key_constraints' => true,
             'tenancy.control_host' => 'admin.counterpos.pk',
             'tenancy.require_verified_domain' => true,
-            'tenancy.require_subscription' => true,
             'tenancy.resolution_cache_store' => 'array',
         ]);
 

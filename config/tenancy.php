@@ -9,7 +9,6 @@ return [
     'enabled' => (bool) env('TENANCY_ENABLED', false),
     'control_host' => strtolower((string) env('CONTROL_PLANE_HOST', 'admin.counterpos.pk')),
     'require_verified_domain' => (bool) env('TENANT_REQUIRE_VERIFIED_DOMAIN', true),
-    'require_subscription' => (bool) env('TENANT_REQUIRE_SUBSCRIPTION', true),
     'resolution_cache_seconds' => (int) env('TENANT_RESOLUTION_CACHE_SECONDS', 30),
     'resolution_cache_store' => (string) env('TENANT_RESOLUTION_CACHE_STORE', 'file'),
     'control_auth_timeout_seconds' => (int) env('CONTROL_AUTH_TIMEOUT_SECONDS', 1800),

@@ -38,7 +38,7 @@ class ControlHostRoutingTest extends TestCase
     {
         $this->get('https://admin.counterpos.pk/login')
             ->assertOk()
-            ->assertSeeText('Restricted administration.');
+            ->assertSeeText('Sign in to manage tenant domains and database connections.');
     }
 
     public function test_control_host_cannot_fall_through_to_tenant_api(): void
@@ -47,46 +47,36 @@ class ControlHostRoutingTest extends TestCase
             ->assertNotFound();
     }
 
-    public function test_superadmin_can_sign_in_with_a_one_time_recovery_code(): void
+    public function test_superadmin_can_sign_in_with_username_and_password(): void
     {
         $admin = SuperAdmin::query()->create([
             'name' => 'Local Admin',
+            'username' => 'local.admin',
             'email' => 'admin@example.test',
             'password' => Hash::make('correct-horse-battery-staple'),
             'is_active' => true,
         ]);
-        $admin->forceFill([
-            'totp_secret' => 'JBSWY3DPEHPK3PXP',
-            'recovery_code_hashes' => [Hash::make('ABCD-EFGH-IJKL')],
-        ])->save();
 
         $this->post('https://admin.counterpos.pk/login', [
-            'email' => 'admin@example.test',
+            'username' => 'local.admin',
             'password' => 'correct-horse-battery-staple',
-            'code' => 'ABCD-EFGH-IJKL',
         ])->assertRedirect();
 
         $this->assertAuthenticatedAs($admin, 'control');
-        $this->assertSame([], $admin->fresh()->recovery_code_hashes);
     }
 
     public function test_authenticated_superadmin_can_register_a_tenant(): void
     {
         $admin = SuperAdmin::query()->create([
             'name' => 'Local Admin',
+            'username' => 'local.admin',
             'email' => 'admin@example.test',
             'password' => Hash::make('correct-horse-battery-staple'),
             'is_active' => true,
         ]);
-        $admin->forceFill([
-            'totp_secret' => 'JBSWY3DPEHPK3PXP',
-            'recovery_code_hashes' => [Hash::make('MNOP-QRST-UVWX')],
-        ])->save();
-
         $this->post('https://admin.counterpos.pk/login', [
-            'email' => 'admin@example.test',
+            'username' => 'local.admin',
             'password' => 'correct-horse-battery-staple',
-            'code' => 'MNOP-QRST-UVWX',
         ])->assertRedirect();
 
         $this->post('https://admin.counterpos.pk/tenants', [
@@ -97,5 +87,6 @@ class ControlHostRoutingTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame('provisioning', Tenant::query()->where('slug', 'tenant-alpha')->value('status'));
+        $this->get('https://admin.counterpos.pk/plans')->assertNotFound();
     }
 }

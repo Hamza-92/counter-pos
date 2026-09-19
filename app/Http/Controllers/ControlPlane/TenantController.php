@@ -4,9 +4,6 @@ namespace App\Http\Controllers\ControlPlane;
 
 use App\Http\Controllers\Controller;
 use App\Models\ControlPlane\Domain;
-use App\Models\ControlPlane\ManualPayment;
-use App\Models\ControlPlane\Plan;
-use App\Models\ControlPlane\Subscription;
 use App\Models\ControlPlane\Tenant;
 use App\Models\ControlPlane\TenantDatabase;
 use App\Services\ControlPlane\AuditService;
@@ -16,7 +13,6 @@ use App\Tenancy\TenantResolver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -24,7 +20,7 @@ class TenantController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Tenant::query()->with(['primaryDomain', 'databaseConfiguration', 'subscriptions.plan']);
+        $query = Tenant::query()->with(['primaryDomain', 'databaseConfiguration']);
         if ($request->filled('search')) {
             $search = $request->string('search')->trim()->toString();
             $query->where(static function ($builder) use ($search) {
@@ -60,12 +56,9 @@ class TenantController extends Controller
 
     public function show(Tenant $tenant): View
     {
-        $tenant->load(['domains', 'databaseConfiguration', 'subscriptions.plan', 'subscriptions.payments']);
+        $tenant->load(['domains', 'databaseConfiguration']);
 
-        return view('control.tenants.show', [
-            'tenant' => $tenant,
-            'plans' => Plan::query()->where('is_active', true)->orderBy('name')->get(),
-        ]);
+        return view('control.tenants.show', ['tenant' => $tenant]);
     }
 
     public function addDomain(Request $request, Tenant $tenant, AuditService $audit, TenantResolver $resolver): RedirectResponse
@@ -168,76 +161,6 @@ class TenantController extends Controller
         }
     }
 
-    public function addSubscription(Request $request, Tenant $tenant, AuditService $audit): RedirectResponse
-    {
-        $data = $request->validate([
-            'plan_id' => ['required', Rule::exists('control.plans', 'id')->where('is_active', true)],
-            'starts_at' => ['required', 'date'],
-            'ends_at' => ['required', 'date', 'after:starts_at'],
-            'grace_ends_at' => ['nullable', 'date', 'after_or_equal:ends_at'],
-            'agreed_amount' => ['required', 'numeric', 'min:0'],
-            'currency' => ['required', 'string', 'size:3'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-        ]);
-
-        $subscription = $tenant->subscriptions()->create($data + [
-            'status' => now()->between($data['starts_at'], $data['ends_at']) ? 'active' : 'pending',
-            'currency' => strtoupper($data['currency']),
-            'created_by' => auth('control')->id(),
-        ]);
-        $audit->record('subscription.created', $subscription, null, $subscription->only(['plan_id', 'status', 'starts_at', 'ends_at', 'agreed_amount', 'currency']));
-
-        return back()->with('status', 'Subscription recorded.');
-    }
-
-    public function addPayment(Request $request, Tenant $tenant, AuditService $audit): RedirectResponse
-    {
-        $data = $request->validate([
-            'subscription_id' => ['required', Rule::exists('control.subscriptions', 'id')->where('tenant_id', $tenant->id)],
-            'reference' => ['nullable', 'string', 'max:191', Rule::unique('control.manual_payments', 'reference')],
-            'amount' => ['required', 'numeric', 'gt:0'],
-            'currency' => ['required', 'string', 'size:3'],
-            'paid_at' => ['required', 'date'],
-            'method' => ['nullable', 'string', 'max:80'],
-            'notes' => ['nullable', 'string', 'max:2000'],
-        ]);
-
-        $payment = ManualPayment::query()->create($data + [
-            'tenant_id' => $tenant->id,
-            'currency' => strtoupper($data['currency']),
-            'recorded_by' => auth('control')->id(),
-            'recorded_at' => now(),
-        ]);
-        $audit->record('payment.recorded', $payment, null, $payment->only(['subscription_id', 'reference', 'amount', 'currency', 'paid_at', 'method']));
-
-        return back()->with('status', 'Payment recorded in the append-only ledger.');
-    }
-
-    public function reversePayment(Request $request, ManualPayment $payment, AuditService $audit): RedirectResponse
-    {
-        $data = $request->validate(['notes' => ['required', 'string', 'max:2000']]);
-        if (ManualPayment::query()->where('reversal_of_id', $payment->id)->exists() || $payment->reversal_of_id) {
-            return back()->withErrors(['payment' => 'This payment cannot be reversed again.']);
-        }
-
-        $reversal = ManualPayment::query()->create([
-            'tenant_id' => $payment->tenant_id,
-            'subscription_id' => $payment->subscription_id,
-            'reversal_of_id' => $payment->id,
-            'reference' => 'REV-'.Str::upper(Str::random(12)),
-            'amount' => -abs((float) $payment->amount),
-            'currency' => $payment->currency,
-            'paid_at' => now(),
-            'method' => 'reversal',
-            'notes' => $data['notes'],
-            'recorded_by' => auth('control')->id(),
-            'recorded_at' => now(),
-        ]);
-        $audit->record('payment.reversed', $reversal, null, ['reversal_of_id' => $payment->id, 'amount' => $reversal->amount]);
-
-        return back()->with('status', 'A reversal entry was appended.');
-    }
-
     public function changeStatus(Request $request, Tenant $tenant, AuditService $audit): RedirectResponse
     {
         $data = $request->validate([
@@ -252,10 +175,9 @@ class TenantController extends Controller
 
         if ($data['status'] === 'active') {
             $ready = $tenant->databaseConfiguration()->exists()
-                && $tenant->domains()->where('is_primary', true)->whereNotNull('verified_at')->exists()
-                && $tenant->subscriptions()->whereIn('status', ['active', 'grace'])->where('ends_at', '>', now())->exists();
+                && $tenant->domains()->where('is_primary', true)->whereNotNull('verified_at')->exists();
             if (! $ready) {
-                return back()->withErrors(['status' => 'Activation requires a database, verified primary domain, and current subscription.']);
+                return back()->withErrors(['status' => 'Activation requires a database and verified primary domain.']);
             }
         }
 

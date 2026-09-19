@@ -3,13 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\ControlPlane\Domain;
-use App\Models\ControlPlane\Plan;
-use App\Models\ControlPlane\Subscription;
 use App\Models\ControlPlane\SuperAdmin;
 use App\Models\ControlPlane\Tenant;
 use App\Models\ControlPlane\TenantDatabase;
 use App\Models\User;
-use App\Services\ControlPlane\TotpService;
 use App\Tenancy\TenantDatabaseManager;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -23,7 +20,7 @@ class TenancyLocalBootstrap extends Command
     protected $signature = 'tenancy:local-bootstrap {--confirm-local : Create the fixed local test databases and records}';
     protected $description = 'Create a non-destructive local control + two-tenant test installation';
 
-    public function handle(TotpService $totp, TenantDatabaseManager $manager): int
+    public function handle(TenantDatabaseManager $manager): int
     {
         if (! $this->option('confirm-local')) {
             $this->error('Refusing to continue without --confirm-local.');
@@ -68,13 +65,8 @@ class TenancyLocalBootstrap extends Command
             return self::FAILURE;
         }
 
-        $plan = Plan::query()->firstOrCreate(['name' => 'Local Test'], [
-            'billing_interval' => 'monthly', 'price' => 1000, 'currency' => 'PKR', 'is_active' => true,
-            'features' => ['Local isolation testing'],
-        ]);
-
-        $tenantA = $this->tenant('Local Existing Business', 'local-a', 'shop-a.127.0.0.1.nip.io', $tenantAName, $mysql, $plan);
-        $tenantB = $this->tenant('Local New Business', 'local-b', 'shop-b.127.0.0.1.nip.io', $tenantBName, $mysql, $plan);
+        $tenantA = $this->tenant('Local Existing Business', 'local-a', 'shop-a.127.0.0.1.nip.io', $tenantAName, $mysql);
+        $tenantB = $this->tenant('Local New Business', 'local-b', 'shop-b.127.0.0.1.nip.io', $tenantBName, $mysql);
 
         $manager->initializeForTenant($tenantA->id, true);
         try {
@@ -113,21 +105,15 @@ class TenancyLocalBootstrap extends Command
         }
 
         $adminPassword = $this->randomPassword();
-        $secret = $totp->generateSecret();
-        $recovery = $totp->generateRecoveryCodes();
         $admin = SuperAdmin::query()->firstOrNew(['email' => 'admin@counterpos.local']);
-        $admin->fill(['name' => 'Local Superadmin', 'password' => Hash::make($adminPassword), 'is_active' => true]);
-        $admin->totp_secret = $secret;
-        $admin->recovery_code_hashes = array_map(static fn ($code) => Hash::make($code), $recovery);
+        $admin->fill(['name' => 'Local Superadmin', 'username' => 'admin', 'password' => Hash::make($adminPassword), 'is_active' => true]);
         $admin->save();
 
         $this->newLine();
         $this->warn('Local credentials (save now; rerunning rotates them):');
         $this->line('Control URL: http://admin.127.0.0.1.nip.io:8000');
-        $this->line('Control email: admin@counterpos.local');
+        $this->line('Control username: admin');
         $this->line('Control password: '.$adminPassword);
-        $this->line('TOTP secret: '.$secret);
-        $this->line('Recovery code: '.$recovery[0]);
         $this->line('Tenant A URL: http://shop-a.127.0.0.1.nip.io:8000 (existing application data)');
         $this->line('Tenant B URL: http://shop-b.127.0.0.1.nip.io:8000');
         $this->line('Tenant B email: owner@local.test');
@@ -136,7 +122,7 @@ class TenancyLocalBootstrap extends Command
         return self::SUCCESS;
     }
 
-    private function tenant(string $name, string $slug, string $host, string $databaseName, array $mysql, Plan $plan): Tenant
+    private function tenant(string $name, string $slug, string $host, string $databaseName, array $mysql): Tenant
     {
         $tenant = Tenant::query()->firstOrCreate(['slug' => $slug], [
             'name' => $name, 'status' => 'active', 'activated_at' => now(),
@@ -151,13 +137,6 @@ class TenancyLocalBootstrap extends Command
             'database_name' => $databaseName, 'username' => $mysql['username'], 'password' => $mysql['password'],
             'migration_username' => $mysql['username'], 'migration_password' => $mysql['password'],
         ]);
-        Subscription::query()->firstOrCreate([
-            'tenant_id' => $tenant->id, 'plan_id' => $plan->id,
-        ], [
-            'status' => 'active', 'starts_at' => now()->subDay(), 'ends_at' => now()->addYear(),
-            'agreed_amount' => $plan->price, 'currency' => $plan->currency,
-        ]);
-
         return $tenant;
     }
 

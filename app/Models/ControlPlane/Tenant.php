@@ -16,6 +16,8 @@ class Tenant extends ControlPlaneModel
         'activated_at' => 'immutable_datetime',
         'suspended_at' => 'immutable_datetime',
         'last_health_check_at' => 'immutable_datetime',
+        'crm_application_instance_id' => 'integer',
+        'data_template_version' => 'integer',
         'version' => 'integer',
     ];
 
@@ -37,5 +39,10 @@ class Tenant extends ControlPlaneModel
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class)->orderByDesc('ends_at');
+    }
+
+    public function provisioningRuns(): HasMany
+    {
+        return $this->hasMany(ProvisioningRun::class)->orderByDesc('created_at');
     }
 }

@@ -12,7 +12,7 @@ class SuperAdmin extends Authenticatable
 
     protected $connection = 'control';
 
-    protected $fillable = ['name', 'email', 'password', 'is_active'];
+    protected $fillable = ['name', 'username', 'email', 'password', 'is_active'];
 
     protected $hidden = ['password', 'remember_token', 'totp_secret', 'recovery_code_hashes'];
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\ControlPlane;
 use App\Http\Controllers\Controller;
 use App\Models\ControlPlane\SuperAdmin;
 use App\Services\ControlPlane\AuditService;
-use App\Services\ControlPlane\TotpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -22,31 +21,25 @@ class AuthController extends Controller
         return view('control.auth.login');
     }
 
-    public function login(Request $request, TotpService $totp, AuditService $audit): RedirectResponse
+    public function login(Request $request, AuditService $audit): RedirectResponse
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'username' => ['required', 'string', 'max:191'],
             'password' => ['required', 'string'],
-            'code' => ['required', 'string', 'max:32'],
         ]);
 
-        $admin = SuperAdmin::query()->where('email', strtolower($credentials['email']))->first();
+        $login = strtolower(trim($credentials['username']));
+        $admin = SuperAdmin::query()
+            ->whereRaw('LOWER(username) = ?', [$login])
+            ->orWhereRaw('LOWER(email) = ?', [$login])
+            ->first();
         if (! $admin || ! $admin->is_active || ! Hash::check($credentials['password'], $admin->password)) {
-            return back()->withErrors(['email' => 'The supplied credentials are invalid.'])->onlyInput('email');
-        }
-
-        $validCode = $admin->totp_secret && $totp->verify($admin->totp_secret, $credentials['code']);
-        if (! $validCode) {
-            $validCode = $this->consumeRecoveryCode($admin, $credentials['code']);
-        }
-
-        if (! $validCode) {
-            return back()->withErrors(['code' => 'The verification code is invalid.'])->onlyInput('email');
+            return back()->withErrors(['username' => 'The supplied credentials are invalid.'])->onlyInput('username');
         }
 
         auth('control')->login($admin, false);
         $request->session()->regenerate();
-        $request->session()->put('control_2fa_verified_at', time());
+        $request->session()->put('control_authenticated_at', time());
 
         $admin->forceFill([
             'last_login_at' => now(),
@@ -69,23 +62,5 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('control.login');
-    }
-
-    private function consumeRecoveryCode(SuperAdmin $admin, string $candidate): bool
-    {
-        $candidate = strtoupper(trim($candidate));
-        $hashes = $admin->recovery_code_hashes ?? [];
-
-        foreach ($hashes as $index => $hash) {
-            if (Hash::check($candidate, $hash)) {
-                unset($hashes[$index]);
-                $admin->recovery_code_hashes = array_values($hashes);
-                $admin->save();
-
-                return true;
-            }
-        }
-
-        return false;
     }
 }
