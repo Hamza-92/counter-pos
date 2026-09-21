@@ -62,7 +62,13 @@ final class PortableMySqlBackup
             $snapshotStarted = false;
         } catch (Throwable $exception) {
             if ($snapshotStarted && $connection->transactionLevel() > 0) {
-                $connection->rollBack();
+                try {
+                    $connection->rollBack();
+                } catch (Throwable $rollbackException) {
+                    // Preserve the backup failure that caused the rollback. A
+                    // dropped remote connection can make rollback fail too.
+                    report($rollbackException);
+                }
             }
             fclose($stream);
             @unlink($path);

@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Tenancy;
 
+use App\Models\ControlPlane\Domain;
 use App\Models\ControlPlane\ProvisioningRun;
 use App\Models\ControlPlane\Tenant;
+use App\Tenancy\TenantAdministratorService;
 use App\Tenancy\TenantMigrationService;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
@@ -178,6 +180,33 @@ class CrmControlApiTest extends TestCase
             ->assertJsonPath('data.status', 'active');
     }
 
+    public function test_domain_configuration_promotes_a_matching_non_primary_domain(): void
+    {
+        $tenant = Tenant::query()->create([
+            'name' => 'Domain Retry Tenant',
+            'slug' => 'domain-retry-tenant',
+            'status' => 'provisioning',
+            'crm_application_instance_id' => 92,
+        ]);
+        $domain = Domain::query()->create([
+            'tenant_id' => $tenant->id,
+            'host' => 'retry.example.com',
+            'is_primary' => false,
+            'verified_at' => null,
+        ]);
+        $url = "https://admin.counterpos.pk/api/control/v1/tenants/{$tenant->id}/domain";
+        $payload = ['host' => 'retry.example.com', 'verified' => true];
+
+        $this->json('PUT', $url, $payload, $this->signedJsonHeaders('PUT', $url, $payload, (string) Str::uuid()))
+            ->assertOk()
+            ->assertJsonPath('data.domain.host', 'retry.example.com')
+            ->assertJsonPath('data.domain.verified', true);
+
+        $this->assertTrue($domain->fresh()->is_primary);
+        $this->assertNotNull($domain->fresh()->verified_at);
+        $this->assertSame(1, $tenant->domains()->count());
+    }
+
     public function test_reusing_an_idempotency_key_for_different_content_is_rejected(): void
     {
         $url = 'https://admin.counterpos.pk/api/control/v1/tenants';
@@ -191,6 +220,50 @@ class CrmControlApiTest extends TestCase
             ->assertJsonPath('code', 'idempotency_conflict');
     }
 
+    public function test_crm_can_configure_an_administrator_without_exposing_the_password(): void
+    {
+        $tenant = Tenant::query()->create([
+            'name' => 'Administrator Tenant',
+            'slug' => 'administrator-tenant',
+            'status' => 'provisioning',
+            'crm_application_instance_id' => 110,
+        ]);
+        $key = (string) Str::uuid();
+        $administrators = \Mockery::mock(TenantAdministratorService::class);
+        $administrators->shouldReceive('configure')->once()
+            ->with($tenant->id, \Mockery::on(fn (array $data) => $data['email'] === 'owner@example.com'
+                && $data['password'] === 'SecureTenantPassword123!'), 'crm', $key)
+            ->andReturnUsing(function (string $tenantId, array $data, string $source, string $externalReference): array {
+                ProvisioningRun::query()->create([
+                    'tenant_id' => $tenantId,
+                    'action' => 'configure-administrator',
+                    'source' => $source,
+                    'status' => 'succeeded',
+                    'idempotency_key' => $externalReference,
+                    'external_reference' => $externalReference,
+                    'result' => ['status' => 'configured', 'admin_email' => $data['email'], 'created' => true],
+                    'started_at' => now(),
+                    'finished_at' => now(),
+                ]);
+
+                return ['status' => 'configured', 'admin_email' => $data['email'], 'created' => true];
+            });
+        $this->app->instance(TenantAdministratorService::class, $administrators);
+
+        $url = "https://admin.counterpos.pk/api/control/v1/tenants/{$tenant->id}/administrator";
+        $payload = [
+            'name' => 'Store Owner',
+            'email' => 'owner@example.com',
+            'password' => 'SecureTenantPassword123!',
+        ];
+        $response = $this->json('PUT', $url, $payload, $this->signedJsonHeaders('PUT', $url, $payload, $key))
+            ->assertOk()
+            ->assertJsonPath('data.result.admin_email', 'owner@example.com')
+            ->assertJsonPath('data.result.created', true);
+
+        $this->assertStringNotContainsString('SecureTenantPassword123!', $response->getContent());
+    }
+
     public function test_migration_requests_are_tracked_and_idempotent(): void
     {
         $tenant = Tenant::query()->create([
@@ -202,7 +275,7 @@ class CrmControlApiTest extends TestCase
         $key = (string) Str::uuid();
         $migrations = \Mockery::mock(TenantMigrationService::class);
         $migrations->shouldReceive('run')->once()
-            ->with($tenant->id, \Mockery::type(BufferedOutput::class), 'crm', $key)
+            ->with($tenant->id, \Mockery::type(BufferedOutput::class), 'crm', $key, true)
             ->andReturnUsing(function (string $tenantId, $output, string $source, string $externalReference): array {
                 ProvisioningRun::query()->create([
                     'tenant_id' => $tenantId,

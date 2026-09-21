@@ -9,11 +9,15 @@ use App\Models\ControlPlane\Tenant;
 use App\Models\ControlPlane\TenantDatabase;
 use App\Services\ControlPlane\AuditService;
 use App\Tenancy\Exceptions\TenantDatabaseException;
+use App\Tenancy\HostNormalizer;
+use App\Tenancy\TenantAdministratorService;
 use App\Tenancy\TenantDatabaseManager;
 use App\Tenancy\TenantMigrationService;
+use App\Tenancy\TenantOperationRunner;
 use App\Tenancy\TenantResolver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -60,20 +64,22 @@ final class TenantController extends Controller
         return $this->tenantResponse($tenant);
     }
 
-    public function saveDomain(Request $request, Tenant $tenant, AuditService $audit, TenantResolver $resolver): JsonResponse
+    public function saveDomain(Request $request, Tenant $tenant, AuditService $audit, TenantResolver $resolver, HostNormalizer $normalizer): JsonResponse
     {
         $data = $request->validate([
             'host' => ['required', 'string', 'max:191'],
             'verified' => ['required', 'boolean'],
         ]);
-        $domain = $tenant->primaryDomain()->first();
+        $normalizedHost = $normalizer->normalize($data['host']);
+        $domain = $tenant->primaryDomain()->first()
+            ?? $tenant->domains()->where('normalized_host', $normalizedHost)->first();
         $before = $domain?->only(['normalized_host', 'is_primary', 'verified_at']);
         $oldHost = $domain?->normalized_host;
 
         $domain = DB::connection('control')->transaction(function () use ($tenant, $domain, $data): Domain {
             Domain::query()->where('tenant_id', $tenant->id)->update(['is_primary' => false]);
             $domain ??= new Domain(['tenant_id' => $tenant->id]);
-            $domain->fill([
+            $domain->forceFill([
                 'host' => $data['host'],
                 'is_primary' => true,
                 'verified_at' => $data['verified'] ? now() : null,
@@ -173,6 +179,7 @@ final class TenantController extends Controller
 
     public function migrate(Request $request, Tenant $tenant, TenantMigrationService $migrations): JsonResponse
     {
+        set_time_limit(900);
         $idempotencyKey = (string) $request->header('Idempotency-Key', '');
         if (! Str::isUuid($idempotencyKey)) {
             return response()->json([
@@ -191,13 +198,135 @@ final class TenantController extends Controller
         }
 
         try {
-            $migrations->run($tenant->id, new BufferedOutput, 'crm', $idempotencyKey);
+            $migrations->run($tenant->id, new BufferedOutput, 'crm', $idempotencyKey, true);
         } catch (Throwable) {
             $run = ProvisioningRun::query()->where('external_reference', $idempotencyKey)->first();
 
             return $run
                 ? $this->operationResponse($run, 422)
                 : response()->json(['message' => 'Migration could not be started.', 'code' => 'migration_failed'], 422);
+        }
+
+        return $this->operationResponse(ProvisioningRun::query()->where('external_reference', $idempotencyKey)->firstOrFail());
+    }
+
+    public function seedTemplate(Request $request, Tenant $tenant, TenantOperationRunner $runner): JsonResponse
+    {
+        set_time_limit(900);
+        $idempotencyKey = (string) $request->header('Idempotency-Key', '');
+        if (! Str::isUuid($idempotencyKey)) {
+            return response()->json([
+                'message' => 'A UUID Idempotency-Key header is required.',
+                'code' => 'idempotency_key_required',
+            ], 422);
+        }
+
+        $data = $request->validate([
+            'template_code' => ['required', 'alpha_dash', 'max:64'],
+            'template_version' => ['required', 'integer', 'min:1'],
+        ]);
+        if ($tenant->data_template_code && $data['template_code'] !== $tenant->data_template_code) {
+            return response()->json([
+                'message' => 'The requested template does not match the tenant registration.',
+                'code' => 'template_mismatch',
+            ], 422);
+        }
+
+        $existing = ProvisioningRun::query()->where('external_reference', $idempotencyKey)->first();
+        if ($existing) {
+            if ($existing->tenant_id !== $tenant->id) {
+                return response()->json(['message' => 'Idempotency key belongs to another tenant.', 'code' => 'idempotency_conflict'], 409);
+            }
+
+            return $this->operationResponse($existing);
+        }
+
+        try {
+            $runner->run($tenant->id, 'seed-template', function () use ($data): array {
+                $seeders = [
+                    'clients' => 'Database\\Seeders\\ClientSeeder',
+                    'currencies' => 'Database\\Seeders\\CurrencySeeder',
+                    'settings' => 'Database\\Seeders\\SettingSeeder',
+                    'servers' => 'Database\\Seeders\\ServerSeeder',
+                    'permissions' => 'Database\\Seeders\\PermissionsSeeder',
+                    'roles' => 'Database\\Seeders\\RoleSeeder',
+                    'permission_role' => 'Database\\Seeders\\PermissionRoleSeeder',
+                    'warehouses' => 'Database\\Seeders\\Warehouse',
+                    'store_settings' => 'Database\\Seeders\\StoreSettingSeeder',
+                    'payment_methods' => 'Database\\Seeders\\PaymentMethodsSeeder',
+                ];
+                $seededTables = [];
+
+                foreach ($seeders as $table => $seeder) {
+                    if (DB::connection('tenant')->table($table)->exists()) {
+                        continue;
+                    }
+
+                    $exit = Artisan::call('db:seed', [
+                        '--database' => 'tenant',
+                        '--class' => $seeder,
+                        '--force' => true,
+                    ]);
+                    if ($exit !== 0) {
+                        throw new \RuntimeException("Tenant reference data seeding failed for {$table}.");
+                    }
+
+                    $seededTables[] = $table;
+                }
+
+                return [
+                    'status' => 'completed',
+                    'template_code' => $data['template_code'],
+                    'template_version' => $data['template_version'],
+                    'seeded' => $seededTables !== [],
+                    'seeded_tables' => $seededTables,
+                ];
+            }, true, 'crm', $idempotencyKey);
+        } catch (Throwable) {
+            $run = ProvisioningRun::query()->where('external_reference', $idempotencyKey)->first();
+
+            return $run
+                ? $this->operationResponse($run, 422)
+                : response()->json(['message' => 'Template seeding could not be started.', 'code' => 'template_seed_failed'], 422);
+        }
+
+        return $this->operationResponse(ProvisioningRun::query()->where('external_reference', $idempotencyKey)->firstOrFail());
+    }
+
+    public function configureAdministrator(Request $request, Tenant $tenant, TenantAdministratorService $administrators): JsonResponse
+    {
+        set_time_limit(120);
+        $idempotencyKey = (string) $request->header('Idempotency-Key', '');
+        if (! Str::isUuid($idempotencyKey)) {
+            return response()->json([
+                'message' => 'A UUID Idempotency-Key header is required.',
+                'code' => 'idempotency_key_required',
+            ], 422);
+        }
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:191'],
+            'email' => ['required', 'email', 'max:192'],
+            'password' => ['required', 'string', 'min:12', 'max:128'],
+        ]);
+
+        $existing = ProvisioningRun::query()->where('external_reference', $idempotencyKey)->first();
+        if ($existing) {
+            if ($existing->tenant_id !== $tenant->id) {
+                return response()->json(['message' => 'Idempotency key belongs to another tenant.', 'code' => 'idempotency_conflict'], 409);
+            }
+
+            return $this->operationResponse($existing);
+        }
+
+        try {
+            $administrators->configure($tenant->id, $data, 'crm', $idempotencyKey);
+        } catch (Throwable) {
+            $run = ProvisioningRun::query()->where('external_reference', $idempotencyKey)->first();
+
+            return $run
+                ? $this->operationResponse($run, 422)
+                : response()->json(['message' => 'Administrator configuration could not be started.', 'code' => 'administrator_configuration_failed'], 422);
         }
 
         return $this->operationResponse(ProvisioningRun::query()->where('external_reference', $idempotencyKey)->firstOrFail());
@@ -290,7 +419,17 @@ final class TenantController extends Controller
 
     private function operationData(ProvisioningRun $run): array
     {
-        $result = collect($run->result ?? [])->only(['status', 'applied', 'schema_version'])->all();
+        $result = collect($run->result ?? [])->only([
+            'status',
+            'applied',
+            'schema_version',
+            'template_code',
+            'template_version',
+            'seeded',
+            'seeded_tables',
+            'admin_email',
+            'created',
+        ])->all();
 
         return [
             'id' => $run->id,
