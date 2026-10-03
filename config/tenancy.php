@@ -13,6 +13,11 @@ return [
     'resolution_cache_store' => (string) env('TENANT_RESOLUTION_CACHE_STORE', 'file'),
     'control_auth_timeout_seconds' => (int) env('CONTROL_AUTH_TIMEOUT_SECONDS', 1800),
 
+    'support' => [
+        'email' => (string) env('COUNTERPOS_SUPPORT_EMAIL', 'support@counterpos.pk'),
+        'website' => (string) env('COUNTERPOS_SUPPORT_URL', 'https://counterpos.pk'),
+    ],
+
     'crm_api' => [
         'key' => (string) env('CRM_API_KEY', ''),
         'secret' => (string) env('CRM_API_SECRET', ''),

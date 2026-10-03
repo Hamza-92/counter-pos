@@ -391,6 +391,7 @@ final class TenantController extends Controller
             'name' => $tenant->name,
             'slug' => $tenant->slug,
             'status' => $tenant->status,
+            'access_reason' => $tenant->manual_suspension_reason,
             'version' => $tenant->version,
             'schema_version' => $tenant->schema_version,
             'data_template' => ['code' => $tenant->data_template_code, 'version' => $tenant->data_template_version],

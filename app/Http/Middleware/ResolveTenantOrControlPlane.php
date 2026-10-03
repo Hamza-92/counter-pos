@@ -6,9 +6,10 @@ use App\Tenancy\ControlPlaneContext;
 use App\Tenancy\Exceptions\InvalidHostException;
 use App\Tenancy\Exceptions\TenantDatabaseException;
 use App\Tenancy\HostNormalizer;
+use App\Tenancy\TenancyManager;
+use App\Tenancy\TenantAccessUnavailablePage;
 use App\Tenancy\TenantDatabaseManager;
 use App\Tenancy\TenantResolver;
-use App\Tenancy\TenancyManager;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -22,8 +23,8 @@ class ResolveTenantOrControlPlane
         private readonly TenantResolver $resolver,
         private readonly TenantDatabaseManager $databaseManager,
         private readonly TenancyManager $tenancy,
-    ) {
-    }
+        private readonly TenantAccessUnavailablePage $accessUnavailablePage,
+    ) {}
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -104,14 +105,16 @@ class ResolveTenantOrControlPlane
 
     private function accessDeniedResponse(?string $reason, string $state): Response
     {
-        $status = $state === 'suspended' ? 423 : 402;
-        $message = htmlspecialchars($reason ?: 'This account is not currently active.', ENT_QUOTES, 'UTF-8');
+        $status = match ($state) {
+            'suspended' => 423,
+            'archived' => 410,
+            default => 403,
+        };
 
         return response(
-            '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="robots" content="noindex">'.
-            '<title>Account unavailable</title><body><main><h1>Account unavailable</h1><p>'.$message.'</p></main></body></html>',
+            $this->accessUnavailablePage->render($state, $reason),
             $status,
-            ['Cache-Control' => 'no-store']
+            ['Cache-Control' => 'no-store', 'Content-Type' => 'text/html; charset=UTF-8'],
         );
     }
 }

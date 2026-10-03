@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#0f766e">
+    <title>Tenant Access Unavailable | Counter POS</title>
+    <style>
+        :root { color-scheme:light; --brand:#0f766e; --brand-dark:#115e59; --brand-soft:#ccfbf1; --ink:#102a2a; --muted:#5b6f70; --line:#dce8e7; --page:#f3f8f7; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; color:var(--ink); background:radial-gradient(circle at 15% 10%,rgba(20,184,166,.14),transparent 32rem),radial-gradient(circle at 90% 90%,rgba(13,148,136,.10),transparent 30rem),var(--page); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+        .page { width:min(100%,680px); }
+        .brand { display:inline-flex; align-items:center; gap:11px; margin:0 0 20px 4px; color:var(--brand-dark); font-size:20px; font-weight:800; letter-spacing:-.02em; }
+        .brand-mark { display:grid; place-items:center; width:38px; height:38px; border-radius:11px; color:white; background:linear-gradient(145deg,#14b8a6,var(--brand-dark)); box-shadow:0 10px 24px rgba(15,118,110,.22); }
+        .card { overflow:hidden; border:1px solid rgba(15,118,110,.14); border-radius:24px; background:rgba(255,255,255,.96); box-shadow:0 24px 70px rgba(19,78,74,.12); }
+        .accent { height:6px; background:linear-gradient(90deg,#14b8a6,#0f766e); }
+        .content { padding:42px 44px 38px; }
+        .status-icon { display:grid; place-items:center; width:62px; height:62px; margin-bottom:25px; border-radius:18px; color:var(--brand-dark); background:var(--brand-soft); }
+        .eyebrow { margin:0 0 10px; color:var(--brand); font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+        h1 { margin:0; font-size:clamp(30px,6vw,42px); line-height:1.1; letter-spacing:-.04em; }
+        .intro { margin:16px 0 26px; color:var(--muted); font-size:17px; line-height:1.7; }
+        .reason { margin:0; padding:18px 20px; border:1px solid var(--line); border-left:4px solid #14b8a6; border-radius:12px; background:#f8fbfb; }
+        .reason strong { display:block; margin-bottom:5px; font-size:13px; }
+        .reason span { color:#314f50; line-height:1.6; }
+        .help { margin:28px 0 16px; font-weight:700; }
+        .actions { display:flex; flex-wrap:wrap; gap:12px; }
+        .button { display:inline-flex; align-items:center; justify-content:center; min-height:46px; padding:0 18px; border:1px solid var(--line); border-radius:11px; color:var(--ink); background:white; font-weight:750; text-decoration:none; transition:transform .15s ease; }
+        .button.primary { border-color:var(--brand); color:white; background:var(--brand); }
+        .button:hover { transform:translateY(-1px); }
+        .footer { padding:19px 44px; border-top:1px solid var(--line); color:var(--muted); background:#fbfdfd; font-size:13px; }
+        @media (max-width:560px) { body { padding:42px 16px 16px; align-items:start; } .content { padding:31px 24px 28px; } .footer { padding:17px 24px; } .actions { flex-direction:column; } .button { width:100%; } }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <div class="brand" aria-label="Counter POS">
+            <span class="brand-mark" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 7.5h10M8.5 12h7M10 16.5h4M5 3h14a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </span>
+            Counter POS
+        </div>
+        <section class="card">
+            <div class="accent"></div>
+            <div class="content">
+                <div class="status-icon" aria-hidden="true">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M12 8v4m0 4h.01M10.3 3.7 2.7 17a2 2 0 0 0 1.74 3h15.12a2 2 0 0 0 1.74-3L13.7 3.7a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <p class="eyebrow">%%STATE_LABEL%%</p>
+                <h1>Tenant access unavailable</h1>
+                <p class="intro">Your store data is safe, but access to this Counter POS account is currently restricted.</p>
+                <p class="reason"><strong>Why access is restricted</strong><span>%%REASON%%</span></p>
+                <p class="help">Need help restoring access?</p>
+                <div class="actions">
+                    %%SUPPORT_ACTIONS%%
+                </div>
+            </div>
+            <div class="footer">If you recently renewed your subscription, access will return after the payment is confirmed.</div>
+        </section>
+    </main>
+</body>
+</html>
