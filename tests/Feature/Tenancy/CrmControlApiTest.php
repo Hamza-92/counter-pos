@@ -121,6 +121,48 @@ class CrmControlApiTest extends TestCase
         $this->assertArrayNotHasKey('password', $database);
     }
 
+    public function test_crm_can_list_and_link_existing_tenants_for_transfer(): void
+    {
+        $tenant = Tenant::query()->create([
+            'name' => 'Legacy Shop',
+            'slug' => 'legacy-shop',
+            'contact_name' => 'Shop Owner',
+            'contact_email' => 'owner@example.com',
+            'status' => 'active',
+        ]);
+        $tenant->domains()->create(['host' => 'legacy.example.com', 'is_primary' => true, 'verified_at' => now()]);
+        $tenant->databaseConfiguration()->create([
+            'driver' => 'mysql', 'host' => 'localhost', 'port' => 3306,
+            'database_name' => 'legacy_shop_db', 'username' => 'secret_user', 'password' => 'secret_password',
+        ]);
+
+        $listUrl = 'https://admin.counterpos.pk/api/control/v1/tenants?search=Legacy';
+        $listed = $this->withHeaders($this->signedHeaders('GET', $listUrl))
+            ->get($listUrl, ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.business_name', 'Legacy Shop')
+            ->assertJsonPath('data.0.customer_name', 'Shop Owner')
+            ->assertJsonPath('data.0.url', 'https://legacy.example.com')
+            ->assertJsonPath('data.0.database', 'legacy_shop_db');
+        $this->assertStringNotContainsString('secret_user', $listed->getContent());
+        $this->assertStringNotContainsString('secret_password', $listed->getContent());
+
+        $showUrl = "https://admin.counterpos.pk/api/control/v1/tenants/{$tenant->id}";
+        $this->withHeaders($this->signedHeaders('GET', $showUrl))->get($showUrl)->assertOk()
+            ->assertJsonPath('data.id', $tenant->id);
+
+        $linkUrl = "https://admin.counterpos.pk/api/control/v1/tenants/{$tenant->id}/crm-link";
+        $payload = ['crm_application_instance_id' => 42];
+        $this->json('PUT', $linkUrl, $payload, $this->signedJsonHeaders('PUT', $linkUrl, $payload, (string) Str::uuid()))
+            ->assertOk()->assertJsonPath('data.crm_application_instance_id', 42);
+        $this->json('PUT', $linkUrl, $payload, $this->signedJsonHeaders('PUT', $linkUrl, $payload, (string) Str::uuid()))
+            ->assertOk();
+        $other = ['crm_application_instance_id' => 43];
+        $this->json('PUT', $linkUrl, $other, $this->signedJsonHeaders('PUT', $linkUrl, $other, (string) Str::uuid()))
+            ->assertStatus(409)->assertJsonPath('code', 'crm_link_conflict');
+    }
+
     public function test_control_api_is_not_available_on_tenant_hosts(): void
     {
         $url = 'https://customer.example.com/api/control/v1/health';

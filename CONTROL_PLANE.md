@@ -63,8 +63,11 @@ The API rejects expired timestamps, reused nonces, invalid signatures, and reque
 The available endpoints are:
 
 - `GET /api/control/v1/health`
+- `GET /api/control/v1/tenants` (paginated legacy transfer inventory; `search`, `page`, `per_page`)
 - `POST /api/control/v1/tenants`
 - `GET /api/control/v1/tenants/by-crm-instance/{id}`
+- `GET /api/control/v1/tenants/{tenant}` (legacy transfer details)
+- `PUT /api/control/v1/tenants/{tenant}/crm-link` (link an existing tenant to a CRM application instance)
 - `PUT /api/control/v1/tenants/{tenant}/domain`
 - `PUT /api/control/v1/tenants/{tenant}/database`
 - `POST /api/control/v1/tenants/{tenant}/database/test`
@@ -72,7 +75,7 @@ The available endpoints are:
 - `PUT /api/control/v1/tenants/{tenant}/status`
 - `GET /api/control/v1/operations/{run}`
 
-Tenant and operation responses intentionally exclude database host, name, username, passwords, and migration credentials. Database credentials are encrypted in the control database before storage.
+General tenant and operation responses intentionally exclude database host, name, username, passwords, and migration credentials. The signed legacy transfer inventory and detail responses include the database name for operator review; they still exclude its host, username, passwords, and migration credentials. Database credentials are encrypted in the control database before storage.
 
 ## Hosting automation boundary
 

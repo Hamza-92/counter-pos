@@ -26,6 +26,89 @@ use Throwable;
 
 final class TenantController extends Controller
 {
+    public function index(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+        ]);
+        $search = trim((string) ($data['search'] ?? ''));
+        $tenants = Tenant::query()
+            ->with(['primaryDomain', 'databaseConfiguration'])
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('contact_name', 'like', '%'.$search.'%')
+                        ->orWhere('contact_email', 'like', '%'.$search.'%')
+                        ->orWhereHas('primaryDomain', fn ($domain) => $domain->where('host', 'like', '%'.$search.'%'))
+                        ->orWhereHas('databaseConfiguration', fn ($database) => $database->where('database_name', 'like', '%'.$search.'%'));
+                });
+            })
+            ->orderBy('name')
+            ->paginate((int) ($data['per_page'] ?? 25));
+
+        return response()->json([
+            'data' => $tenants->getCollection()->map(fn (Tenant $tenant) => $this->transferData($tenant))->values(),
+            'meta' => [
+                'current_page' => $tenants->currentPage(),
+                'last_page' => $tenants->lastPage(),
+                'per_page' => $tenants->perPage(),
+                'total' => $tenants->total(),
+            ],
+        ]);
+    }
+
+    public function show(Tenant $tenant): JsonResponse
+    {
+        return response()->json(['data' => $this->transferData($tenant->load(['primaryDomain', 'databaseConfiguration']))]);
+    }
+
+    public function linkCrmInstance(Request $request, Tenant $tenant, AuditService $audit): JsonResponse
+    {
+        $data = $request->validate([
+            'crm_application_instance_id' => ['required', 'integer', 'min:1'],
+        ]);
+        $instanceId = (int) $data['crm_application_instance_id'];
+        $result = DB::connection('control')->transaction(function () use ($tenant, $instanceId, $audit): array {
+            $locked = Tenant::query()->lockForUpdate()->findOrFail($tenant->id);
+            if ($locked->crm_application_instance_id !== null
+                && (int) $locked->crm_application_instance_id !== $instanceId) {
+                return ['error' => 'Tenant is already linked to another CRM application instance.'];
+            }
+            if (Tenant::query()->where('crm_application_instance_id', $instanceId)->where('id', '!=', $locked->id)->exists()) {
+                return ['error' => 'CRM application instance is already linked to another tenant.'];
+            }
+            if ($locked->crm_application_instance_id === null) {
+                $locked->forceFill(['crm_application_instance_id' => $instanceId])->save();
+                $audit->record('crm_api.tenant.linked', $locked, ['crm_application_instance_id' => null], ['crm_application_instance_id' => $instanceId]);
+            }
+
+            return ['tenant' => $locked];
+        });
+
+        if (isset($result['error'])) {
+            return response()->json(['message' => $result['error'], 'code' => 'crm_link_conflict'], 409);
+        }
+
+        return response()->json(['data' => $this->transferData($result['tenant']->load(['primaryDomain', 'databaseConfiguration']))]);
+    }
+
+    private function transferData(Tenant $tenant): array
+    {
+        return [
+            'id' => $tenant->id,
+            'business_name' => $tenant->name,
+            'customer_name' => $tenant->contact_name,
+            'email' => $tenant->contact_email,
+            'phone' => $tenant->contact_phone,
+            'status' => $tenant->status,
+            'url' => $tenant->primaryDomain?->host ? 'https://'.$tenant->primaryDomain->host : null,
+            'database' => $tenant->databaseConfiguration?->database_name,
+            'crm_application_instance_id' => $tenant->crm_application_instance_id,
+        ];
+    }
+
     public function register(Request $request, AuditService $audit): JsonResponse
     {
         $existing = Tenant::query()->where('crm_application_instance_id', $request->integer('crm_application_instance_id'))->first();
